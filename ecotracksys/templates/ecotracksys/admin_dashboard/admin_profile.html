@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Profile | EcoTrack</title>
+
+  <!-- =========================
+       Bootstrap Icons for UI
+       ========================= -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- =========================
+       Internal CSS for Dark Glowing Theme
+       ========================= -->
+  <style>
+    /* =====================================================
+       Root Variables
+       Define main color palette, gradients, highlights, and shadows
+       ===================================================== */
+    :root {
+      --bg-gradient: linear-gradient(to right, #0f2027, #2c5364); /* Page background gradient */
+      --container-gradient: linear-gradient(to right, #232526, #1e3c72); /* Sidebar background */
+      --primary: #1976d2;    /* Main accent color for buttons, headings */
+      --secondary: #0d47a1;  /* Secondary accent color */
+      --highlight: #4fc3f7;  /* Highlight for icons and hover states */
+      --light-blue: #90caf9; /* Labels and secondary text */
+      --text-light: #f0f0f0; /* Default text color */
+      --shadow: rgba(31, 38, 135, 0.37); /* Soft shadow for cards and elements */
+    }
+
+    /* =====================================================
+       Body Styling
+       ===================================================== */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-light);
+    }
+
+    /* =====================================================
+       Container Flexbox
+       Sidebar + Main Content side by side
+       ===================================================== */
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* =====================================================
+       Sidebar Styling
+       ===================================================== */
+    .sidebar {
+      width: 260px; /* Full width when expanded */
+      background: var(--container-gradient);
+      transition: width 0.3s ease;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .sidebar.collapsed {
+      width: 70px; /* Collapsed width */
+    }
+
+    /* Sidebar brand/logo text */
+    .sidebar h2 {
+      text-align: center;
+      padding: 20px 0;
+      font-size: 1.6rem;
+      margin: 0;
+      transition: opacity 0.3s;
+      color: var(--text-light);
+    }
+
+    .sidebar.collapsed h2 {
+      opacity: 0; /* Hide brand text when collapsed */
+    }
+
+    /* Sidebar navigation list */
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Sidebar list items */
+    .sidebar ul li {
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px; /* Space between icon and text */
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    /* Hover effect for sidebar items */
+    .sidebar ul li:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar ul li span {
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar ul li a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-light);
+      text-decoration: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Hide text labels when sidebar collapsed */
+    .sidebar.collapsed ul li span {
+      opacity: 0;
+    }
+
+    /* Sidebar toggle button */
+    .toggle-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: var(--text-light);
+      cursor: pointer;
+    }
+
+    /* =====================================================
+       Main Content Area
+       ===================================================== */
+    .main {
+      flex: 1; /* Takes remaining horizontal space */
+      padding: 24px;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Header within Main Content */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      color: var(--text-light);
+    }
+
+    /* =====================================================
+       Profile Card Styling
+       ===================================================== */
+    .profile-card {
+      background: #1c2b4a; /* Dark card background */
+      padding: 32px;
+      border-radius: 18px;
+      box-shadow: 0 4px 12px var(--shadow);
+      max-width: 600px;
+      margin: 0 auto; /* Center horizontally */
+    }
+
+    /* Profile Picture */
+    .profile-pic {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%; /* Circular */
+      object-fit: cover;
+      border: 3px solid var(--highlight);
+      margin-bottom: 16px;
+    }
+
+    /* Form Groups */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--light-blue);
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #273b61;
+      color: var(--text-light);
+    }
+
+    /* Update Buttons */
+    .update-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s ease, transform 0.2s;
+    }
+
+    .update-btn:hover {
+      background: var(--highlight);
+      color: black;
+      transform: scale(1.05);
+    }
+
+    /* =====================================================
+       Activity Log Section
+       ===================================================== */
+    .activity-log {
+      margin-top: 40px;
+    }
+
+    .activity-log h2 {
+      font-size: 20px;
+      color: var(--light-blue);
+      margin-bottom: 16px;
+    }
+
+    .activity-log ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .activity-log li {
+      padding: 10px;
+      background: #273b61;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px var(--shadow);
+    }
+
+    /* =====================================================
+       Responsive Styling for Smaller Screens
+       ===================================================== */
+    @media screen and (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        z-index: 999;
+        height: 100%;
+      }
+
+      .main {
+        margin-left: 70px;
+      }
+
+      .sidebar.collapsed + .main {
+        margin-left: 70px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- =====================================================
+         Sidebar Navigation
+         Contains links to all admin sections
+         ===================================================== -->
+    <div class="sidebar" id="sidebar">
+      <h2 id="brandText">EcoTrack</h2>
+      <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+      <ul>
+        <li><a href="{% url 'admin_dashboard' %}"><i>🏠</i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'pickup_management' %}"><i>🗑️</i> <span>Pickup Management</span></a></li>
+        <li><a href="{% url 'zone_management' %}"><i>📍</i> <span>Zone Management</span></a></li>
+        <li><a href="{% url 'leave_req_management' %}"><i>📅</i> <span>Leave Requests</span></a></li>
+        <li><a href="{% url 'complaint_management' %}"><i>📢</i> <span>Complaints</span></a></li>
+        <li><a href="{% url 'user_management' %}"><i>🧑‍🤝‍🧑</i> <span>User Management</span></a></li>
+        <li><a href="{% url 'collector_management' %}"><i>👷‍♂️</i> <span>Collector Management</span></a></li>
+        <li><a href="{% url 'analytics' %}"><i>📊</i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'admin_profile' %}"><i>👤</i> <span>Admin Profile</span></a></li>
+      </ul>
+    </div>
+
+    <!-- =====================================================
+         Main Content Area
+         Profile Information and Activity Log
+         ===================================================== -->
+    <div class="main">
+      <!-- Page Header -->
+      <div class="header">
+        <h1>Admin Profile</h1>
+      </div>
+
+      <!-- Profile Card -->
+      <div class="profile-card">
+        <center>
+          <!-- Profile Picture -->
+          <img src="https://via.placeholder.com/120" alt="Profile" class="profile-pic" />
+          <br />
+          <!-- Change Picture Button -->
+          <button class="update-btn"><i class="bi bi-upload"></i> Change Picture</button>
+        </center>
+        <br />
+
+        <!-- Full Name Update -->
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" value="Aparna Jiji" />
+          <button class="update-btn"><i class="bi bi-check2"></i> Update</button>
+        </div>
+
+        <!-- Email Update -->
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" value="admin@ecotrack.com" />
+          <button class="update-btn"><i class="bi bi-envelope-check"></i> Update</button>
+        </div>
+
+        <!-- Password Change -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" value="********" />
+          <button class="update-btn"><i class="bi bi-lock"></i> Change Password</button>
+        </div>
+      </div>
+
+      <!-- Recent Activity Log -->
+      <div class="activity-log">
+        <h2>Recent Activity</h2>
+        <ul>
+          <li><i class="bi bi-clock-history"></i> Logged in on 1 Aug 2025 at 9:00 AM</li>
+          <li><i class="bi bi-person-check"></i> Assigned pickup to Collector #23</li>
+          <li><i class="bi bi-geo-alt-fill"></i> Updated zone details for Sector-17</li>
+          <li><i class="bi bi-check-circle"></i> Reviewed leave request of Collector #11</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================
+       JavaScript: Toggle Sidebar Collapse
+       ===================================================== -->
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("collapsed"); // Toggle collapsed class
+    }
+  </script>
+</body>
+
+</html>

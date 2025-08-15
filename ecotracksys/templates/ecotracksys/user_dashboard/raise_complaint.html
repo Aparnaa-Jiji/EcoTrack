@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Raise Complaint - EcoTrack</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #0f2027, #2c5364);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: linear-gradient(to right, #232526, #1e3c72);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(31, 38, 135, 0.37);
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+    }
+
+    h2 {
+      text-align: center;
+      color: #4fc3f7;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #4fc3f7;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      margin-bottom: 20px;
+      background-color: #f5f5f5;
+      color: #000;
+      font-size: 1rem;
+    }
+
+    input[type="file"] {
+      background-color: #fff;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .submit-btn {
+      background-color: #1976d2;
+      color: #fff;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: #1565c0;
+    }
+
+    .cancel-btn {
+      background-color: #ff5252;
+      color: #fff;
+      transition: background-color 0.3s ease;
+    }
+
+    .cancel-btn:hover {
+      background-color: #e53935;
+    }
+
+    .home-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #4fc3f7;
+      color: #000;
+      padding: 8px 15px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    /* Error messages */
+    .errorlist {
+      color: #ff5252;
+      margin-top: -15px;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+      list-style: none;
+      padding-left: 0;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <a href="{% url 'user_dashboard' %}" class="home-btn">🏠 Home</a>
+    <h2>Raise a Complaint</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <label for="{{ form.subject.id_for_label }}">Complaint Subject</label>
+      {{ form.subject }}
+      {% if form.subject.errors %}
+        <ul class="errorlist">{{ form.subject.errors }}</ul>
+      {% endif %}
+
+      <label for="{{ form.complaint_type.id_for_label }}">Complaint Type</label>
+      {{ form.complaint_type }}
+      {% if form.complaint_type.errors %}
+        <ul class="errorlist">{{ form.complaint_type.errors }}</ul>
+      {% endif %}
+
+      <label for="{{ form.related_pickup.id_for_label }}">Related Pickup Request</label>
+      {{ form.related_pickup }}
+      {% if form.related_pickup.errors %}
+        <ul class="errorlist">{{ form.related_pickup.errors }}</ul>
+      {% endif %}
+
+      <label for="{{ form.description.id_for_label }}">Complaint Description</label>
+      {{ form.description }}
+      {% if form.description.errors %}
+        <ul class="errorlist">{{ form.description.errors }}</ul>
+      {% endif %}
+
+      <label for="{{ form.photo.id_for_label }}">Upload Photo (optional)</label>
+      {{ form.photo }}
+      {% if form.photo.errors %}
+        <ul class="errorlist">{{ form.photo.errors }}</ul>
+      {% endif %}
+
+      <div class="button-row">
+        <button type="button" class="cancel-btn" onclick="window.history.back()">Cancel</button>
+        <button type="submit" class="submit-btn">Submit Complaint</button>
+      </div>
+    </form>
+  </div>
+
+</body>
+</html>

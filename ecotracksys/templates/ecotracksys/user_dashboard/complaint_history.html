@@ -1,0 +1,147 @@
+<!--compaint_history.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Complaint History</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #fff;
+    }
+
+    .wrapper {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .back-button {
+      display: inline-block;
+      margin-bottom: 25px;
+      padding: 10px 20px;
+      background-color: #1976d2;
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(31, 38, 135, 0.4);
+      transition: 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: #0d47a1;
+      box-shadow: 0 0 8px #90caf9;
+    }
+
+    .complaint-card {
+      background: linear-gradient(to right, #232526, #1e3c72);
+      border-radius: 12px;
+      padding: 20px 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 20px rgba(31, 38, 135, 0.2);
+      transition: 0.3s ease;
+    }
+
+    .complaint-card:hover {
+      transform: scale(1.01);
+      box-shadow: 0 0 10px #1976d2;
+    }
+
+    .complaint-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .complaint-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #90caf9;
+    }
+
+    .complaint-date {
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .complaint-content {
+      margin-bottom: 10px;
+      line-height: 1.6;
+      color: #e0e0e0;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .pending {
+      background-color: #ffa000;
+      color: #fff;
+    }
+
+    .resolved {
+      background-color: #388e3c;
+      color: #fff;
+    }
+
+    .rejected {
+      background-color: #ff5252;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <!-- Back Button -->
+    <a href="{% url 'citizen_dashboard' %}" class="back-button">← Back to Dashboard</a>
+    <h1>Complaint History</h1>
+
+    <!-- Complaint 1 -->
+    <div class="complaint-card">
+      <div class="complaint-header">
+        <div class="complaint-title">Complaint #101 - Missed Pickup</div>
+        <span class="status pending">Pending</span>
+      </div>
+      <div class="complaint-content">
+        My waste pickup was not completed yesterday despite scheduling. Please resolve this.
+      </div>
+      <div class="complaint-date">Submitted on: 05-Aug-2025</div>
+    </div>
+
+    <!-- Complaint 2 -->
+    <div class="complaint-card">
+      <div class="complaint-header">
+        <div class="complaint-title">Complaint #92 - Late Collection</div>
+        <span class="status resolved">Resolved</span>
+      </div>
+      <div class="complaint-content">
+        Collector arrived 3 hours late multiple times this week. Kindly ensure timely pickup.
+      </div>
+      <div class="complaint-date">Submitted on: 30-Jul-2025</div>
+    </div>
+
+    <!-- Complaint 3 -->
+    <div class="complaint-card">
+      <div class="complaint-header">
+        <div class="complaint-title">Complaint #85 - Improper Behaviour</div>
+        <span class="status rejected">Rejected</span>
+      </div>
+      <div class="complaint-content">
+        The collector was rude and unprofessional during pickup. I request strict action.
+      </div>
+      <div class="complaint-date">Submitted on: 25-Jul-2025</div>
+    </div>
+  </div>
+</body>
+</html>

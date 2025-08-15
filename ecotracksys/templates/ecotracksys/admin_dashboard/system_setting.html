@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EcoTrack Admin - System Settings</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(to right, #0f2027, #2c5364);
+      --container-gradient: linear-gradient(to right, #232526, #1e3c72);
+      --primary: #1976d2;
+      --secondary: #0d47a1;
+      --highlight: #4fc3f7;
+      --light-blue: #90caf9;
+      --text-light: #f0f0f0;
+      --shadow: rgba(31, 38, 135, 0.37);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-light);
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: var(--container-gradient);
+      transition: width 0.3s ease;
+      overflow: hidden;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      padding: 20px 0;
+      font-size: 1.6rem;
+      margin: 0;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar ul li {
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .sidebar ul li:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar ul li i {
+      font-size: 18px;
+    }
+
+    .sidebar ul li a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-light);
+  text-decoration: none;
+  width: 100%;
+  height: 100%;
+}
+
+
+    .main {
+      flex: 1;
+      padding: 24px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+    }
+
+    .settings-group {
+      background: #1c2b4a;
+      padding: 24px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    .settings-group h2 {
+      color: var(--highlight);
+      margin-bottom: 16px;
+      font-size: 20px;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 14px 0;
+    }
+
+    .setting-item label {
+      font-size: 16px;
+    }
+
+    .setting-item select, .setting-item input[type="checkbox"] {
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #273b61;
+      color: var(--text-light);
+      border: none;
+    }
+
+    .setting-item input[type="checkbox"] {
+      transform: scale(1.2);
+      margin-left: 8px;
+    }
+
+    .save-btn {
+      padding: 10px 22px;
+      background-color: var(--primary);
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 20px;
+    }
+
+    .save-btn:hover {
+      background-color: var(--highlight);
+      transform: scale(1.05);
+    }
+
+    @media screen and (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+      }
+
+      .main {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <h2>EcoTrack</h2>
+      <ul>
+        <li><a href="{% url 'admin_dashboard' %}"><i>🏠</i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'pickup_management' %}"><i>🗑️</i> <span>Pickup Management</span></a></li>
+        <li><a href="{% url 'zone_management' %}"><i>📍</i> <span>Zone Management</span></a></li>
+        <li><a href="{% url 'leave_req_management' %}"><i>📅</i> <span>Leave Requests</span></a></li>
+        <li><a href="{% url 'complaint_management' %}"><i>📢</i> <span>Complaints</span></a></li>
+        <li><a href="{% url 'user_management' %}"><i>🧑‍🤝‍🧑</i> <span>User Management</span></a></li>
+        <li><a href="{% url 'collector_management' %}"><i>👷‍♂️</i> <span>Collector Management</span></a></li>
+        <li><a href="{% url 'analytics' %}"><i>📊</i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'admin_profile' %}"><i>👤</i> <span>Admin Profile</span></a></li>
+      </ul>
+    </div>
+
+    <div class="main">
+      <div class="header">
+        <h1>System Settings</h1>
+      </div>
+
+      <div class="settings-group">
+        <h2>General Settings</h2>
+        <div class="setting-item">
+          <label>Enable System Maintenance Mode</label>
+          <input type="checkbox" />
+        </div>
+        <div class="setting-item">
+          <label>Default Language</label>
+          <select>
+            <option>English</option>
+            <option>Hindi</option>
+            <option>Tamil</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h2>Notification Preferences</h2>
+        <div class="setting-item">
+          <label>Email Alerts</label>
+          <input type="checkbox" checked />
+        </div>
+        <div class="setting-item">
+          <label>SMS Notifications</label>
+          <input type="checkbox" />
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h2>Data Management</h2>
+        <div class="setting-item">
+          <label>Auto Backup</label>
+          <input type="checkbox" />
+        </div>
+        <div class="setting-item">
+          <label>Clear Logs Older Than</label>
+          <select>
+            <option>30 Days</option>
+            <option>60 Days</option>
+            <option>90 Days</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h2>Appearance & Accessibility</h2>
+        <div class="setting-item">
+          <label>High Contrast Mode</label>
+          <input type="checkbox" />
+        </div>
+        <div class="setting-item">
+          <label>Text Size</label>
+          <select>
+            <option>Normal</option>
+            <option>Large</option>
+            <option>Extra Large</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="save-btn">Save Settings</button>
+    </div>
+  </div>
+</body>
+</html>

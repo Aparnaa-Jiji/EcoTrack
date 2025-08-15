@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Register</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url("{% static 'bgimg.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .register-container {
+            border: none;
+            padding: 36px 44px;
+            border-radius: 18px;
+            box-shadow:
+                0 8px 32px 0 rgba(27, 127, 120, 255),
+                0 1.5px 6px 0 #077375,
+                0 0 0 4px rgba(78, 188, 174, 0.667) inset;
+            background: rgba(109,148,135,0.25);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(19, 151, 127, 0.936);
+            color: #fff;
+            min-width: 340px;
+            transform: perspective(800px) rotateY(-2deg) scale(1.01);
+        }
+        h2 {
+            text-align: center;
+            color: #0f8a4f;
+            
+        }
+        form label {
+            display: block;
+            margin-top: 14px;
+            color: #116d4b;
+            font-weight: 500;
+        }
+        form input {
+            width: 95%;
+            padding: 8px 10px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: none;
+            background: #dadcde;
+            color: #187972;
+
+            /* Shadows & border effect */
+            box-shadow:
+                0 2px 6px #03684d,
+                0 1px 2px #116d4b inset,
+                0 0 0 2px #03684d;
+
+            font-size: 15px;
+            outline: none;
+            transition: box-shadow 0.2s, transform 0.1s;
+        }
+        form input:focus {
+            box-shadow:
+                0 0 0 2px #116d4b,
+                0 2px 6px #f4f4f4,
+                0 1px 2px #03684d inset;
+            transform: scale(1.03);
+        }
+        button {
+            width: 100%;
+            margin-top: 22px;
+            padding: 10px;
+            font-size: 17px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(100,173,169,255);
+            border: none;
+            border-radius: 10px;
+
+            /* Button shadow effects */
+            box-shadow:
+                0 4px 16px #0a0a0a,
+                0 2px 8px rgba(100,173,169,255),
+                0 6px 24px #0a0a0a;
+
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+        }
+
+        .extra-links {
+            text-align: center;
+            margin-top: 16px;
+        }
+        .extra-links a {
+            color: #04706e;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 6px 10px;
+            display: inline-block;
+            transition: color 0.2s ease;
+        }
+        .extra-links a:hover {
+            color: #90caf9;
+            text-shadow: 0 0 6px #0c9676;
+        }
+
+        button:hover {
+            background: #067475;
+            box-shadow:
+                0 12px 32px #0b7e74,
+                0 2px 8px #0a0a0a;
+            transform: translateY(-3px) scale(1.05);
+        }
+        button:active {
+            box-shadow:
+                0 2px 8px #087865,
+                0 1px 2px #0a0a0a;
+            transform: translateY(1px) scale(0.98);
+        }
+
+        /* Flexbox row for two inputs */
+        .form-row {
+            display: flex;
+            gap: 30px;
+        }
+        .form-row .form-group {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2>Register</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- First row: Full Name & Email -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="full_name">Full Name:</label>
+                    <input type="text" id="full_name" name="full_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+            </div>
+
+            <label for="phone_no">Phone No:</label>
+            <input type="tel" id="phone_no" name="phone_no" required>
+
+            <label for="profile_image">Profile Image:</label>
+            <input type="file" id="profile_image" name="profile_image" accept="image/*">
+
+            <!-- Second row: Password & Confirm Password -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password:</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required>
+                </div>
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+        
+        <div class="extra-links">
+            <a href="{% url 'login' %}">Already have an account? Login</a>
+        </div>
+        <div class="extra-links" style="text-align:center; margin-bottom:15px;">
+            <a href="{% url 'index' %}" style="color:#04706e; text-decoration:none;">← Home</a>
+        </div>
+    </div>
+</body>
+</html>

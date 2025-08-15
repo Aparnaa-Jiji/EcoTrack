@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Requests – EcoTrack</title>
+  <link rel="icon" href="favicon.ico" />
+  <style>
+    body {
+      background: #0f172a;
+      color: #e5e7eb;
+      transition: background .3s ease, color .3s ease;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body.light-mode {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    body.light-mode .request-container {
+      background: linear-gradient(145deg, #ffffff, #e5e7eb);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    body.light-mode .request-card {
+      background: linear-gradient(145deg, #ffffff, #f9fafb);
+      border: 1px solid #e5e7eb;
+    }
+
+    body.light-mode .status-badge.pending {
+      background: linear-gradient(145deg, #fbbf24, #f59e0b);
+    }
+
+    body.light-mode .status-badge.completed {
+      background: linear-gradient(145deg, #10b981, #059669);
+    }
+
+    body.light-mode .status-badge.cancelled {
+      background: linear-gradient(145deg, #ef4444, #dc2626);
+    }
+
+    .request-container {
+      background: linear-gradient(145deg, #1a1a2e, #16213e);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4), inset 0 2px 0 rgba(59,130,246,0.3), inset 0 -2px 0 rgba(0,0,0,0.5);
+      margin: 20px auto;
+      max-width: 1200px;
+    }
+
+    .request-card {
+      background: linear-gradient(145deg, #1e293b, #334155);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #475569;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .request-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.3), 0 0 20px rgba(59,130,246,0.2);
+    }
+
+    .request-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .status-badge.pending {
+      background: linear-gradient(145deg, #f59e0b, #d97706);
+      color: white;
+    }
+
+    .status-badge.completed {
+      background: linear-gradient(145deg, #10b981, #047857);
+      color: white;
+    }
+
+    .status-badge.cancelled {
+      background: linear-gradient(145deg, #ef4444, #b91c1c);
+      color: white;
+    }
+
+    .status-badge.in-progress {
+      background: linear-gradient(145deg, #3b82f6, #1d4ed8);
+      color: white;
+    }
+
+    .request-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .request-id {
+      font-size: 18px;
+      font-weight: 700;
+      color: #60a5fa;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .request-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .detail-label {
+      font-size: 12px;
+      color: #9ca3af;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .detail-value {
+      font-size: 14px;
+      color: #e5e7eb;
+      font-weight: 500;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .action-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: white;
+    }
+
+    .action-btn.edit {
+      background: linear-gradient(145deg, #10b981, #047857);
+    }
+
+    .cancel-btn {
+      background-color: #ef4444; /* Red danger color */
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    }
+
+    .cancel-btn:hover {
+      background-color: #e53935; /* Slightly darker red on hover */
+    }
+
+    .action-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    .action-btn:disabled,
+    .cancel-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      box-shadow: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #9ca3af;
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-select {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      background: linear-gradient(145deg, #1e293b, #334155);
+      color: #e5e7eb;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    body.light-mode .filter-select {
+      background: #fff;
+      color: #111827;
+      border: 1px solid #cbd5e1;
+    }
+
+    .new-request-btn {
+      background: linear-gradient(145deg, #8b5cf6, #7c3aed);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(139,92,246,0.3);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .new-request-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(139,92,246,0.4);
+    }
+
+    /* Popup overlay */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(15, 32, 39, 0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    /* Popup box */
+    .popup-box {
+      background: linear-gradient(to right, #232526, #1e3c72);
+      color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 20px #1976d2;
+      max-width: 320px;
+      margin: 0 15px;
+    }
+
+    /* Popup buttons */
+    .popup-buttons {
+      margin-top: 20px;
+    }
+
+    .popup-buttons .yes-btn,
+    .popup-buttons .no-btn {
+      padding: 10px 20px;
+      margin: 0 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: background-color 0.3s ease;
+    }
+
+    .yes-btn {
+      background-color: #1976d2;
+      color: #fff;
+    }
+
+    .yes-btn:hover {
+      background-color: #155a9c;
+    }
+
+    .no-btn {
+      background-color: #4fc3f7;
+      color: #0f2027;
+    }
+
+    .no-btn:hover {
+      background-color: #3aa7e0;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #232526;
+      color: #4fc3f7;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 15px;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.4s ease-in-out;
+      box-shadow: 0 0 15px rgba(31, 38, 135, 0.37);
+      user-select: none;
+    }
+    .toast.show {
+      opacity: 1;
+    }
+
+    /* Side Navigation */
+    .side-nav {
+      position: fixed;
+      left: 20px;
+      top: 120px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 10;
+      max-width: 260px;
+    }
+
+    .modern-btn.dashboard-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 12px 16px;
+      background: linear-gradient(145deg, #0f172a, #2563eb);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
+      box-shadow: 0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+      border: 1px solid #2563eb;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .modern-btn.dashboard-btn:hover {
+      background: linear-gradient(145deg, #2563eb, #1e40af);
+      box-shadow: 0 8px 20px rgba(37,99,235,0.6), inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+
+    .btn-icon {
+      margin-right: 8px;
+      font-size: 14px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    }
+
+    .btn-text {
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-wrapper" style="display:flex;flex-direction:column;padding-left:280px;gap:40px;">
+
+    <div class="request-container" role="main" aria-label="My pickup requests">
+      <!-- Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
+        <div>
+          <h1 style="margin: 0; color: #60A5FA; font-size: 32px; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.6); background: linear-gradient(90deg, #60A5FA, #3B82F6); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            📋 My Requests
+          </h1>
+          <p style="margin: 5px 0 0 0; color: #9ca3af; font-size: 16px;">
+            Track and manage your pickup requests
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 15px; align-items: center;">
+          <button id="theme-toggle" title="Toggle theme" aria-pressed="false" style="width: 42px; height: 42px; border: none; border-radius: 50%; background: linear-gradient(135deg, #1e3a8a, #2563eb); display: flex; align-items: center; justify-content: center; color: #fbbf24; font-size: 20px; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+            🌙
+          </button>
+
+          <a href="{% url 'user_dashboard' %}" class="new-request-btn" title="Back to Dashboard" style="text-decoration: none;">🏠 Back</a>
+          <span class="new-request-btn" onclick="window.location.href='{% url 'pickup_request' %}'" role="button" tabindex="0" style="cursor:pointer;">
+            ➕ New Request
+          </span>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar" role="region" aria-label="Filter pickup requests">
+        <select class="filter-select" id="status-filter" aria-label="Filter requests by status">
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+
+        <select class="filter-select" id="date-filter" aria-label="Filter requests by date">
+          <option value="">All Time</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+        </select>
+
+        <div style="margin-left: auto; color: #9ca3af; font-size: 14px;">
+          Total Requests: <span id="total-count">0</span>
+        </div>
+      </div>
+
+      <!-- Requests List -->
+      <div id="requests-container" aria-live="polite" aria-relevant="additions removals">
+        {% if requests %}
+          {% for req in requests %}
+          <div class="request-card" data-status="{{ req.status|lower }}" data-date="{{ req.pickup_date }}" tabindex="0">
+            <div class="request-header">
+              <div class="request-id">Request #{{ req.id }}</div>
+              <span class="status-badge {{ req.status|lower }}" aria-label="Status: {{ req.status }}">{{ req.status }}</span>
+            </div>
+
+            <div class="request-details">
+              <div class="detail-item">
+                <span class="detail-label">Pickup Date</span>
+                <span class="detail-value">{{ req.pickup_date|date:"M d, Y" }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Pickup Time Slot</span>
+                <span class="detail-value">{{ req.pickup_time_slot }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Address</span>
+                <span class="detail-value">{{ req.address }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Waste Type</span>
+                <span class="detail-value">{{ req.waste_type }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Quantity</span>
+                <span class="detail-value">{{ req.quantity }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Created</span>
+                <span class="detail-value">{{ req.created_at|date:"M d, Y H:i" }}</span>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-label">Collector</span>
+                <span class="detail-value">{{ req.collector.get_full_name|default:"Not assigned" }}</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 15px;">
+              <span class="detail-label">Notes</span>
+              <p style="margin: 5px 0 0 0; color: #d1d5db; font-size: 14px; line-height: 1.5;">
+                {{ req.notes|default:"No additional notes." }}
+              </p>
+            </div>
+
+            <div class="action-buttons">
+              {% if req.status != 'Cancelled' and req.status != 'Completed' %}
+                <button class="action-btn edit" title="Edit this request">✏️ Edit</button>
+                <button class="cancel-btn" title="Cancel this request">❌ Cancel</button>
+              {% else %}
+                <button class="action-btn edit" disabled title="Cannot edit completed or cancelled request">✏️ Edit</button>
+                <button class="cancel-btn" disabled title="Cannot cancel completed or cancelled request">❌ Cancel</button>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state" role="alert" aria-live="polite" aria-atomic="true">
+            <div class="empty-state-icon" aria-hidden="true">📭</div>
+            <p>You have no pickup requests yet.</p>
+            <button onclick="window.location.href='{% url 'pickup_request' %}'" style="padding: 12px 24px; border-radius: 10px; background: #3b82f6; color: white; border: none; font-weight: 600; cursor: pointer;">Make a Request</button>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Cancel Confirmation Popup -->
+  <div class="popup-overlay" id="cancel-popup" role="dialog" aria-modal="true" aria-labelledby="cancel-popup-title" aria-describedby="cancel-popup-desc">
+    <div class="popup-box">
+      <h2 id="cancel-popup-title">Confirm Cancellation</h2>
+      <p id="cancel-popup-desc">Are you sure you want to cancel this pickup request?</p>
+      <div class="popup-buttons">
+        <button class="yes-btn" id="confirm-cancel-btn" aria-label="Yes, cancel the request">Yes</button>
+        <button class="no-btn" id="cancel-cancel-btn" aria-label="No, keep the request">No</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+  <!-- Side Navigation -->
+  <nav class="side-nav" aria-label="Primary navigation">
+    <a href="{% url 'user_dashboard' %}" class="modern-btn dashboard-btn" title="Go to Dashboard" aria-current="page">
+      <span class="btn-icon" aria-hidden="true">🏠</span>
+      <span class="btn-text">Dashboard</span>
+    </a>
+    <a href="{% url 'my_requests' %}" class="modern-btn dashboard-btn" title="My Requests">
+      <span class="btn-icon" aria-hidden="true">📋</span>
+      <span class="btn-text">My Requests</span>
+    </a>
+    <a href="{% url 'citizen_profile' %}" class="modern-btn dashboard-btn" title="Profile">
+      <span class="btn-icon" aria-hidden="true">👤</span>
+      <span class="btn-text">Profile</span>
+    </a>
+    <a href="{% url 'logout' %}" class="modern-btn dashboard-btn" title="Logout">
+      <span class="btn-icon" aria-hidden="true">🚪</span>
+      <span class="btn-text">Logout</span>
+    </a>
+  </nav>
+
+  <script>
+    // Get references
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    // Load theme preference
+    if (localStorage.getItem('theme') === 'light') {
+      body.classList.add('light-mode');
+      themeToggleBtn.textContent = '☀️';
+      themeToggleBtn.setAttribute('aria-pressed', 'true');
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      body.classList.toggle('light-mode');
+      const isLight = body.classList.contains('light-mode');
+      themeToggleBtn.textContent = isLight ? '☀️' : '🌙';
+      themeToggleBtn.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+
+    // Filtering logic
+    const requestsContainer = document.getElementById('requests-container');
+    const statusFilter = document.getElementById('status-filter');
+    const dateFilter = document.getElementById('date-filter');
+    const totalCountSpan = document.getElementById('total-count');
+
+    function filterRequests() {
+      const statusValue = statusFilter.value.toLowerCase();
+      const dateValue = dateFilter.value.toLowerCase();
+
+      const cards = requestsContainer.querySelectorAll('.request-card');
+      let visibleCount = 0;
+
+      const now = new Date();
+      function isDateInFilter(dateString) {
+        const date = new Date(dateString);
+        if (dateValue === 'today') {
+          return date.toDateString() === now.toDateString();
+        }
+        else if (dateValue === 'week') {
+          const oneWeekAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+          return date >= oneWeekAgo && date <= now;
+        }
+        else if (dateValue === 'month') {
+          return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+        }
+        return true;
+      }
+
+      cards.forEach(card => {
+        const cardStatus = card.dataset.status.toLowerCase();
+        const cardDate = card.dataset.date;
+
+        const statusMatch = !statusValue || statusValue === '' || cardStatus === statusValue;
+        const dateMatch = isDateInFilter(cardDate);
+
+        if (statusMatch && dateMatch) {
+          card.style.display = '';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      totalCountSpan.textContent = visibleCount;
+    }
+
+    statusFilter.addEventListener('change', filterRequests);
+    dateFilter.addEventListener('change', filterRequests);
+
+    // Initial filter update
+    filterRequests();
+
+    // Cancel Request Popup logic
+    const cancelPopup = document.getElementById('cancel-popup');
+    const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+    const cancelCancelBtn = document.getElementById('cancel-cancel-btn');
+    let currentCancelBtn = null;
+
+    requestsContainer.addEventListener('click', (e) => {
+      if (e.target.classList.contains('cancel-btn') && !e.target.disabled) {
+        currentCancelBtn = e.target;
+        cancelPopup.style.display = 'flex';
+        cancelCancelBtn.focus();
+      }
+    });
+
+    cancelCancelBtn.addEventListener('click', () => {
+      closeCancelPopup();
+    });
+
+    function closeCancelPopup() {
+      cancelPopup.style.display = 'none';
+      currentCancelBtn = null;
+    }
+
+    // Toast function
+    const toast = document.getElementById('toast');
+    let toastTimeout;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 4000);
+    }
+
+    // CSRF helper
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+          cookie = cookie.trim();
+          if (cookie.startsWith(name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    // Confirm Cancel button with AJAX
+    confirmCancelBtn.addEventListener('click', () => {
+      if (!currentCancelBtn) {
+        closeCancelPopup();
+        return;
+      }
+
+      const card = currentCancelBtn.closest('.request-card');
+      if (!card) {
+        showToast('Error: Unable to find request card.');
+        closeCancelPopup();
+        return;
+      }
+
+      const requestIdElem = card.querySelector('.request-id');
+      if (!requestIdElem) {
+        showToast('Error: Unable to find request ID.');
+        closeCancelPopup();
+        return;
+      }
+
+      const requestId = requestIdElem.textContent.replace('Request #', '').trim();
+
+      const csrfToken = getCookie('csrftoken');
+
+      fetch("{% url 'cancel_request' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': csrfToken,
+        },
+        body: new URLSearchParams({ request_id: requestId })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Update status badge
+          const statusBadge = card.querySelector('.status-badge');
+          statusBadge.textContent = 'Cancelled';
+          statusBadge.className = 'status-badge cancelled';
+
+          // Disable buttons
+          const editBtn = card.querySelector('.action-btn.edit');
+          const cancelBtn = card.querySelector('.cancel-btn');
+          if (editBtn) editBtn.disabled = true;
+          if (cancelBtn) cancelBtn.disabled = true;
+
+          showToast(data.message);
+          filterRequests();
+        } else {
+          showToast(data.error || 'Failed to cancel the request.');
+        }
+      })
+      .catch(() => {
+        showToast('Network error. Please try again.');
+      })
+      .finally(() => {
+        closeCancelPopup();
+      });
+    });
+  </script>
+</body>
+</html>

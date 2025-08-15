@@ -1,0 +1,299 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoTrack Dashboard</title>
+  <link rel="icon" href="favicon.ico">
+  <style>
+/* Background image setup */
+body {
+  background: url("{% static 'bgimg.jpg' %}") no-repeat center center/cover;
+  position: relative;
+  min-height: 100vh;
+  margin: 0;
+  color: white; /* default text color */
+  overflow-x: hidden;
+}
+
+/* Glassmorphism overlay */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1); /* transparent white layer */
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  z-index: -1; /* stays behind all content */
+}
+
+/* Light mode override */
+body.light-mode {
+  background: #f3f4f6;
+  color: #21704a;
+}
+
+body.light-mode::before {
+  background: none; /* no glass effect in light mode */
+  backdrop-filter: none;
+}
+
+/* Light mode buttons */
+body.light-mode .button-container {
+  background: linear-gradient(145deg, #ffffff, #e5e7eb);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode table {
+  background: #ffffff;
+  color: #21704a;
+}
+
+body.light-mode thead {
+  background: linear-gradient(90deg, #60a5fa, #3b82f6);
+}
+
+/* 3D Jump Effect for New Pickup Request Button */
+.pickup-request-btn {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transition: all 0.3s ease;
+}
+
+.pickup-request-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(147, 51, 234, 0.6),
+              0 0 15px 3px rgba(59, 130, 246, 0.7) !important;
+}
+
+/* 3D Jump Animation */
+@keyframes jump3D {
+  0% {
+    transform: translateY(0) rotateX(0deg) rotateY(0deg) scale(1);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.5),
+                0 0 10px 2px rgba(59, 130, 246, 0.6);
+  }
+  25% {
+    transform: translateY(-15px) rotateX(-10deg) rotateY(5deg) scale(1.05);
+    box-shadow: 0 15px 25px rgba(147, 51, 234, 0.7),
+                0 0 20px 4px rgba(59, 130, 246, 0.8);
+  }
+  50% {
+    transform: translateY(-25px) rotateX(-15deg) rotateY(-5deg) scale(1.08);
+    box-shadow: 0 25px 35px rgba(147, 51, 234, 0.8),
+                0 0 25px 5px rgba(59, 130, 246, 0.9);
+  }
+  75% {
+    transform: translateY(-15px) rotateX(-5deg) rotateY(3deg) scale(1.05);
+    box-shadow: 0 15px 25px rgba(147, 51, 234, 0.7),
+                0 0 20px 4px rgba(59, 130, 246, 0.8);
+  }
+  100% {
+    transform: translateY(0) rotateX(0deg) rotateY(0deg) scale(1);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.5),
+                0 0 10px 2px rgba(59, 130, 246, 0.6);
+  }
+}
+
+/* Glow pulse during animation */
+@keyframes glowPulse {
+  0%, 100% { filter: brightness(1) saturate(1); }
+  50% { filter: brightness(1.3) saturate(1.5); }
+}
+
+.pickup-request-btn.jump-active {
+  animation: jump3D 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+             glowPulse 0.8s ease-in-out;
+}
+</style>
+</head>
+</html>
+<div class="dashboard-wrapper" style="display:flex;flex-direction:column;padding-left:280px;gap:40px;margin-top:80px;">
+  <!-- Left column: Pickup Request form embedded -->
+  <div class="dashboard-left" style="flex:1 1 auto;display:flex;flex-direction:column;max-width:700px;margin:0 auto;">
+    <!-- Button Container Box -->
+     <!-- Welcome Box -->
+     <div class="welcome-box" style="width: 100%; background: linear-gradient(to right, #232526, #1e3c72); padding: 20px; border-radius: 12px; color: #ffffff; box-shadow: 0 4px 8px rgba(31, 38, 135, 0.3); margin-bottom: 20px; display: flex; align-items: center; gap: 15px; font-family: 'Segoe UI', 'Roboto', sans-serif;">
+    {% if request.user.profile_image %}
+    <img src="{{ request.user.profile_image.url }}" alt="User Photo" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid #4fc3f7; object-fit: cover;" />
+  {% else %}
+    <img src="{% static 'default_profile.png' %}" alt="Default User" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid #4fc3f7; object-fit: cover;" />
+  {% endif %}
+    <div>
+      <h2 style="margin: 0; font-size: 22px;">Welcome back, {{ request.user.name|default:request.user.email }} 👋</h2>
+      <!-- Display the number of upcoming pickups dynamically -->
+      <p style="margin: 4px 0 0; font-size: 14px; color: #90caf9;">
+       You have {{ upcoming_pickups_count }} upcoming pickups scheduled for today.
+      </p>
+
+    </div>
+  </div>
+  <!--End of welcome box-->
+  <!-- Pickup Request Form -->
+    <div class="button-container" style="background:linear-gradient(145deg, #1a1a2e, #16213e);border-radius:15px;padding:25px;box-shadow:0 8px 16px rgba(0,0,0,0.4), inset 0 2px 0 rgba(59,130,246,0.3), inset 0 -2px 0 rgba(0,0,0,0.5);margin-bottom:20px;display:flex;flex-direction:column;align-items:flex-start;width:100%;">
+      <h3 style="margin:0 0 20px 0;color:#60A5FA;font-size:24px;font-weight:700;text-align:center;border-bottom:3px solid #2563EB;padding-bottom:12px;text-shadow:0 2px 4px rgba(0,0,0,0.6);background:linear-gradient(90deg, #60A5FA, #3B82F6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;width:100%;font-family:'Segoe UI', 'Roboto', 'Arial Black', sans-serif;letter-spacing:2px;text-transform:uppercase;">Dashboard Menu</h3>
+      <button id="theme-toggle" title="Toggle theme" style="position:absolute;top:20px;right:25px;width:42px;height:42px;border:none;border-radius:50%;background:linear-gradient(135deg,#1e3a8a,#2563eb);display:flex;align-items:center;justify-content:center;color:#fbbf24;font-size:20px;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;box-shadow:0 4px 12px rgba(0,0,0,0.4);">🌙</button>
+      <a href="/" title="Home" style="position:absolute;top:20px;left:25px;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a,#2563eb);color:#fff;font-size:20px;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,0.4);transition:transform .2s ease,box-shadow .2s ease;">🏠</a>
+      
+      
+
+      <!-- Stats Row: Total Pickups, Pending & Upcoming -->
+      <div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;column-gap:60px;row-gap:20px;width:100%;max-width:700px;margin:0 auto 25px;">
+        <!-- Total Pickups Card -->
+        <a href="#" class="total-pickup-btn" style="display:inline-flex;align-items:center;padding:12px 20px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:4px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.2);border:1px solid #2563eb;min-width:160px;">
+          <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">📦</span>
+         <span class="btn-text">Total Pickups : {{ total_pickups_count }}</span>
+          
+        </a>
+
+        <!-- Pending Request Button with dynamic count -->
+        <a href="#" class="pending-request-btn" style="display:inline-flex;align-items:center;padding:12px 20px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:4px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.2);border:1px solid #2563eb;min-width:160px;">
+          <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">📅</span>
+          <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">Pending Requests : {{ pending_requests_count }}</span>
+
+        </a>
+
+        
+      
+       <!-- Latest Pickup Requests (dynamic table) -->
+       <div style="width:100%;margin-top:5px;display:flex;flex-direction:column;align-items:center;">
+         <h4 style="color:#ffffff;font-size:20px;font-weight:700;margin:10px auto 12px;max-width:700px;text-align:center;text-transform:uppercase;letter-spacing:1px;">Latest Pickup Requests</h4>
+          <a href="{% url 'pickup_request' %}" id="pickup-request-btn" class="pickup-request-btn" style="display:inline-block;margin:0 auto 18px;padding:10px 28px;background:linear-gradient(135deg,#3b82f6,#9333ea);color:#fff;font-weight:700;border-radius:30px;text-decoration:none;box-shadow:0 4px 12px rgba(147,51,234,0.5),0 0 10px 2px rgba(59,130,246,0.6);transition:transform .2s ease,box-shadow .2s ease;">
+            ➕ New Pickup Request
+          </a>
+         <input type="text" placeholder="Search pickup requests…" style="width:100%;max-width:550px;margin:0 auto 20px;display:block;padding:10px 18px;border-radius:30px;border:2px solid #3b82f6;background:#0f172a;color:#fff;font-size:15px;box-shadow:0 0 8px rgba(59,130,246,0.6) inset;outline:none;transition:all .25s ease;" onfocus="this.style.borderColor='#9333ea';this.style.boxShadow='0 0 10px rgba(147,51,234,0.8) inset';" onblur="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 8px rgba(59,130,246,0.6) inset';" />
+          <div style="overflow-x:auto;width:100%;max-width:800px;margin:0 auto;padding:0 10px;box-shadow:0 4px 12px rgba(0,0,0,0.6);border-radius:12px;">
+           <table style="width:100%;border-collapse:collapse;text-align:center;background:rgba(17,24,39,0.8);backdrop-filter:blur(6px);color:#e5e7eb;border-radius:12px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.5);">
+             <thead style="background:linear-gradient(90deg,#1e3a8a,#2563eb);">
+               <tr>
+                 <th style="padding:10px;">Date</th>
+                 <th style="padding:10px;">Status</th>
+                 <th style="padding:10px;">Location</th>
+                 <th style="padding:10px;">Type</th>
+               </tr>
+             </thead>
+             <tbody>
+               
+               
+               <tr>
+                 <td style="padding:8px;color:#2563eb;" colspan="4">No recent pickup requests.</td>
+               </tr>
+               
+             </tbody>
+           </table>
+         </div>
+       </div>
+      
+
+      
+      <div class="side-nav" style="position:absolute;left:20px;top:80px;display:flex;flex-direction:column;gap:12px;z-index:10;">
+      <a href="{% url 'pickup_request' %}" class="modern-btn pickup-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(30,58,138,0.4), inset 0 1px 0 rgba(255,255,255,0.2);width:100%;max-width:260px;border:1px solid #1E40AF;">
+        <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">🚛</span>
+        <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">Pickup Request</span>
+      </a>
+
+      <a href="{% url 'my_requests' %}" class="modern-btn my-request-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.1);width:100%;max-width:260px;border:1px solid #2563eb;">
+        <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.8);">📋</span>
+        <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.8);">My Request</span>
+      </a>
+
+      <a href="{% url 'raise_complaint' %}" class="modern-btn pickup-map-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.2);width:100%;max-width:260px;border:1px solid #2563eb;">
+        <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">🚨</span>
+        <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">Raise Complaint</span>
+      </a>
+
+      <a href="{% url 'notifications' %}" class="modern-btn notification-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.1);width:100%;max-width:260px;border:1px solid #2563eb;">
+        <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.7);">🔔</span>
+        <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.7);">Notification</span>
+      </a>
+
+      <a href="{% url 'citizen_profile' %}" class="modern-btn edit-profile-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.2);width:100%;max-width:260px;border:1px solid #2563eb;">
+        <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">⚙️</span>
+        <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">My Profile</span>
+      </a>
+
+      <a href="{% url 'forgot_password' %}" class="modern-btn forgot-password-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.1);width:100%;max-width:260px;border:1px solid #2563eb;">
+        <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.7);">🔐</span>
+        <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.7);">Forgot Password</span>
+      </a>
+
+      <a href="{% url 'logout' %}" class="modern-btn logout-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:8px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.2);width:100%;max-width:260px;border:1px solid #2563eb;">
+        <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">🚪</span>
+        <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">Logout</span>
+      </a>
+    </div>
+
+  </div>
+
+</div>
+<script>
+  (function() {
+    async function refreshStats() {
+      try {
+        const res = await fetch('dashboard_stats.json');
+        if (!res.ok) return;
+        const data = await res.json();
+        const total = document.getElementById('total-pickups-badge');
+        const pending = document.getElementById('pending-requests-badge');
+        const upcoming = document.getElementById('upcoming-pickups-badge');
+        const budget = document.getElementById('budget-earn-badge');
+        if (total) total.textContent = data.total_pickups;
+        if (pending) pending.textContent = data.pending_requests;
+        if (upcoming) upcoming.textContent = data.upcoming_pickups;
+        if (budget) budget.textContent = data.budget_earn;
+      } catch (err) {
+        console.error('Dashboard stats refresh failed', err);
+      }
+    }
+    refreshStats();
+    setInterval(refreshStats, 30000);
+
+    // Theme toggle
+    const toggleBtn = document.getElementById('theme-toggle');
+    if(toggleBtn){
+      toggleBtn.addEventListener('click', ()=>{
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        toggleBtn.textContent = isLight ? '☀️' : '🌙';
+      });
+    }
+    
+    // 3D Jump Effect for New Pickup Request Button
+    const pickupBtn = document.getElementById('pickup-request-btn');
+    if(pickupBtn) {
+      pickupBtn.addEventListener('click', function(e) {
+        // Prevent default temporarily to show animation
+        e.preventDefault();
+        
+        // Add jump animation class
+        this.classList.add('jump-active');
+        
+        // Remove animation class after animation completes and navigate
+        setTimeout(() => {
+          this.classList.remove('jump-active');
+          // Navigate to the pickup request page after animation
+          window.location.href = this.href;
+        }, 800); // Match animation duration
+      });
+      
+      // Add subtle hover sound effect (optional)
+      pickupBtn.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-2px) scale(1.02)';
+      });
+      
+      pickupBtn.addEventListener('mouseleave', function() {
+        if (!this.classList.contains('jump-active')) {
+          this.style.transform = 'translateY(0) scale(1)';
+        }
+      });
+    }
+  })();
+</script>
+</body>
+</html>
+

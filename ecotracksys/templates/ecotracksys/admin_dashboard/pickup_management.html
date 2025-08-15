@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pickup Management | EcoTrack</title>
+
+  <style>
+    /* =======================
+       Root variables for colors and theme
+       ======================= */
+    :root {
+      --bg-gradient: linear-gradient(to right, #0f2027, #2c5364); /* page background */
+      --container-gradient: linear-gradient(to right, #232526, #1e3c72); /* sidebar background */
+      --primary: #1976d2;       /* main blue color */
+      --secondary: #0d47a1;     /* darker blue accent */
+      --highlight: #4fc3f7;     /* highlight text/buttons */
+      --light-blue: #90caf9;    /* secondary highlight */
+      --text-light: #f0f0f0;    /* main text color */
+      --shadow: rgba(31, 38, 135, 0.37); /* card/table shadow */
+    }
+
+    /* =======================
+       Base styles
+       ======================= */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-light);
+    }
+
+    .container {
+      display: flex;           /* sidebar + main content side by side */
+      min-height: 100vh;
+    }
+
+    /* =======================
+       Sidebar styles
+       ======================= */
+    .sidebar {
+      width: 260px;
+      background: var(--container-gradient);
+      transition: width 0.3s ease; /* smooth collapse animation */
+      overflow: hidden;
+      position: relative;
+    }
+
+    .sidebar.collapsed { width: 70px; } /* collapsed sidebar width */
+    
+    .sidebar h2 {
+      text-align: center;
+      padding: 20px 0;
+      font-size: 1.6rem;
+      margin: 0;
+      transition: opacity 0.3s; /* fade text when collapsed */
+    }
+    .sidebar.collapsed h2 { opacity: 0; }
+
+    /* Sidebar navigation list */
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar ul li {
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .sidebar ul li:hover { background-color: rgba(255, 255, 255, 0.08); }
+
+    /* Sidebar icons and text */
+    .sidebar ul li i { font-size: 18px; }
+    .sidebar ul li a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-light);
+      text-decoration: none;
+      width: 100%;
+      height: 100%;
+    }
+    .sidebar ul li span { transition: opacity 0.3s ease; }
+    .sidebar.collapsed ul li span { opacity: 0; }
+
+    /* Sidebar toggle button */
+    .toggle-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: var(--text-light);
+      cursor: pointer;
+    }
+
+    /* =======================
+       Main content styles
+       ======================= */
+    .main {
+      flex: 1;               /* takes remaining width */
+      padding: 24px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .header h1 { font-size: 24px; }
+
+    /* =======================
+       Table styles
+       ======================= */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #1c2b4a;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+    th, td {
+      padding: 16px;
+      text-align: left;
+      border-bottom: 1px solid #33415c;
+    }
+    th { background-color: #273b61; color: var(--highlight); }
+    tr:hover { background-color: rgba(255, 255, 255, 0.03); }
+
+    /* Action buttons (Assign / Reassign / Reschedule) */
+    .actions { display: flex; gap: 10px; }
+    .action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--light-blue);
+      transition: all 0.2s ease-in-out;
+    }
+    .action-btn:hover {
+      color: var(--highlight);
+      transform: scale(1.1); /* subtle grow effect on hover */
+    }
+
+    /* =======================
+       Responsive design
+       ======================= */
+    @media screen and (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        z-index: 999;
+        height: 100%;
+      }
+      .main { margin-left: 70px; }
+      .sidebar.collapsed + .main { margin-left: 70px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- =======================
+         Sidebar navigation
+         ======================= -->
+    <div class="sidebar" id="sidebar">
+      <h2 id="brandText">EcoTrack</h2>
+      <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+      <ul>
+        <li><a href="{% url 'admin_dashboard' %}"><i>🏠</i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'pickup_management' %}"><i>🗑️</i> <span>Pickup Management</span></a></li>
+        <li><a href="{% url 'zone_management' %}"><i>📍</i> <span>Zone Management</span></a></li>
+        <li><a href="{% url 'leave_req_management' %}"><i>📅</i> <span>Leave Requests</span></a></li>
+        <li><a href="{% url 'complaint_management' %}"><i>📢</i> <span>Complaints</span></a></li>
+        <li><a href="{% url 'user_management' %}"><i>🧑‍🤝‍🧑</i> <span>User Management</span></a></li>
+        <li><a href="{% url 'collector_management' %}"><i>👷‍♂️</i> <span>Collector Management</span></a></li>
+        <li><a href="{% url 'analytics' %}"><i>📊</i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'admin_profile' %}"><i>👤</i> <span>Admin Profile</span></a></li>
+      </ul>
+    </div>
+
+    <!-- =======================
+         Main content
+         ======================= -->
+    <div class="main">
+      <div class="header">
+        <h1>Pickup Management</h1>
+        <!-- Optional filter or buttons can go here -->
+      </div>
+
+      <!-- =======================
+           Pickup requests table
+           ======================= -->
+      <table>
+        <thead>
+          <tr>
+            <th>Request ID</th>
+            <th>Citizen</th>
+            <th>Location</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Collector</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+  {% for p in pickups %}
+  <tr>
+    <td>{{ p.id }}</td>
+    <td>{{ p.citizen }}</td>
+    <td>{{ p.location }}</td>
+    <td>{{ p.date }}</td>
+    <td style="color: {% if p.status == 'Pending' %}orange{% elif p.status == 'Assigned' %}lime{% else %}white{% endif %}">
+      {{ p.status }}
+    </td>
+    <td>{{ p.collector }}</td>
+    <td class="actions">
+      <button class="action-btn" title="Assign">✅</button>
+      <button class="action-btn" title="Reassign">🔁</button>
+      <button class="action-btn" title="Reschedule">🕒</button>
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- =======================
+       Sidebar toggle script
+       ======================= -->
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("collapsed"); // expand/collapse sidebar
+    }
+  </script>
+</body>
+</html>

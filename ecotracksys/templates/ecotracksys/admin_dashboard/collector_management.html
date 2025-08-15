@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Collector Management | EcoTrack</title>
+  <!-- Bootstrap Icons for action icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    /* ===========================
+       CSS Variables / Color Palette
+       =========================== */
+    :root {
+      --bg-gradient: linear-gradient(to right, #0f2027, #2c5364);
+      --container-gradient: linear-gradient(to right, #232526, #1e3c72);
+      --primary: #1976d2;
+      --secondary: #0d47a1;
+      --highlight: #4fc3f7;
+      --light-blue: #90caf9;
+      --text-light: #f0f0f0;
+      --shadow: rgba(31, 38, 135, 0.37);
+    }
+
+    /* ===========================
+       Body / Global Styles
+       =========================== */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-light);
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ===========================
+       Sidebar Styles
+       =========================== */
+    .sidebar {
+      width: 260px;
+      background: var(--container-gradient);
+      transition: width 0.3s ease;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .sidebar.collapsed {
+      width: 70px;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      padding: 20px 0;
+      font-size: 1.6rem;
+      margin: 0;
+      transition: opacity 0.3s;
+      color: var(--text-light);
+    }
+
+    .sidebar.collapsed h2 {
+      opacity: 0;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar ul li {
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .sidebar ul li:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar ul li i {
+      font-size: 18px;
+    }
+
+    .sidebar ul li a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-light);
+      text-decoration: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    .sidebar ul li span {
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar.collapsed ul li span {
+      opacity: 0;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: var(--text-light);
+      cursor: pointer;
+    }
+
+    /* ===========================
+       Main Content Styles
+       =========================== */
+    .main {
+      flex: 1;
+      padding: 24px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      color: var(--text-light);
+    }
+
+    .create-btn {
+      padding: 10px 18px;
+      background-color: var(--primary);
+      border: none;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s ease;
+    }
+
+    .create-btn:hover {
+      background-color: var(--secondary);
+    }
+
+    /* ===========================
+       Table Styles
+       =========================== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #1c2b4a;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    th,
+    td {
+      padding: 16px;
+      text-align: left;
+      border-bottom: 1px solid #33415c;
+    }
+
+    th {
+      background-color: #273b61;
+      color: var(--highlight);
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--light-blue);
+      transition: all 0.2s ease-in-out;
+    }
+
+    .action-btn:hover {
+      color: var(--highlight);
+      transform: scale(1.15);
+    }
+
+    /* ===========================
+       Modal Styles
+       =========================== */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background: rgba(15, 32, 39, 0.9);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      background: #1c2b4a;
+      margin: 8% auto;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 12px var(--shadow);
+      color: var(--text-light);
+      position: relative;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--highlight);
+      transition: color 0.3s ease;
+    }
+
+    .close-btn:hover {
+      color: var(--light-blue);
+    }
+
+    .modal-content h2 {
+      margin-top: 0;
+      color: var(--highlight);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--light-blue);
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background-color: #273b61;
+      color: var(--text-light);
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: 2px solid var(--primary);
+    }
+
+    /* ===========================
+       Responsive Styles
+       =========================== */
+    @media screen and (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        z-index: 999;
+        height: 100%;
+      }
+
+      .main {
+        margin-left: 70px;
+      }
+
+      .sidebar.collapsed + .main {
+        margin-left: 70px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- ===========================
+         Sidebar Section
+         =========================== -->
+    <div class="sidebar" id="sidebar">
+      <h2 id="brandText">EcoTrack</h2>
+      <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+      <ul>
+        <li><a href="{% url 'admin_dashboard' %}"><i>🏠</i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'pickup_management' %}"><i>🗑️</i> <span>Pickup Management</span></a></li>
+        <li><a href="{% url 'zone_management' %}"><i>📍</i> <span>Zone Management</span></a></li>
+        <li><a href="{% url 'leave_req_management' %}"><i>📅</i> <span>Leave Requests</span></a></li>
+        <li><a href="{% url 'complaint_management' %}"><i>📢</i> <span>Complaints</span></a></li>
+        <li><a href="{% url 'user_management' %}"><i>🧑‍🤝‍🧑</i> <span>User Management</span></a></li>
+        <li><a href="{% url 'collector_management' %}"><i>👷‍♂️</i> <span>Collector Management</span></a></li>
+        <li><a href="{% url 'analytics' %}"><i>📊</i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'admin_profile' %}"><i>👤</i> <span>Admin Profile</span></a></li>
+      </ul>
+    </div>
+
+    <!-- ===========================
+         Main Content Section
+         =========================== -->
+    <div class="main">
+      <div class="header">
+        <h1>Collector Management</h1>
+        <button class="create-btn" onclick="openModal()">+ New Collector</button>
+      </div>
+
+      <!-- ===========================
+           Collector Table
+           =========================== -->
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>ID</th>
+            <th>Phone</th>
+            <th>Zone</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for collector in collectors %}
+          <tr>
+            <td>{{ collector.name }}</td>
+            <td>{{ collector.id }}</td>
+            <td>{{ collector.phone }}</td>
+            <td>{{ collector.zone }}</td>
+            <td style="color: {% if collector.status == 'Active' %}lime{% else %}orange{% endif %}">
+              {{ collector.status }}
+            </td>
+            <td class="actions">
+              <button class="action-btn" title="Edit">✏️</button>
+              {% if collector.status == 'Active' %}
+              <button class="action-btn" title="Disable">🚫</button>
+              {% else %}
+              <button class="action-btn" title="Enable">✅</button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- ===========================
+           Modal Popup for New Collector
+           =========================== -->
+      <div id="collectorModal" class="modal">
+        <div class="modal-content">
+          <span class="close-btn" onclick="closeModal()">&times;</span>
+          <h2>Add New Collector</h2>
+          <form method="POST" action="#">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="collectorName">Full Name</label>
+              <input type="text" id="collectorName" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="collectorPhone">Phone</label>
+              <input type="text" id="collectorPhone" name="phone" required>
+            </div>
+            <div class="form-group">
+              <label for="collectorZone">Zone</label>
+              <input type="text" id="collectorZone" name="zone" required>
+            </div>
+            <div class="form-group">
+              <label for="collectorStatus">Status</label>
+              <select id="collectorStatus" name="status" required>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+            <button type="submit" class="create-btn">Add Collector</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===========================
+       JavaScript Section
+       =========================== -->
+  <script>
+    // Sidebar toggle
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.classList.toggle("collapsed");
+    }
+
+    // Modal functionality
+    const modal = document.getElementById("collectorModal");
+
+    function openModal() {
+      modal.style.display = "block";
+    }
+
+    function closeModal() {
+      modal.style.display = "none";
+    }
+
+    // Close modal if clicked outside modal content
+    window.onclick = function (event) {
+      if (event.target === modal) {
+        closeModal();
+      }
+    }
+  </script>
+</body>
+
+</html>

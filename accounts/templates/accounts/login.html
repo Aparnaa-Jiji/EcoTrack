@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+
+    <style>
+        /* ====== PAGE BACKGROUND ====== */
+        body {
+            display: flex; /* Center the login box horizontally */
+            justify-content: center;
+            align-items: center; /* Center vertically */
+            height: 100vh;
+            margin: 0;
+            background-image: url("{% static 'bgimg.jpg' %}"); /* Background image */
+            background-size: cover;       /* Image covers entire screen */
+            background-position: center;  /* Image centered */
+            background-repeat: no-repeat; /* Prevent repetition */
+        }
+
+        /* ====== LOGIN BOX STYLING ====== */
+        .login-container {
+            padding: 36px 44px;
+            border-radius: 18px;
+
+            /* Glassmorphic shadow layers */
+            box-shadow:
+                0 8px 32px 0 rgba(27,127,120,255),
+                0 1.5px 6px 0 #077375,
+                0 0 0 4px rgba(78, 188, 174, 0.667) inset;
+
+            /* Glassmorphic background */
+            background: rgba(109, 148, 135, 0.25);
+            backdrop-filter: blur(12px);         /* Frosted glass blur */
+            -webkit-backdrop-filter: blur(12px); /* Safari support */
+            border: 1px solid rgba(19, 151, 127, 0.936);
+
+            /* Text and sizing */
+            color: #fff;
+            min-width: 340px;
+            transform: perspective(800px) rotateY(-2deg) scale(1.01);
+        }
+
+        /* ====== HEADING ====== */
+        h2 {
+            text-align: center;
+            color: #0f8a4f;
+        }
+
+        /* ====== FORM LABELS ====== */
+        form label {
+            display: block;
+            margin-top: 14px;
+            color: #116d4b;
+            font-weight: 500;
+        }
+
+        /* ====== INPUT FIELDS ====== */
+        form input {
+            width: 95%;
+            padding: 8px 10px;
+            margin-top: 5px;
+            border-radius: 8px;
+            border: none;
+            background: #dadcde;
+            color: #187972;
+
+            /* Shadows & border effect */
+            box-shadow:
+                0 2px 6px #03684d,
+                0 1px 2px #116d4b inset,
+                0 0 0 2px #03684d;
+
+            font-size: 15px;
+            outline: none;
+            transition: box-shadow 0.2s, transform 0.1s;
+        }
+
+        /* ====== INPUT FOCUS EFFECT ====== */
+        form input:focus {
+            box-shadow:
+                0 0 0 2px #116d4b,
+                0 2px 6px #f4f4f4,
+                0 1px 2px #03684d inset;
+            transform: scale(1.03);
+        }
+
+        /* ====== SUBMIT BUTTON ====== */
+        button {
+            width: 100%;
+            margin-top: 22px;
+            padding: 10px;
+            font-size: 17px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(100,173,169,255);
+            border: none;
+            border-radius: 10px;
+
+            /* Button shadow effects */
+            box-shadow:
+                0 4px 16px #0a0a0a,
+                0 2px 8px rgba(100,173,169,255),
+                0 6px 24px #0a0a0a;
+
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+        }
+        button:hover {
+            background: #067475;
+            box-shadow:
+                0 12px 32px #0b7e74,
+                0 2px 8px #0a0a0a;
+            transform: translateY(-3px) scale(1.05);
+        }
+        button:active {
+            box-shadow:
+                0 2px 8px #087865,
+                0 1px 2px #0a0a0a;
+            transform: translateY(1px) scale(0.98);
+        }
+
+        /* ====== ERROR & MESSAGE STYLING ====== */
+        .errorlist, 
+        .messages {
+            color: #ff5252;
+            text-align: center;
+            margin-bottom: 10px;
+            list-style: none;
+            padding: 0;
+        }
+
+        /* ====== EXTRA LINKS (Forgot password, Create account) ====== */
+        .extra-links {
+            text-align: center;
+            margin-top: 16px;
+        }
+        .extra-links a {
+            color: #04706e;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 6px 10px;
+            display: inline-block;
+            transition: color 0.2s ease;
+        }
+        .extra-links a:hover {
+            color: #90caf9;
+            text-shadow: 0 0 6px #0c9676;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <section class="login-container">
+            <h2>Login Now</h2>
+
+            <!-- ==== DISPLAY ERRORS IF FORM VALIDATION FAILS ==== -->
+            {% if form.errors %}
+                <ul class="errorlist">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- ==== DISPLAY DJANGO MESSAGES ==== -->
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- ==== LOGIN FORM ==== -->
+            <form method="post" action="{% url 'login' %}" autocomplete="off" novalidate>
+                {% csrf_token %}
+
+                <!-- Hidden fake fields to prevent browser autofill -->
+                <input type="text" name="username_fake" id="username_fake" style="display:none" autocomplete="username">
+                <input type="password" name="password_fake" id="password_fake" style="display:none" autocomplete="new-password">
+
+                <!-- Email Field -->
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" autocomplete="off" required autofocus>
+
+                <!-- Password Field -->
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" autocomplete="off" required>
+
+                <!-- Submit Button -->
+                <button type="submit">Login</button>
+            </form>
+
+            <!-- ==== EXTRA LINKS BELOW FORM ==== -->
+            <div class="extra-links">
+                <a href="{% url 'forgot_password' %}">Forgot Password?</a>
+                <a href="{% url 'register' %}">Create an Account</a>
+            </div>
+
+            <!-- Home Link -->
+            <div style="text-align:center; margin-bottom:15px;">
+                <a href="{% url 'index' %}" style="color:#04706e; text-decoration:none;">← Home</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==== JAVASCRIPT: Clear fields on page load ==== -->
+    <script>
+        window.addEventListener('load', () => {
+            const emailField = document.querySelector('input[type="email"]');
+            const passwordField = document.querySelector('input[type="password"]');
+            if (emailField) emailField.value = '';
+            if (passwordField) passwordField.value = '';
+        });
+    </script>
+</body>
+</html>

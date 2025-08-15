@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About | EcoTrack</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+  <!-- Main Site Styles -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}" />
+</head>
+<body>
+  <!-- Header & Simple Nav -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top blue_gradient_bg">
+    <div class="container">
+      <a class="navbar-brand font-weight-bold" href="index.html" style="color:#28a745;">EcoTrack</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase font-weight-bold">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="#about">About <span class="sr-only">(current)</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Spacer to offset fixed nav height -->
+  <div style="height: 80px;"></div>
+
+  <!-- About EcoTrack Section -->
+  <div class="services_section layout_padding sparkling_bg text-white" id="about">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h1 class="services_taital" style="color: white;">About EcoTrack</h1>
+          <p class="services_text" style="color: white;">EcoTrack is a smart waste management solution designed for modern cities and municipalities. Our mission is to bring transparency, efficiency, and sustainability into waste collection.</p>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 30px;">
+        <div class="col-md-6 about_content">
+          <h3 style="color: #28a745;">What is EcoTrack?</h3>
+          <p>EcoTrack is a web-based smart waste collection management system that enables real-time monitoring of waste collection activities. It supports role-based login (Admin, Collector, User), route optimization, and data-driven insights.</p>
+          <p>The system is designed to reduce missed pickups, prevent garbage overflow, and promote a cleaner environment through digital tracking and communication between citizens and municipal authorities.</p>
+          <h3 style="color: #28a745; margin-top: 30px;">Core Objectives</h3>
+          <ul style="list-style-type: disc; padding-left: 20px;">
+            <li>Real-time waste collection tracking via map integration</li>
+            <li>Photo verification of garbage pickup by collectors</li>
+            <li>User complaints and feedback system</li>
+            <li>Eco-friendly performance metrics and reporting</li>
+            <li>Smart scheduling to reduce operational costs</li>
+          </ul>
+        </div>
+        <div class="col-md-6 d-flex align-items-stretch">
+          <div class="map_3d w-100 h-100">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d241317.1160995932!2d72.74109936029153!3d19.08219783822995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b63f8ad533a9%3A0xdeb9c383119b1e0!2sMumbai%2C%20Maharashtra!5e0!3m2!1sen!2sin!4v1660000000000!5m2!1sen!2sin" width="100%" style="height:100%; min-height:300px; border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer Placeholder -->
+  <footer class="text-center py-4 blue_gradient_bg" style="color:#e6e8ff;">
+    &copy; <span id="year"></span> EcoTrack. All rights reserved.
+  </footer>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

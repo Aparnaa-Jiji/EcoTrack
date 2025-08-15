@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Works | EcoTrack</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+  <!-- Main Site Styles -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}" />
+</head>
+<body>
+  <!-- Header & Simple Nav -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top blue_gradient_bg">
+    <div class="container">
+      <a class="navbar-brand font-weight-bold" href="index.html" style="color:#28a745;">EcoTrack</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto text-uppercase font-weight-bold">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="about.html">About</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="#features">Works <span class="sr-only">(current)</span></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Spacer to offset fixed nav height -->
+  <div style="height: 80px;"></div>
+
+  <!-- Core Features Section -->
+  <div class="about_section layout_padding blue_gradient_bg text-white" id="features">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h1 class="pricing_taital">Core Features</h1>
+          <p class="pricing_text">What makes EcoTrack a smart waste management system</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="about_box">
+            <div class="icon_1"><img src="{% static 'images/icon-1.png' %}" alt="icon"/></div>
+            <h3 class="faster_text">Live Map Integration</h3>
+            <p class="lorem_text">Track waste collectors in real time using Leaflet.js integration with OpenStreetMap for comprehensive coverage monitoring.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="about_box">
+            <div class="icon_1"><img src="{% static 'images/icon-2.png' %}" alt="icon"/></div>
+            <h3 class="faster_text">Photo Verification</h3>
+            <p class="lorem_text">Collectors upload photo proof of every collection to ensure transparency and accountability in waste pickup operations.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="about_box">
+            <div class="icon_1"><img src="{% static 'images/icon-3.png' %}" alt="icon"/></div>
+            <h3 class="faster_text">Role-Based Login</h3>
+            <p class="lorem_text">Admins, Collectors, and Citizens access tailored dashboards with appropriate privileges and functionality.</p>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 30px;">
+        <div class="col-md-4">
+          <div class="about_box">
+            <div class="icon_1"><img src="{% static 'images/icon-1.png' %}" alt="icon"/></div>
+            <h3 class="faster_text">Smart Scheduling</h3>
+            <p class="lorem_text">Optimized routes reduce missed pickups and save fuel through intelligent scheduling and capacity monitoring.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="about_box">
+            <div class="icon_1"><img src="{% static 'images/icon-2.png' %}" alt="icon"/></div>
+            <h3 class="faster_text">Alerts & Notifications</h3>
+            <p class="lorem_text">Instant alerts for issues and collection updates keep all stakeholders informed in real-time.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="about_box">
+            <div class="icon_1"><img src="{% static 'images/icon-3.png' %}" alt="icon"/></div>
+            <h3 class="faster_text">Eco-Awareness</h3>
+            <p class="lorem_text">Visual dashboards show environmental performance metrics and promote sustainable waste management practices.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Core Features Section End -->
+
+  <!-- Why Choose Section -->
+  <div class="pricing_section layout_padding blue_gradient_bg text-white">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h1 class="pricing_taital">Why Choose EcoTrack?</h1>
+          <p class="pricing_text">Eco-conscious, scalable, and secure waste management solution</p>
+        </div>
+      </div>
+      <div class="pricing_section_2">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="pricing_box">
+              <h3 class="number_text">1</h3>
+              <h5 class="cloud_text">Smart Scheduling</h5>
+              <p class="band_text">Automatically schedules waste pickup based on real-time data and bin capacity, reducing missed pickups and saving fuel.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="pricing_box">
+              <h3 class="number_text">2</h3>
+              <h5 class="cloud_text">Eco-Friendly Practices</h5>
+              <p class="band_text">Promotes sustainability by encouraging waste segregation and minimizing landfill use through digital awareness tools.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="pricing_box">
+              <h3 class="number_text">3</h3>
+              <h5 class="cloud_text">Analytics Dashboard</h5>
+              <p class="band_text">Admin can view waste metrics, missed collections, and efficiency graphs for data-driven decision making.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Why Choose Section End -->
+
+  <!-- Footer -->
+  <footer class="text-center py-4 blue_gradient_bg" style="color:#e6e8ff;">
+    &copy; <span id="year"></span> EcoTrack. All rights reserved.
+  </footer>
+
+  <!-- JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

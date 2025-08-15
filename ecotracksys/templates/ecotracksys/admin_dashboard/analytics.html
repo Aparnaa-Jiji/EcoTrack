@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics – EcoTrack Admin</title>
+
+  <!-- =========================================
+       Font Awesome Icons for UI Elements
+       ========================================= -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- =========================================
+       Internal CSS for Dark Glowing Theme
+       ========================================= -->
+  <style>
+    /* =====================================================
+       Root Variables for Color Palette & Shadows
+       ===================================================== */
+    :root {
+      --bg-gradient: linear-gradient(to right, #0f2027, #2c5364); /* Page background gradient */
+      --container-gradient: linear-gradient(to right, #232526, #1e3c72); /* Sidebar background */
+      --primary: #1976d2; /* Main accent color for charts/buttons */
+      --secondary: #0d47a1; /* Secondary accent */
+      --highlight: #4fc3f7; /* Highlight color for headings/icons */
+      --light-blue: #90caf9; /* Secondary text color */
+      --text-light: #f0f0f0; /* Default text color */
+      --shadow: rgba(31, 38, 135, 0.37); /* Soft shadow for cards */
+    }
+
+    /* =====================================================
+       Body Styling
+       ===================================================== */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-light);
+    }
+
+    /* =====================================================
+       Container Flex Layout
+       Sidebar + Main Content
+       ===================================================== */
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* =====================================================
+       Sidebar Styling
+       ===================================================== */
+    .sidebar {
+      width: 260px; /* Expanded width */
+      background: var(--container-gradient);
+      transition: width 0.3s ease;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .sidebar.collapsed {
+      width: 70px; /* Collapsed width */
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      padding: 20px 0;
+      font-size: 1.6rem;
+      margin: 0;
+      transition: opacity 0.3s;
+    }
+
+    .sidebar.collapsed h2 {
+      opacity: 0; /* Hide brand text when collapsed */
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar ul li {
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .sidebar ul li:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar ul li i {
+      font-size: 18px;
+    }
+
+    .sidebar ul li a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--text-light);
+      text-decoration: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    .sidebar ul li span {
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar.collapsed ul li span {
+      opacity: 0;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: var(--text-light);
+      cursor: pointer;
+    }
+
+    /* =====================================================
+       Main Content Area
+       ===================================================== */
+    .main {
+      flex: 1;
+      padding: 24px;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Header Styling */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+    }
+
+    /* =====================================================
+       Chart Card Styling
+       ===================================================== */
+    .chart-card {
+      background: #1c2b4a; /* Dark card background */
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .chart-card h3 {
+      margin-top: 0;
+      color: var(--highlight); /* Highlighted chart heading */
+    }
+
+    canvas {
+      width: 100%;
+      max-height: 400px; /* Limit chart height */
+    }
+
+    /* PDF Download Button Styling */
+    .pdf-button {
+      background: var(--primary);
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(25, 118, 210, 0.5);
+      transition: background 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .pdf-button:hover {
+      background: #1565c0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- =========================================
+         Sidebar Navigation
+         Links to all Admin Sections
+         ========================================= -->
+    <div class="sidebar" id="sidebar">
+      <h2 id="sidebarTitle">EcoTrack</h2>
+      <button class="toggle-btn" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul>
+        <li><a href="{% url 'admin_dashboard' %}"><i>🏠</i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'pickup_management' %}"><i>🗑️</i> <span>Pickup Management</span></a></li>
+        <li><a href="{% url 'zone_management' %}"><i>📍</i> <span>Zone Management</span></a></li>
+        <li><a href="{% url 'leave_req_management' %}"><i>📅</i> <span>Leave Requests</span></a></li>
+        <li><a href="{% url 'complaint_management' %}"><i>📢</i> <span>Complaints</span></a></li>
+        <li><a href="{% url 'user_management' %}"><i>🧑‍🤝‍🧑</i> <span>User Management</span></a></li>
+        <li><a href="{% url 'collector_management' %}"><i>👷‍♂️</i> <span>Collector Management</span></a></li>
+        <li><a href="{% url 'analytics' %}"><i>📊</i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'admin_profile' %}"><i>👤</i> <span>Admin Profile</span></a></li>
+      </ul>
+    </div>
+
+    <!-- =========================================
+         Main Content Area
+         Contains Header, Charts, and PDF Download
+         ========================================= -->
+    <div class="main">
+      <div class="header">
+        <h1>Analytics</h1>
+        <!-- Button to Download Entire Analytics Report as PDF -->
+        <button id="downloadPDF" class="pdf-button">📄 Download PDF</button>
+      </div>
+
+      <!-- Wrapper for content that will be included in PDF -->
+      <div id="pdf-content">
+        <!-- Monthly Pickups Chart Card -->
+        <div class="chart-card">
+          <h3>Monthly Pickups</h3>
+          <canvas id="pickupChart"></canvas>
+        </div>
+
+        <!-- User Registrations Chart Card -->
+        <div class="chart-card">
+          <h3>User Registrations</h3>
+          <canvas id="userChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================
+       External JS Libraries
+       Chart.js for rendering charts
+       html2pdf.js for PDF generation
+       ========================================= -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- =========================================
+       Custom JS for Sidebar Toggle, Charts, and PDF
+       ========================================= -->
+  <script>
+    // Function to collapse or expand sidebar
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    // PDF Download Functionality
+    document.getElementById("downloadPDF").addEventListener("click", function () {
+      const content = document.getElementById("pdf-content");
+
+      // PDF Options
+      const opt = {
+        margin: 0.5,
+        filename: 'EcoTrack_Analytics_Report.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+
+      // Generate and save PDF
+      html2pdf().set(opt).from(content).save();
+    });
+
+    // =========================================
+    // Chart.js - Monthly Pickups Bar Chart
+    // =========================================
+    const pickupChart = new Chart(document.getElementById('pickupChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Pickups',
+          data: {{ pickup_data|safe }}, // Django template variable
+          backgroundColor: '#1976d2'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#f0f0f0' } } },
+        scales: {
+          x: { ticks: { color: '#f0f0f0' } },
+          y: { ticks: { color: '#f0f0f0' } }
+        }
+      }
+    });
+
+    // =========================================
+    // Chart.js - User Registrations Line Chart
+    // =========================================
+    const userChart = new Chart(document.getElementById('userChart'), {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Users',
+          data: {{ user_data|safe }}, // Django template variable
+          borderColor: '#4fc3f7',
+          backgroundColor: 'rgba(79, 195, 247, 0.2)',
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: '#f0f0f0' } } },
+        scales: {
+          x: { ticks: { color: '#f0f0f0' } },
+          y: { ticks: { color: '#f0f0f0' } }
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
