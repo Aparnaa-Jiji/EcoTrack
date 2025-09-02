@@ -1,254 +1,357 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Zone Management | EcoTrack</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
+    /* ================= GREEN THEME ================= */
     :root {
-      --bg-gradient: linear-gradient(to right, #0f2027, #2c5364);
-      --container-gradient: linear-gradient(to right, #232526, #1e3c72);
-      --primary: #1976d2;
-      --secondary: #0d47a1;
-      --highlight: #4fc3f7;
-      --light-blue: #90caf9;
-      --text-light: #f0f0f0;
-      --shadow: rgba(31, 38, 135, 0.37);
+      --bg-image: url("{% static 'images/bgimg.jpg' %}");
+      --container-gradient: linear-gradient(145deg, rgba(4, 57, 39, 0.9), rgba(5, 111, 79, 0.85));
+      --primary: #04706e;       /* main accent */
+      --secondary: #2f9080;     /* highlights */
+      --highlight: #85fcde;     /* minty highlight */
+      --shadow: rgba(3, 104, 77, 0.5);
+      --text-light: #e6fef3;
+      --text-dark: #0b3d2e;
     }
 
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text-light);
+      background: var(--bg-image) no-repeat center center/cover;
+      color: var(--text-dark);
     }
 
     .container {
       display: flex;
       min-height: 100vh;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7));
     }
 
+    /* ================= SIDEBAR ================= */
     .sidebar {
       width: 260px;
-      background: var(--container-gradient);
+      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7));
+      box-shadow: 2px 0 12px var(--shadow);
+      backdrop-filter: blur(12px);
       transition: width 0.3s ease;
-      overflow: hidden;
-      position: relative;
     }
-
-    .sidebar.collapsed {
-      width: 70px;
-    }
-
     .sidebar h2 {
       text-align: center;
       padding: 20px 0;
       font-size: 1.6rem;
       margin: 0;
-      transition: opacity 0.3s;
+      color: var(--primary);
     }
-
-    .sidebar.collapsed h2 {
-      opacity: 0;
-    }
-
     .sidebar ul {
       list-style: none;
-      padding: 0;
       margin: 0;
+      padding: 0;
     }
-
     .sidebar ul li a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text-light);
-  text-decoration: none;
-  width: 100%;
-  height: 100%;
-}
-
-
-    .sidebar ul li {
-      padding: 16px 24px;
       display: flex;
       align-items: center;
       gap: 12px;
-      cursor: pointer;
+      padding: 14px 22px;
+      color: var(--text-dark);
+      text-decoration: none;
+      border-radius: 8px;
       transition: background 0.3s ease;
     }
-
-    .sidebar ul li:hover {
-      background-color: rgba(255, 255, 255, 0.08);
+    .sidebar ul li a.active {
+      background: var(--primary);
+      color: #fff;
+      font-weight: bold;
+    }
+    .sidebar ul li a:hover {
+      background: var(--secondary);
+      color: #fff;
     }
 
-    .sidebar ul li i {
-      font-size: 18px;
-    }
-
-    .sidebar ul li span {
-      transition: opacity 0.3s ease;
-    }
-
-    .sidebar.collapsed ul li span {
-      opacity: 0;
-    }
-
-    .toggle-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: none;
-      border: none;
-      font-size: 22px;
-      color: var(--text-light);
-      cursor: pointer;
-    }
-
+    /* ================= MAIN ================= */
     .main {
       flex: 1;
       padding: 24px;
-      transition: margin-left 0.3s ease;
+      backdrop-filter: blur(6px);
     }
-
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
-
     .header h1 {
-      font-size: 24px;
+      font-size: 26px;
+      color: var(--primary);
     }
 
+    /* ================= BUTTON ================= */
+    .add-zone-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .add-zone-btn:hover {
+      background: var(--secondary);
+      transform: scale(1.05);
+    }
+
+    /* ================= TABLE ================= */
     table {
       width: 100%;
       border-collapse: collapse;
-      background-color: #1c2b4a;
+      background: #fff;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 4px 12px var(--shadow);
     }
-
     th, td {
-      padding: 16px;
+      padding: 14px;
       text-align: left;
-      border-bottom: 1px solid #33415c;
+      border-bottom: 1px solid rgba(3,104,77,0.2);
     }
-
     th {
-      background-color: #273b61;
-      color: var(--highlight);
+      background: var(--primary);
+      color: #fff;
     }
-
     tr:hover {
-      background-color: rgba(255, 255, 255, 0.03);
+      background: rgba(4,112,110,0.08);
     }
-
     .actions {
       display: flex;
       gap: 10px;
     }
-
     .action-btn {
-      background: none;
       border: none;
+      background: none;
       cursor: pointer;
       font-size: 18px;
-      color: var(--light-blue);
+      color: var(--primary);
+      transition: 0.2s;
     }
-
     .action-btn:hover {
       color: var(--highlight);
       transform: scale(1.1);
     }
 
-    @media screen and (max-width: 768px) {
-      .sidebar {
-        position: fixed;
-        z-index: 999;
-        height: 100%;
-      }
+    /* ================= PROFILE ================= */
+    .profile-menu {
+      position: absolute;
+      top: 16px;
+      right: 30px;
+    }
+    .profile-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      cursor: pointer;
+      object-fit: cover;
+    }
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 55px;
+      background: #fff;
+      color: var(--text-dark);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px var(--shadow);
+    }
+    .profile-dropdown a {
+      display: block;
+      padding: 10px 14px;
+      text-decoration: none;
+      color: var(--text-dark);
+    }
+    .profile-dropdown a:hover {
+      background: var(--secondary);
+      color: #fff;
+    }
 
-      .main {
-        margin-left: 70px;
-      }
-
-      .sidebar.collapsed + .main {
-        margin-left: 70px;
-      }
+    /* ================= MODAL ================= */
+    .modal-overlay {
+      position: fixed;
+      top:0;left:0;
+      width:100%;height:100%;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:rgba(0,0,0,0.6);
+      z-index:2000;
+    }
+    .modal-card {
+      background: var(--container-gradient);
+      padding: 20px;
+      border-radius: 12px;
+      width: 400px;
+      color: var(--text-light);
+    }
+    .modal-card input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--secondary);
+    }
+    .modal-actions {
+      text-align: right;
+    }
+    .modal-actions button {
+      margin-left: 10px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="sidebar" id="sidebar">
-      <h2 id="brandText">EcoTrack</h2>
-      <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h2>EcoTrack</h2>
       <ul>
-        <li><a href="{% url 'admin_dashboard' %}"><i>🏠</i> <span>Dashboard</span></a></li>
-        <li><a href="{% url 'pickup_management' %}"><i>🗑️</i> <span>Pickup Management</span></a></li>
-        <li><a href="{% url 'zone_management' %}"><i>📍</i> <span>Zone Management</span></a></li>
-        <li><a href="{% url 'leave_req_management' %}"><i>📅</i> <span>Leave Requests</span></a></li>
-        <li><a href="{% url 'complaint_management' %}"><i>📢</i> <span>Complaints</span></a></li>
-        <li><a href="{% url 'user_management' %}"><i>🧑‍🤝‍🧑</i> <span>User Management</span></a></li>
-        <li><a href="{% url 'collector_management' %}"><i>👷‍♂️</i> <span>Collector Management</span></a></li>
-        <li><a href="{% url 'analytics' %}"><i>📊</i> <span>Analytics</span></a></li>
-        <li><a href="{% url 'admin_profile' %}"><i>👤</i> <span>Admin Profile</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_dashboard' %}"><i class="fas fa-home"></i> Dashboard</a></li>
+        <li><a href="{% url 'ecotracksys:pickup_management' %}"><i class="fas fa-trash"></i> Pickup Management</a></li>
+        <li><a href="{% url 'ecotracksys:zone_management' %}" class="active"><i class="fas fa-map-marker-alt"></i> Zone Management</a></li>
+        <li><a href="{% url 'ecotracksys:leave_request_management' %}"><i class="fas fa-calendar-alt"></i> Leave Requests</a></li>
+        <li><a href="{% url 'ecotracksys:complaint_management' %}"><i class="fas fa-bullhorn"></i> Complaints</a></li>
+        <li><a href="{% url 'ecotracksys:user_management' %}"><i class="fas fa-users"></i> User Management</a></li>
+        <li><a href="{% url 'ecotracksys:collector_management' %}"><i class="fas fa-user-cog"></i> Collector Management</a></li>
+        <li><a href="{% url 'ecotracksys:analytics' %}"><i class="fas fa-chart-line"></i> Analytics</a></li>
+        <li><a href="{% url 'ecotracksys:admin_profile' %}"><i class="fas fa-user-shield"></i> Admin Profile</a></li>
       </ul>
     </div>
+
+    <!-- Main -->
     <div class="main">
+      <!-- Profile -->
+      <div class="profile-menu">
+        {% if user.is_authenticated %}
+          {% if request.user.profile_image %}
+            <img src="{{ request.user.profile_image.url }}" class="profile-img" onclick="toggleProfileMenu()">
+          {% else %}
+            <img src="{% static 'default_profile.png' %}" class="profile-img" onclick="toggleProfileMenu()">
+          {% endif %}
+        {% endif %}
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="{% url 'ecotracksys:admin_profile' %}">👤 View Profile</a>
+          <a href="{% url 'logout' %}">🚪 Logout</a>
+        </div>
+      </div>
+
+      <!-- Header -->
       <div class="header">
         <h1>Zone Management</h1>
-        <!-- Optional buttons: Add New Zone -->
+        <button class="add-zone-btn" id="showAddZoneForm">➕ Add Zone</button>
       </div>
+
+      <!-- Modal -->
+      <div id="addZoneModal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+          <h2>Add New Zone</h2>
+          <form method="POST" action="{% url 'ecotracksys:zone_management' %}">
+            {% csrf_token %}
+            <label>Zone Name</label>
+            <input type="text" name="zone_name" required>
+            <label>Ward Number</label>
+            <input type="text" name="ward">
+            <label>Latitude Min</label>
+            <input type="number" step="any" name="lat_min" required>
+            <label>Latitude Max</label>
+            <input type="number" step="any" name="lat_max" required>
+            <label>Longitude Min</label>
+            <input type="number" step="any" name="lng_min" required>
+            <label>Longitude Max</label>
+            <input type="number" step="any" name="lng_max" required>
+            <div class="modal-actions">
+              <button type="submit" class="add-zone-btn">✅ Add Zone</button>
+              <button type="button" class="add-zone-btn" onclick="closeModal()">❌ Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Table -->
       <table>
         <thead>
           <tr>
-            <th>Zone ID</th>
+            <th>ID</th>
             <th>Zone Name</th>
-            <th>Ward Number</th>
+            <th>Ward</th>
             <th>Today's Pickups</th>
-            <th>Collector Assigned</th>
+            <th>Collector</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
+          {% for zone in zones %}
           <tr>
-            <td>Z001</td>
-            <td>Zone A</td>
-            <td>Ward 12</td>
-            <td>27</td>
-            <td>Ravi Kumar</td>
-            <td class="actions">
-              <button class="action-btn" title="View">🔍</button>
-              <button class="action-btn" title="Edit">✏️</button>
-              <button class="action-btn" title="Reassign Collector">🔁</button>
-            </td>
+            <td>{{ zone.id }}</td>
+            <td>{{ zone.name }}</td>
+            <td>{{ zone.ward }}</td>
+            <td>{{ zone.pickups }}</td>
+            <td>{{ zone.collector }}</td>
+            <td>
+  <!-- Edit -->
+  <form action="{% url 'ecotracksys:edit_zone' zone.id %}" method="POST" style="display:inline;">
+    {% csrf_token %}
+    <input type="hidden" name="name" value="{{ zone.name }}">
+    <input type="hidden" name="ward" value="{{ zone.ward }}">
+    <button type="submit" class="btn-edit">✏️ Edit</button>
+  </form>
+
+  <!-- Delete -->
+  <form action="{% url 'ecotracksys:delete_zone' zone.id %}" method="POST" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn-delete">🗑️ Delete</button>
+  </form>
+
+  <!-- Assign Collector -->
+  <form action="{% url 'ecotracksys:assign_collector' zone.id %}" method="POST" style="display:inline;">
+    {% csrf_token %}
+    <select name="collector" required>
+      {% for collector in collectors %}
+        <option value="{{ collector.id }}" {% if zone.collector == collector %}selected{% endif %}>
+          {{ collector.email }}
+        </option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn-assign">✅ Assign</button>
+  </form>
+</td>
+
           </tr>
-          <tr>
-            <td>Z002</td>
-            <td>Zone B</td>
-            <td>Ward 15</td>
-            <td>19</td>
-            <td>Anita Verma</td>
-            <td class="actions">
-              <button class="action-btn" title="View">🔍</button>
-              <button class="action-btn" title="Edit">✏️</button>
-              <button class="action-btn" title="Reassign Collector">🔁</button>
-            </td>
-          </tr>
+          {% empty %}
+          <tr><td colspan="6">No zones found</td></tr>
+          {% endfor %}
         </tbody>
       </table>
     </div>
   </div>
 
   <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      sidebar.classList.toggle("collapsed");
+    function toggleProfileMenu() {
+      const menu = document.getElementById("profileDropdown");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
+    document.addEventListener("click", function(e) {
+      if (!document.querySelector(".profile-menu").contains(e.target)) {
+        document.getElementById("profileDropdown").style.display = "none";
+      }
+    });
+
+    const modal = document.getElementById("addZoneModal");
+    document.getElementById("showAddZoneForm").onclick = () => modal.style.display = "flex";
+    function closeModal(){ modal.style.display = "none"; }
+    window.onclick = (e) => { if (e.target === modal) closeModal(); }
   </script>
 </body>
 </html>

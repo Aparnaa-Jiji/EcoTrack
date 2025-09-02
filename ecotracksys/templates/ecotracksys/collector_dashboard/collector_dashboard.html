@@ -1,0 +1,583 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Collector Dashboard — EcoTrack</title>
+
+  <!-- Icons & Chart.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Leaflet (map placeholder) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    /* ========================
+       Mint Professional Theme
+       ======================== */
+    :root{
+      --bg:#f6fff9;
+      --mint-600:#2e7d32;
+      --mint-500:#43a047;
+      --mint-300:#a5d6a7;
+      --accent:#20c997;
+      --card:#ffffff;
+      --muted:#6b6b6b;
+      --success:#2e7d32;
+      --warning:#f0ad4e;
+      --danger:#e53935;
+      --shadow: 0 6px 22px rgba(16, 64, 54, 0.08);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+    body{background:linear-gradient(135deg,var(--bg),#e8faf0 60%);color:#0b3d2e; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;}
+
+    /* Layout */
+    .app {
+      display:flex;
+      min-height:100vh;
+      gap:20px;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      width:240px;
+      background:linear-gradient(180deg,var(--mint-300), #e6f7ec);
+      border-right:1px solid rgba(10,50,30,0.03);
+      padding:18px;
+      position:sticky;
+      top:0;
+      height:100vh;
+      box-shadow:var(--shadow);
+    }
+    .brand { font-weight:700; color:var(--mint-600); font-size:1.15rem; text-align:center; margin-bottom:14px; }
+    .nav { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px; }
+    .nav a{
+      display:flex; align-items:center; gap:10px; padding:10px 12px; text-decoration:none; color:var(--mint-600);
+      border-radius:10px; font-weight:600;
+    }
+    .nav a .icon{ width:28px; text-align:center; color:var(--mint-600); }
+    .nav a:hover, .nav a.active{ background:var(--mint-500); color:#fff; transform:translateX(4px); box-shadow:0 6px 18px rgba(66,160,102,0.08); }
+    .nav a.active .icon{ color:#fff; }
+
+    /* Main area */
+    .main {
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      padding:22px;
+    }
+
+    /* Header */
+    .topbar {
+      display:flex; align-items:center; gap:12px; justify-content:space-between;
+      background:rgba(255,255,255,0.85); padding:12px 18px; border-radius:12px; box-shadow:var(--shadow);
+      position:sticky; top:18px; z-index:10;
+    }
+    .topbar .left{ display:flex; align-items:center; gap:12px; }
+    .shift-btn { background:var(--mint-500); color:#fff; border:none; padding:8px 12px; border-radius:8px; font-weight:700; cursor:pointer; }
+    .shift-btn.ended{ background:#f5f5f5; color:var(--muted); border:1px solid #e8f0ea; }
+
+    /* Profile avatar & dropdown */
+    .profile {
+      position:relative;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .avatar {
+      width:40px; height:40px; border-radius:50%; overflow:hidden; border:2px solid var(--mint-500);
+      display:inline-block; cursor:pointer;
+      background:#fff;
+    }
+    .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .profile .name { font-weight:700; color:var(--mint-600); font-size:0.95rem; }
+    .profile .menu {
+      display:none; position:absolute; right:0; top:54px; background:#fff; border-radius:10px; box-shadow:var(--shadow); min-width:180px; overflow:hidden;
+    }
+    .profile.open .menu{ display:block; }
+    .profile .menu a { display:block; padding:10px 12px; text-decoration:none; color:#0b3d2e; font-weight:600; }
+    .profile .menu a:hover{ background:#f3fff7; }
+
+    /* Dashboard header / greeting */
+    .greeting { display:flex; flex-direction:column; gap:6px; }
+    .greeting h1{ margin:0; font-size:1.25rem; color:var(--mint-600); }
+    .greeting p{ margin:0; color:var(--muted); font-size:0.95rem; }
+
+    /* KPI cards */
+    .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; }
+    .kpi {
+      background:var(--card); padding:12px; border-radius:12px; box-shadow:var(--shadow);
+      display:flex; align-items:center; gap:12px; border-left:6px solid var(--mint-500);
+    }
+    .kpi .meta { font-weight:700; font-size:1.35rem; color:var(--mint-600); }
+    .kpi .label { font-size:0.9rem; color:var(--muted); }
+
+    /* Main content columns */
+    .content {
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:18px;
+      align-items:start;
+    }
+
+    /* Assignments list */
+    .assignments {
+      background:var(--card); padding:14px; border-radius:12px; box-shadow:var(--shadow);
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .assignments .header-row{ display:flex; justify-content:space-between; align-items:center; gap:12px; }
+    .assignments .filters { display:flex; gap:8px; }
+    .assignments .filters select, .assignments .filters input { padding:8px 10px; border-radius:8px; border:1px solid #e9f3ee; }
+
+    .assignment-row {
+      display:flex; gap:12px; align-items:center; padding:12px; border-radius:10px; background:linear-gradient(180deg,#ffffff,#fbfffb);
+      border:1px solid #f1f7f2;
+    }
+    .assignment-row + .assignment-row { margin-top:8px; }
+    .assignment-meta { flex:1; display:flex; flex-direction:column; gap:6px; }
+    .assignment-top { display:flex; justify-content:space-between; gap:8px; align-items:center; }
+    .assignment-address { font-weight:700; color:#114b3a; }
+    .assignment-sub { font-size:0.9rem; color:var(--muted); }
+
+    .status-chip { padding:6px 10px; border-radius:999px; font-weight:700; font-size:0.85rem; }
+    .status-assigned { background:#fff9e6; color:#8a6b00; border:1px solid #fff2d9; }
+    .status-enroute { background:#e6fbff; color:#055a66; border:1px solid #dff7fb; }
+    .status-done { background:#e6fbef; color:#0b6b3d; border:1px solid #dff6e9; }
+    .status-missed { background:#fff0f0; color:#8a1f1f; border:1px solid #ffe8e8; }
+
+    .assignment-actions { display:flex; gap:8px; align-items:center; }
+    .btn { border:none; cursor:pointer; padding:8px 10px; border-radius:8px; font-weight:700; }
+    .btn.start { background:var(--accent); color:#fff; }
+    .btn.enroute { background:#43a047; color:#fff; }
+    .btn.complete { background:#2e7d32; color:#fff; }
+    .btn.ghost { background:transparent; border:1px solid #e8f0ea; color:var(--mint-600); }
+
+    /* Side panel (notifications & performance) */
+    .side {
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .panel { background:var(--card); padding:12px; border-radius:12px; box-shadow:var(--shadow); }
+    .panel h4 { margin:0 0 8px 0; color:var(--mint-600); }
+    .notifications .note { padding:10px; border-radius:10px; background:linear-gradient(180deg,#fff,#fbfffb); border:1px solid #f1f7f2; margin-bottom:8px; }
+    .progress { background:#f1fbf6; border-radius:12px; overflow:hidden; height:14px; }
+    .progress > span { display:block; height:100%; background:linear-gradient(90deg,var(--mint-500),var(--accent)); width:0%; transition:width 600ms ease; }
+
+    /* Map placeholder */
+    #map { width:100%; height:220px; border-radius:10px; border:1px solid #e8f3ee; }
+
+    /* Footer actions */
+    .quick-actions { display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; }
+    .chip { padding:8px 12px; border-radius:999px; background:#f3fff7; color:var(--mint-600); font-weight:700; border:1px solid #e8f7ef; }
+
+    /* Responsive */
+    @media (max-width:1100px){ .content{ grid-template-columns:1fr 320px } }
+    @media (max-width:880px){
+      .sidebar{ display:none }
+      .main{ margin-left:0; padding:12px }
+      .content{ grid-template-columns:1fr }
+      .topbar{ position:static }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" role="navigation" aria-label="Main navigation">
+      <div class="brand">EcoTrack</div>
+      <nav>
+        <ul class="nav" role="menu">
+          <li><a href="{% url 'ecotracksys:collector_dashboard' %}" class="active"><span class="icon"><i class="fas fa-home"></i></span><span class="label">Dashboard</span></a></li>
+          <li><a href="{% url 'ecotracksys:collector_assignments' %}"><span class="icon"><i class="fas fa-list-check"></i></span><span class="label">My Assignments</span></a></li>
+          <li><a href="{% url 'ecotracksys:collector_pickup_history' %}"><span class="icon"><i class="fas fa-clock-rotate-left"></i></span><span class="label">History</span></a></li>
+          <li><a href="{% url 'ecotracksys:collector_performance' %}"><span class="icon"><i class="fas fa-chart-line"></i></span><span class="label">Performance</span></a></li>
+          <li><a href="{% url 'ecotracksys:collector_leave' %}"><span class="icon"><i class="fas fa-calendar-alt"></i></span><span class="label">Leave</span></a></li>
+          <li><a href="{% url 'ecotracksys:collector_notifications' %}"><span class="icon"><i class="fas fa-bell"></i></span><span class="label">Notifications</span></a></li>
+          <li><a href="{% url 'ecotracksys:collector_complaints' %}"><span class="icon"><i class="fas fa-cog"></i></span><span class="label">Complaints</span></a></li>
+          <li><a href="{% url 'ecotracksys:collector_profile' %}"><span class="icon"><i class="fas fa-user"></i></span><span class="label">Profile</span></a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" id="main" role="main">
+      <!-- TOPBAR -->
+      <div class="topbar" role="region" aria-label="Top bar">
+        <div class="left">
+          <div class="greeting">
+            <h1>Good morning, Collector 👋</h1>
+            <p>Ready for your route? Today's summary below.</p>
+          </div>
+          <div style="width:12px"></div>
+          <!-- Shift quick controls -->
+          {% comment %} shift_active boolean in context {% endcomment %}
+          {% if shift_active %}
+            <button class="shift-btn" id="endShiftBtn">End Shift</button>
+          {% else %}
+            <button class="shift-btn" id="startShiftBtn">Start Shift</button>
+          {% endif %}
+        </div>
+
+        <div class="profile" id="profile">
+          <div class="avatar" id="avatarBtn" aria-haspopup="true" aria-expanded="false" tabindex="0">
+          {% if request.user.profile_image %}
+            <img src="{{ request.user.profile_image.url }}" alt="Profile Image" class="profile-image">
+          {% else %}
+            <img src="{% static 'default_profile.png' %}" alt="Profile Image" class="profile-image">
+          {% endif %}
+          </div>
+          <div class="name" style="margin-left:8px; display:none;">Name</div>
+
+          <div class="menu" role="menu" id="profileMenu">
+          <a href="{% url 'ecotracksys:collector_profile' %}" role="menuitem">👤 View profile</a>
+          <a href="{% url 'logout' %}">🚪 Logout</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI CARDS -->
+      <section class="kpis" aria-label="Key stats">
+        <div class="kpi">
+          <div>
+            <div class="label">Today's Assignments</div>
+            <div class="meta" id="kpi-today">{{ tasks_today|default:0 }}</div>
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div>
+            <div class="label">Completed</div>
+            <div class="meta" id="kpi-completed">{{ tasks_completed_today|default:0 }}</div>
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div>
+            <div class="label">Pending</div>
+            <div class="meta" id="kpi-pending">{{ tasks_pending_today|default:0 }}</div>
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div>
+            <div class="label">Missed</div>
+            <div class="meta" id="kpi-missed">{{ tasks_missed_today|default:0 }}</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MAIN CONTENT: ASSIGNMENTS + SIDE PANEL -->
+      <div class="content">
+        <!-- ASSIGNMENTS -->
+        <section class="assignments" aria-labelledby="assignmentsHeading">
+          <div class="header-row">
+            <h3 id="assignmentsHeading">Today's Assignments</h3>
+            <div class="filters" role="search" aria-label="Filter assignments">
+              <input id="searchInput" type="search" placeholder="Search address or zone..." oninput="filterAssignments()" />
+              <select id="zoneFilter" onchange="filterAssignments()">
+                <option value="">All zones</option>
+                {% for z in zones %}<option value="{{ z }}">{{ z }}</option>{% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <!-- List rendering (client-friendly) -->
+          <div id="assignmentsList" aria-live="polite">
+            {% for job in todays_assignments %}
+            <article class="assignment-row" data-zone="{{ job.zone }}" data-text="{{ job.address }} {{ job.waste_type }}">
+              <div style="width:56px; flex-shrink:0;">
+                <div style="width:48px;height:48px;border-radius:10px;background:#f6fff9;border:1px solid #e8f7ef;display:flex;align-items:center;justify-content:center;color:var(--mint-600);font-weight:800;">
+                  {{ forloop.counter }}
+                </div>
+              </div>
+
+              <div class="assignment-meta">
+                <div class="assignment-top">
+                  <div>
+                    <div class="assignment-address">{{ job.address }}</div>
+                    <div class="assignment-sub">{{ job.scheduled_time|default:"--:--" }} • {{ job.zone }} • {{ job.waste_type }}</div>
+                  </div>
+
+                  <div style="text-align:right;">
+                    {% if job.status == 'assigned' %}
+                      <div class="status-chip status-assigned">Assigned</div>
+                    {% elif job.status == 'enroute' %}
+                      <div class="status-chip status-enroute">En route</div>
+                    {% elif job.status == 'done' %}
+                      <div class="status-chip status-done">Completed</div>
+                    {% elif job.status == 'missed' %}
+                      <div class="status-chip status-missed">Missed</div>
+                    {% else %}
+                      <div class="status-chip status-assigned">—</div>
+                    {% endif %}
+                    <div style="font-size:0.85rem;color:var(--muted);margin-top:6px;">ID: {{ job.id }}</div>
+                  </div>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <!-- quick call if phone exists -->
+                    {% if job.contact_phone %}
+                      <a class="btn ghost" href="tel:{{ job.contact_phone }}" title="Call resident"><i class="fa-solid fa-phone"></i></a>
+                    {% endif %}
+                    <a class="btn ghost" href="https://www.google.com/maps/search/?api=1&query={{ job.latitude }},{{ job.longitude }}" target="_blank" rel="noopener" title="Open in navigation"><i class="fa-solid fa-map-location-dot"></i></a>
+                    <span class="chip">Priority: {{ job.priority|default:"Normal" }}</span>
+                  </div>
+
+                  <div class="assignment-actions">
+                    {% if job.status == 'assigned' %}
+                      <button class="btn start" data-id="{{ job.id }}" onclick="startJob(this)">Start</button>
+                    {% elif job.status == 'enroute' %}
+                      <button class="btn enroute" data-id="{{ job.id }}" onclick="markEnroute(this)">On route</button>
+                      <button class="btn complete" data-id="{{ job.id }}" onclick="completeJob(this)">Complete</button>
+                    {% elif job.status == 'done' %}
+                      <button class="btn ghost" disabled>Completed</button>
+                    {% endif %}
+                    <a class="btn ghost" href="{% url 'collector_assignment_detail' job.id %}">Details</a>
+                  </div>
+                </div>
+              </div>
+            </article>
+            {% empty %}
+              <div style="padding:18px;text-align:center;color:var(--muted)">No assignments today. Take a well-deserved break — or check upcoming routes.</div>
+            {% endfor %}
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;">
+            <div><small class="muted">Updated: {{ last_synced|default:"just now" }}</small></div>
+            <div><a href="#" class="btn ghost">Open full assignments</a></div>
+          </div>
+        </section>
+
+        <!-- SIDE PANEL -->
+        <aside class="side" aria-label="Right side panel">
+          <!-- Map -->
+          <div class="panel">
+            <h4>Route Map</h4>
+            <div id="map" aria-hidden="false"></div>
+            <div style="margin-top:10px;font-size:0.9rem;color:var(--muted)">Map shows pickup locations only — no live tracking.</div>
+          </div>
+
+          <!-- Performance -->
+          <div class="panel">
+            <h4>Today's progress</h4>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div style="flex:1">
+                <div class="progress" aria-hidden="true"><span id="progressBar" style="width:0%"></span></div>
+                <div style="margin-top:8px;font-size:0.9rem;color:var(--muted)"><strong id="progressPercent">0%</strong> completed</div>
+              </div>
+              <div style="width:90px;text-align:right;font-weight:800;color:var(--mint-600)" id="todayNumbers">{{ tasks_completed_today|default:0 }}/{{ tasks_today|default:0 }}</div>
+            </div>
+
+            <canvas id="miniChart" style="margin-top:8px; height:60px; max-height:60px;"></canvas>
+          </div>
+
+          <!-- Notifications -->
+          <div class="panel notifications">
+            <h4>Notifications</h4>
+            {% for n in notifications|slice:":4" %}
+              <div class="note"><small style="color:var(--muted)">{{ n.time|default:"" }}</small><div style="margin-top:6px;font-weight:700">{{ n.message }}</div></div>
+            {% empty %}
+              <div class="note">No new notifications</div>
+            {% endfor %}
+            <div style="text-align:right;margin-top:8px"><a class="btn ghost" href="#">View all</a></div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- FOOTER / QUICK ACTIONS -->
+      <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;">
+        <div class="quick-actions" role="toolbar" aria-label="Quick actions">
+          <a class="btn ghost" href="#">Report incident</a>
+          <a class="btn ghost" href="#">Request leave</a>
+          <a class="btn ghost" href="#">Export report</a>
+        </div>
+
+        <div style="font-size:0.9rem;color:var(--muted)">Need help? <a href="#">SOPs & Safety</a></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ====================
+       JavaScript behaviors
+       ==================== -->
+  <script>
+
+    function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+    // PROFILE DROPDOWN
+    const avatarBtn = document.getElementById('avatarBtn');
+    const profile = document.getElementById('profile');
+    const profileMenu = document.getElementById('profileMenu');
+    if (avatarBtn) {
+      avatarBtn.addEventListener('click', (e) => {
+        profile.classList.toggle('open');
+        avatarBtn.setAttribute('aria-expanded', profile.classList.contains('open'));
+      });
+      document.addEventListener('click', (e) => {
+        if (!profile.contains(e.target)) {
+          profile.classList.remove('open');
+          avatarBtn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    // ASSIGNMENT ACTIONS: these should call your API endpoints.
+    // For now they update UI immediately (optimistic) and call placeholder fetch endpoints.
+    function startJob(btn){
+      const id = btn.dataset.id;
+      btn.disabled = true;
+      btn.textContent = 'Starting...';
+      // Optimistic UI - replace with real endpoint
+      fetch(`/api/collector/assignment/${id}/start/`, { method:'POST', headers:{ 'X-Requested-With':'XMLHttpRequest','Content-Type':'application/json' , 'X-CSRFToken': csrftoken  } })
+        .then(res => {
+          if (!res.ok) throw new Error('Network');
+          return res.json();
+        }).then(data => {
+          // Minimal UI update — full refresh recommended
+          btn.textContent = 'En route';
+          btn.classList.remove('start');
+          btn.classList.add('enroute');
+        }).catch(err => {
+          // fallback: still set as en-route in UI but show console
+          btn.textContent = 'En route';
+          btn.classList.remove('start');
+          btn.classList.add('enroute');
+          console.warn('Start endpoint failed (use server endpoint):', err);
+        });
+    }
+
+    function completeJob(btn){
+      const id = btn.dataset.id;
+      btn.disabled = true;
+      btn.textContent = 'Completing...';
+      fetch(`/api/collector/assignment/${id}/complete/`, { method:'POST', headers:{ 'X-Requested-With':'XMLHttpRequest','Content-Type':'application/json', 'X-CSRFToken': csrftoken   } })
+        .then(res => {
+          if (!res.ok) throw new Error('Network');
+          return res.json();
+        }).then(data => {
+          btn.textContent = 'Completed';
+          btn.disabled = true;
+          // Optionally remove or mark row
+          const row = btn.closest('.assignment-row');
+          row.querySelector('.status-chip').className = 'status-chip status-done';
+          row.querySelector('.status-chip').textContent = 'Completed';
+          // Update KPIs & progress (best: refresh page or fetch counts)
+          updateProgress();
+        }).catch(err => {
+          btn.textContent = 'Completed';
+          btn.disabled = true;
+          console.warn('Complete endpoint failed:', err);
+        });
+    }
+
+    function markEnroute(btn){
+      // Same as start; stub
+      startJob(btn);
+    }
+
+    // SEARCH & FILTER
+    function filterAssignments(){
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const zone = document.getElementById('zoneFilter').value;
+      document.querySelectorAll('#assignmentsList .assignment-row').forEach(row => {
+        const text = row.dataset.text.toLowerCase();
+        const matchesQuery = !q || text.includes(q);
+        const matchesZone = !zone || row.dataset.zone === zone;
+        row.style.display = (matchesQuery && matchesZone) ? '' : 'none';
+      });
+    }
+
+    // INITIALIZE MAP (shows markers for todays_assignments). Replace server data via template variables.
+    const mapEl = document.getElementById('map');
+    if (mapEl) {
+      try {
+        const map = L.map('map', { scrollWheelZoom:false }).setView([20.5937,78.9629], 5); // default India view
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'' }).addTo(map);
+        // Add markers from template data
+        {% for job in todays_assignments %}
+          {% if job.latitude and job.longitude %}
+            L.marker([{{ job.latitude }}, {{ job.longitude }}]).addTo(map).bindPopup("{{ job.address|escapejs }}");
+          {% endif %}
+        {% endfor %}
+        // fit to markers if any
+        const markers = [];
+        map.eachLayer(function(layer){ if (layer instanceof L.Marker) markers.push(layer.getLatLng()); });
+        if (markers.length) map.fitBounds(markers);
+      } catch(e){ console.warn('Leaflet map init failed', e); }
+    }
+
+    // Progress bar & mini chart
+    function updateProgress(){
+      const total = parseInt("{{ tasks_today|default:0 }}",10) || 0;
+      const done = parseInt("{{ tasks_completed_today|default:0 }}",10) || 0;
+      const percent = total ? Math.round((done/total)*100) : 0;
+      const pb = document.getElementById('progressBar');
+      const pct = document.getElementById('progressPercent');
+      const tn = document.getElementById('todayNumbers');
+      if (pb) pb.style.width = percent + '%';
+      if (pct) pct.textContent = percent + '%';
+      if (tn) tn.textContent = done + '/' + total;
+    }
+    updateProgress();
+
+    // MiniChart: expects context variable `trend_last_7` - list of ints
+    (function(){
+      const ctx = document.getElementById('miniChart');
+      if (!ctx) return;
+      const data = {{ trend_last_7|default:"[3,4,5,2,6,4,5]"|safe }};
+      new Chart(ctx, {
+        type:'line',
+        data:{ labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], datasets:[{ data:data, borderWidth:2, borderColor:'#2e7d32', backgroundColor:'rgba(46,125,50,0.06)', fill:true, tension:0.3 }]},
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ display:false }, y:{ display:false } } }
+      });
+    })();
+
+    const ctx = document.getElementById('miniChart').getContext('2d');
+  const data = [5, 7, 6, 9, 4, 8, 6]; // Example data for Mon–Sun
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        data: data,
+        borderWidth: 2,
+        borderColor: '#2e7d32',
+        backgroundColor: 'rgba(46,125,50,0.06)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      layout: { padding: 0 },
+      scales: {
+        x: { display: false },
+        y: { display: false }
+      }
+    }
+  });
+  </script>
+</body>
+</html>

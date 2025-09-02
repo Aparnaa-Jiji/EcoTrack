@@ -8,18 +8,18 @@
 
 <style>
   body {
-    background: #0f172a !important;
-    color: #e5e7eb;
+    background: #e6f7f1; /* light mint background */
+    color: #065f46;       /* dark mint text */
     min-height: 100vh;
     transition: background .3s ease, color .3s ease;
     font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
   }
   
   .profile-container {
-    background: linear-gradient(145deg, #1a1a2e, #16213e);
+    background: linear-gradient(145deg, #d1f5d8, #b0f0c3); /* minty gradient */
     border-radius: 20px;
     padding: 40px;
-    box-shadow: 0 12px 24px rgba(0,0,0,0.5), inset 0 2px 0 rgba(59,130,246,0.3), inset 0 -2px 0 rgba(0,0,0,0.5);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.2), inset 0 2px 0 rgba(16,185,129,0.3), inset 0 -2px 0 rgba(0,0,0,0.1);
     margin: 20px auto;
     max-width: 800px;
     position: relative;
@@ -29,7 +29,7 @@
     text-align: center;
     margin-bottom: 40px;
     padding-bottom: 20px;
-    border-bottom: 2px solid #2563eb;
+    border-bottom: 2px solid #10b981;
   }
   
   .profile-avatar {
@@ -37,13 +37,13 @@
     height: 120px;
     border-radius: 50%;
     margin: 0 auto 20px;
-    background: linear-gradient(145deg, #2563eb, #1e40af);
+    background: linear-gradient(145deg, #34d399, #10b981);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 48px;
     color: white;
-    box-shadow: 0 8px 16px rgba(37,99,235,0.4);
+    box-shadow: 0 8px 16px rgba(16,185,129,0.4);
     position: relative;
     overflow: hidden;
   }
@@ -52,7 +52,7 @@
     position: absolute;
     bottom: 0;
     right: 0;
-    background: #10b981;
+    background: #059669;
     border-radius: 50%;
     width: 36px;
     height: 36px;
@@ -60,7 +60,7 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
   }
   
   .form-grid {
@@ -80,7 +80,7 @@
   }
   
   .form-label {
-    color: #60a5fa;
+    color: #059669;
     font-weight: 600;
     margin-bottom: 8px;
     font-size: 14px;
@@ -89,17 +89,18 @@
   .form-input {
     padding: 12px 16px;
     border-radius: 10px;
-    border: 1px solid #2563eb;
-    background: #0f172a;
-    color: #e5e7eb;
+    border: 1px solid #10b981;
+    background: #e6f7f1;
+    color: #065f46;
     outline: none;
     transition: all 0.3s ease;
     font-size: 14px;
   }
   
   .form-input:focus {
-    border-color: #60a5fa;
-    box-shadow: 0 0 0 3px rgba(96,165,250,0.1);
+    border-color: #34d399;
+    box-shadow: 0 0 0 3px rgba(52,211,153,0.2);
+    background: #f0fdf4;
   }
   
   .form-textarea {
@@ -126,30 +127,30 @@
   }
   
   .btn-primary {
-    background: linear-gradient(145deg, #2563eb, #1e40af);
+    background: linear-gradient(145deg, #34d399, #10b981);
     color: white;
-    box-shadow: 0 4px 12px rgba(37,99,235,0.4);
+    box-shadow: 0 4px 12px rgba(16,185,129,0.3);
   }
   
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(37,99,235,0.6);
+    box-shadow: 0 6px 16px rgba(16,185,129,0.5);
   }
   
   .btn-secondary {
-    background: linear-gradient(145deg, #374151, #1f2937);
-    color: #e5e7eb;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    background: linear-gradient(145deg, #b7e4c7, #a1e3b1);
+    color: #065f46;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   }
   
   .btn-secondary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
   }
   
   .back-btn {
     display: inline-block;
-    background-color: #1976d2;
+    background-color: #10b981;
     color: white;
     text-decoration: none;
     padding: 8px 16px;
@@ -157,12 +158,26 @@
     border-radius: 6px;
     transition: background 0.3s ease;
     font-weight: 500;
-    box-shadow: 0 4px 8px rgba(31, 38, 135, 0.2);
-}
+    box-shadow: 0 4px 8px rgba(16,185,129,0.2);
+  }
 
-.back-btn:hover {
-    background-color: #0d47a1;
-}
+  .back-btn:hover {
+    background-color: #059669;
+  }
+
+  h1 {
+    margin:0;
+    font-size:32px;
+    font-weight:700;
+    background:linear-gradient(90deg,#34d399,#10b981);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+
+  p {
+    margin:8px 0 0;
+    color:#065f46;
+  }
 
   @media (max-width: 768px) {
     .form-grid {
@@ -182,23 +197,24 @@
 </head>
 <body>
 
+<div class="profile-container">
+  <a href="{% url 'ecotracksys:citizen_dashboard' %}" class="back-btn">🔙 Back</a>
 
-<div class="profile-container"><a href="{% url 'user_dashboard' %}" class="back-btn">🔙 Back</a>
   <div class="profile-header">
     <div class="profile-avatar">
-  {% if user.profile_image %}
-    <img id="avatar-preview" src="{{ user.profile_image.url }}" alt="Profile" style="width:100%;height:100%;object-fit:cover;">
-  {% else %}
-    <span id="avatar-placeholder">👤</span>
-  {% endif %}
-  <label class="avatar-upload">
-    📷
-    <input type="file" id="avatar-input" name="avatar" accept="image/*" style="display:none;" onchange="previewAvatar(this)">
-  </label>
-</div>
+      {% if user.profile_image %}
+        <img id="avatar-preview" src="{{ user.profile_image.url }}" alt="Profile" style="width:100%;height:100%;object-fit:cover;">
+      {% else %}
+        <span id="avatar-placeholder">👤</span>
+      {% endif %}
+      <label class="avatar-upload">
+        📷
+        <input type="file" id="avatar-input" name="avatar" accept="image/*" style="display:none;" onchange="previewAvatar(this)">
+      </label>
+    </div>
 
-    <h1 style="margin:0;font-size:32px;font-weight:700;background:linear-gradient(90deg,#60A5FA,#3B82F6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Edit Profile</h1>
-    <p style="margin:8px 0 0;color:#9ca3af;">Update your personal information</p>
+    <h1>Edit Profile</h1>
+    <p>Update your personal information</p>
   </div>
   
   <form method="post" enctype="multipart/form-data">
@@ -207,7 +223,7 @@
     <div class="form-grid">
       <div class="form-group">
         <label class="form-label">First Name</label>
-       <input type="text" name="first_name" class="form-input" placeholder="Enter first name" value="{{ user.first_name }}">
+        <input type="text" name="first_name" class="form-input" placeholder="Enter first name" value="{{ user.first_name }}">
       </div>
       
       <div class="form-group">
@@ -235,7 +251,6 @@
         <input type="text" name="city" class="form-input" placeholder="Enter city" value="{{ user.city }}">
       </div>
       
-      
       <div class="form-group full-width">
         <label class="form-label">Bio</label>
         <textarea name="bio" class="form-input form-textarea" placeholder="Tell us about yourself...">{{ user.bio }}</textarea>
@@ -244,10 +259,6 @@
     
     <div class="action-buttons">
       <button type="submit" class="btn btn-primary">💾 Save Changes</button>
-      
-        
-        
-      
     </div>
   </form>
 </div>
@@ -266,19 +277,7 @@ function previewAvatar(input) {
     reader.readAsDataURL(input.files[0]);
   }
 }
-
-// Initialize avatar if user has one
-document.addEventListener('DOMContentLoaded', function() {
-  const userAvatar = '';
-  if (userAvatar) {
-    const preview = document.getElementById('avatar-preview');
-    const placeholder = document.getElementById('avatar-placeholder');
-    preview.src = userAvatar;
-    preview.style.display = 'block';
-    placeholder.style.display = 'none';
-  }
-});
 </script>
+
 </body>
 </html>
-

@@ -1,3 +1,4 @@
+{% load widget_tweaks %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -6,149 +7,302 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Raise Complaint - EcoTrack</title>
   <style>
+    /* ====== Body & Background ====== */
     body {
       margin: 0;
       font-family: 'Roboto', sans-serif;
-      background: linear-gradient(to right, #0f2027, #2c5364);
-      color: #fff;
+      background: linear-gradient(to right, #e6f9e8, #c9f0d6);
+      color: #06470d;
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
     }
+/* ====== Complaints Card Styles ====== */
+.complaints-container {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 
+.complaint-card {
+  background: linear-gradient(to right, #d0f0c0, #a7e5a0);
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 10px rgba(46,125,50,0.2);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.complaint-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(46,125,50,0.4);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  font-weight: bold;
+  color: #06470d;
+}
+
+.card-details {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #90ee90;
+  display: none;
+  color: #06470d;
+  font-size: 0.95rem;
+}
+
+/* ====== Responsive ====== */
+@media(max-width: 480px){
+  .card-header {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+    /* ====== Container ====== */
     .container {
-      background: linear-gradient(to right, #232526, #1e3c72);
+      background: linear-gradient(to right, #d0f0c0, #a7e5a0);
       padding: 30px;
       border-radius: 15px;
-      box-shadow: 0 4px 20px rgba(31, 38, 135, 0.37);
+      box-shadow: 0 8px 25px rgba(0, 128, 0, 0.2);
       width: 90%;
-      max-width: 600px;
+      max-width: 800px;
       position: relative;
+      margin-bottom: 50px;
     }
 
-    h2 {
+    /* ====== Heading ====== */
+    h2, h3 {
       text-align: center;
-      color: #4fc3f7;
-      margin-bottom: 20px;
+      color: #2e7d32;
+      margin-bottom: 25px;
     }
 
+    /* ====== Labels ====== */
     label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 5px;
       font-weight: bold;
-      color: #4fc3f7;
+      color: #2e7d32;
     }
 
+    /* ====== Help text / tooltip ====== */
+    .help-text {
+      font-size: 0.85rem;
+      color: #06470d;
+      margin-bottom: 8px;
+    }
+
+    /* ====== Inputs, Selects & Textarea ====== */
     input, select, textarea {
       width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      margin-bottom: 20px;
-      background-color: #f5f5f5;
-      color: #000;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #90ee90;
+      margin-bottom: 15px;
+      background-color: #f0fff0;
+      color: #06470d;
       font-size: 1rem;
+      box-shadow: inset 0 2px 5px rgba(0, 128, 0, 0.1);
+      transition: all 0.25s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #2e7d32;
+      box-shadow: 0 0 8px rgba(46,125,50,0.5);
+    }
+
+    input.error, select.error, textarea.error {
+      border-color: #ff5252;
+      box-shadow: 0 0 5px rgba(255, 82, 82, 0.6);
     }
 
     input[type="file"] {
-      background-color: #fff;
+      background-color: #e6f9e8;
     }
 
+    /* ====== Buttons ====== */
     .button-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
     }
 
     button {
-      padding: 10px 20px;
+      padding: 12px 25px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
       font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(46,125,50,0.3);
     }
 
     .submit-btn {
-      background-color: #1976d2;
+      background: linear-gradient(145deg, #2e7d32, #90ee90);
       color: #fff;
-      transition: background-color 0.3s ease;
+      flex: 1;
+      min-width: 120px;
     }
 
     .submit-btn:hover {
-      background-color: #1565c0;
+      background: linear-gradient(145deg, #25632a, #7ed67e);
+      box-shadow: 0 6px 15px rgba(46,125,50,0.5);
+      transform: translateY(-2px);
     }
 
     .cancel-btn {
-      background-color: #ff5252;
+      background: linear-gradient(145deg, #ff5252, #ff7f7f);
       color: #fff;
-      transition: background-color 0.3s ease;
+      flex: 1;
+      min-width: 120px;
     }
 
     .cancel-btn:hover {
-      background-color: #e53935;
+      background: linear-gradient(145deg, #e53935, #ff6666);
+      transform: translateY(-2px);
     }
 
+    /* ====== Home Button ====== */
     .home-btn {
       position: absolute;
       top: 20px;
       right: 20px;
-      background-color: #4fc3f7;
-      color: #000;
+      background-color: #90ee90;
+      color: #06470d;
       padding: 8px 15px;
-      border-radius: 6px;
+      border-radius: 8px;
       text-decoration: none;
       font-weight: bold;
+      box-shadow: 0 3px 8px rgba(46,125,50,0.3);
+      transition: all 0.3s ease;
     }
 
-    /* Error messages */
+    .home-btn:hover {
+      background-color: #7ed67e;
+      box-shadow: 0 5px 12px rgba(46,125,50,0.5);
+      transform: translateY(-1px);
+    }
+
+    /* ====== Error Messages ====== */
     .errorlist {
       color: #ff5252;
-      margin-top: -15px;
-      margin-bottom: 15px;
-      font-size: 0.9rem;
+      margin-top: -10px;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
       list-style: none;
       padding-left: 0;
     }
 
+    /* ====== Complaints Table ====== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 0.95rem;
+    }
+
+    table th, table td {
+      padding: 10px;
+      border: 1px solid #90ee90;
+      text-align: left;
+    }
+
+    table th {
+      background-color: #a7e5a0;
+      color: #06470d;
+    }
+
+    table tr:nth-child(even) {
+      background-color: #d0f0c0;
+    }
+
+    table tr:hover {
+      background-color: #c0e8a0;
+    }
+
+    /* ====== Responsive ====== */
+    @media(max-width: 480px){
+      .button-row {
+        flex-direction: column;
+      }
+      .button-row button {
+        width: 100%;
+      }
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+      thead tr { display: none; }
+      tr { margin-bottom: 15px; }
+      td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+      }
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+      }
+    }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <a href="{% url 'user_dashboard' %}" class="home-btn">🏠 Home</a>
+    <a href="{% url 'ecotracksys:citizen_dashboard' %}" class="home-btn">🏠 Home</a>
     <h2>Raise a Complaint</h2>
 
     <form method="POST" enctype="multipart/form-data">
       {% csrf_token %}
-      
+
       <label for="{{ form.subject.id_for_label }}">Complaint Subject</label>
-      {{ form.subject }}
+      <input type="text" name="{{ form.subject.html_name }}" id="{{ form.subject.id_for_label }}" 
+             placeholder="Enter complaint subject" 
+             class="{% if form.subject.errors %}error{% endif %}" 
+             value="{{ form.subject.value|default:'' }}">
       {% if form.subject.errors %}
         <ul class="errorlist">{{ form.subject.errors }}</ul>
       {% endif %}
 
       <label for="{{ form.complaint_type.id_for_label }}">Complaint Type</label>
-      {{ form.complaint_type }}
+      <div class="help-text">Select the category that best fits your complaint</div>
+      {{ form.complaint_type|add_class:"{% if form.complaint_type.errors %}error{% endif %}"}}
       {% if form.complaint_type.errors %}
         <ul class="errorlist">{{ form.complaint_type.errors }}</ul>
       {% endif %}
 
       <label for="{{ form.related_pickup.id_for_label }}">Related Pickup Request</label>
-      {{ form.related_pickup }}
+      <div class="help-text">Choose the pickup request related to this complaint</div>
+      {{ form.related_pickup|add_class:"{% if form.related_pickup.errors %}error{% endif %}"}}
       {% if form.related_pickup.errors %}
         <ul class="errorlist">{{ form.related_pickup.errors }}</ul>
       {% endif %}
 
       <label for="{{ form.description.id_for_label }}">Complaint Description</label>
-      {{ form.description }}
+      <textarea name="{{ form.description.html_name }}" id="{{ form.description.id_for_label }}" 
+                placeholder="Describe your complaint in detail..." rows="4"
+                class="{% if form.description.errors %}error{% endif %}">{{ form.description.value|default:'' }}</textarea>
       {% if form.description.errors %}
         <ul class="errorlist">{{ form.description.errors }}</ul>
       {% endif %}
 
       <label for="{{ form.photo.id_for_label }}">Upload Photo (optional)</label>
-      {{ form.photo }}
+      <div class="help-text">Max size: 5MB. Formats: JPG, PNG</div>
+      {{ form.photo|add_class:"{% if form.photo.errors %}error{% endif %}"}}
       {% if form.photo.errors %}
         <ul class="errorlist">{{ form.photo.errors }}</ul>
       {% endif %}
@@ -158,6 +312,48 @@
         <button type="submit" class="submit-btn">Submit Complaint</button>
       </div>
     </form>
+
+    <!-- ====== Past Complaints Section ====== -->
+{% if past_complaints %}
+  <h3>My Past Complaints</h3>
+  <div class="complaints-container">
+    {% for complaint in past_complaints %}
+    <div class="complaint-card">
+      <div class="card-header" onclick="toggleDetails('details-{{ complaint.id }}')">
+        <span><strong>{{ complaint.subject }}</strong> ({{ complaint.get_complaint_type_display }})</span>
+        <span>Status: {{ complaint.status }}</span>
+        <span>{{ complaint.date_submitted|date:"d M Y, H:i" }}</span>
+      </div>
+      <div class="card-details" id="details-{{ complaint.id }}">
+        <p><strong>Related Pickup:</strong>
+          {% if complaint.related_pickup %}
+            #{{ complaint.related_pickup.id }} - {{ complaint.related_pickup.pickup_date }}
+          {% else %}
+            N/A
+          {% endif %}
+        </p>
+        <p><strong>Description:</strong> {{ complaint.description }}</p>
+        {% if complaint.photo %}
+        <p><strong>Photo:</strong> <a href="{{ complaint.photo.url }}" target="_blank">View</a></p>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p style="color:#06470d; margin-top:20px;">You have not submitted any complaints yet.</p>
+{% endif %}
+<script>
+  function toggleDetails(id) {
+    const details = document.getElementById(id);
+    if (details.style.display === "block") {
+      details.style.display = "none";
+    } else {
+      details.style.display = "block";
+    }
+  }
+</script>
+
   </div>
 
 </body>

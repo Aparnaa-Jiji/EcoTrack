@@ -1,61 +1,48 @@
-# accounts/admin.py
-
+#miniproject/ecotrack/accounts/admin.py
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.utils.translation import gettext_lazy as _
 from .models import CustomUser
 
 
+@admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     """
     Custom admin configuration for the CustomUser model.
-    Extends Django's built-in UserAdmin to support additional fields like
-    role, phone, and profile_image.
+    Extends Django's built-in UserAdmin to support additional fields
+    like role, phone, and profile_image.
     """
 
     model = CustomUser
 
     # Columns displayed in the admin user list view
-    list_display = ('email', 'role', 'phone', 'profile_image', 'is_active', 'is_staff')
-
-    # Filters shown in the sidebar for quick filtering
-    list_filter = ('role', 'is_active', 'is_staff')
-
-    # Fields that can be searched using the admin search bar
-    search_fields = ('email', 'phone')
-
-    # Default ordering of the user list
-    ordering = ('email',)
+    list_display = ("email", "full_name", "role", "zone", "phone", "is_active", "is_staff", "date_joined")
+    list_filter = ("role", "is_active", "is_staff")
+    search_fields = ("email", "phone", "full_name")
+    ordering = ("-date_joined",)
 
     # Layout of fields when editing an existing user in the admin
     fieldsets = (
-        ('Account Info', {
-            'fields': ('email', 'password', 'profile_image', 'phone', 'role')
-        }),
-        ('Permissions', {
-            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')
-        }),
-        ('Important Dates', {
-            'fields': ('last_login',)
-        }),
+        (_("Account Info"), {"fields": ("email", "password", "full_name", "profile_image", "phone", "role", "zone")}),
+        (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        (_("Important Dates"), {"fields": ("last_login", "date_joined")}),
     )
 
     # Layout of fields when creating a new user in the admin
     add_fieldsets = (
         (None, {
-            'classes': ('wide',),
-            'fields': (
-                'email',
-                'password1',
-                'password2',
-                'profile_image',
-                'phone',
-                'role',
-                'is_active',
-                'is_staff'
+            "classes": ("wide",),
+            "fields": (
+                "email",
+                "full_name",
+                "password1",
+                "password2",
+                "profile_image",
+                "phone",
+                "role",
+                "zone",
+                "is_active",
+                "is_staff",
             ),
         }),
     )
-
-
-# Register the CustomUser model with its custom admin configuration
-admin.site.register(CustomUser, CustomUserAdmin)

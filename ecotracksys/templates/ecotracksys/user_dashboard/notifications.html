@@ -2,318 +2,270 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Notifications – EcoTrack</title>
-  <style>
-    /* Base dark theme */
-    body {
-      background: #0f172a;
-      color: #e5e7eb;
-      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      min-height: 100vh;
-      transition: background .3s ease, color .3s ease;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Notifications – EcoTrack</title>
+<style>
+  /* ===== Base Mint Green Theme ===== */
+  body {
+    background: #e6f7f1;
+    color: #065f46;
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    transition: background .3s ease, color .3s ease;
+  }
 
-    /* Container */
-    .notifications-container {
-      background: linear-gradient(145deg, #1a1a2e, #16213e);
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 12px 24px rgba(0,0,0,0.5),
-                  inset 0 2px 0 rgba(59,130,246,0.3),
-                  inset 0 -2px 0 rgba(0,0,0,0.5);
-      max-width: 1000px;
-      margin: 0 auto;
-      position: relative;
-      overflow: hidden;
-    }
+  /* Container */
+  .notifications-container {
+    background: linear-gradient(145deg, #d1f5e0, #a7f0d2);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 12px 24px rgba(6,95,70,0.2),
+                inset 0 2px 0 rgba(34,197,94,0.2),
+                inset 0 -2px 0 rgba(6,95,70,0.2);
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+  }
 
-    /* Header with title and controls */
-    .notifications-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 30px;
-    }
+  /* Header */
+  .notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+  }
 
-    .notifications-title {
-      font-size: 28px;
-      font-weight: 700;
-      color: #60A5FA;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.6);
-      background: linear-gradient(90deg, #60A5FA, #3B82F6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 0;
-    }
+  .notifications-title {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #6ee7b7, #10b981);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+  }
 
-    .notification-badge {
-      background: #ef4444;
-      color: white;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 600;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
+  .notification-badge {
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    animation: pulse 2s infinite;
+    margin-left: 6px;
+  }
 
-    /* Control Buttons */
-    .notification-controls {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .control-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      background: linear-gradient(135deg, #3b82f6, #1e40af);
-      color: white;
-      text-decoration: none;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 14px;
-      box-shadow: 0 4px 12px rgba(59,130,246,0.4);
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      user-select: none;
-    }
-    .control-btn:hover {
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 6px 16px rgba(59,130,246,0.6);
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    }
-    .control-btn.active {
-      background: linear-gradient(135deg, #10b981, #059669);
-      box-shadow: 0 4px 12px rgba(16,185,129,0.4);
-    }
+  @keyframes pulse {
+    0%,100%{ transform: scale(1); }
+    50%{ transform: scale(1.1); }
+  }
 
-    /* Notifications List */
-    #notifications-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+  /* Control Buttons */
+  .notification-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .control-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #6ee7b7, #10b981);
+    color: #065f46;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .control-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 16px rgba(16,185,129,0.5);
+    background: linear-gradient(135deg, #34d399, #059669);
+  }
+  .control-btn.active {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 4px 12px rgba(34,197,94,0.4);
+    color: white;
+  }
 
-    /* Notification item */
-    .notification-item {
-      background: linear-gradient(145deg, #1f2937, #111827);
-      border-left: 5px solid #3b82f6;
-      border-radius: 16px;
-      padding: 20px 20px 20px 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      position: relative;
-      transition: all 0.3s ease;
-    }
-    .notification-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-      border-left-color: #60A5FA;
-    }
-    .notification-item.unread {
-      border-left-color: #f59e0b;
-      background: linear-gradient(145deg, #1f2937, #1a1a2e);
-      font-weight: 600;
-    }
+  /* Notifications List */
+  #notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
-    /* Notification content */
-    .notification-title {
-      font-size: 16px;
-      margin: 0 0 6px 0;
-      color: #e5e7eb;
-      line-height: 1.4;
-    }
-    .notification-message {
-      font-size: 14px;
-      color: #9ca3af;
-      margin: 0 0 10px 0;
-      line-height: 1.5;
-    }
-    small {
-      color: #6b7280;
-      font-size: 12px;
-    }
+  .notification-item {
+    background: linear-gradient(145deg, #d9f7ed, #b7f0db);
+    border-left: 6px solid #10b981;
+    border-radius: 16px;
+    padding: 20px 20px 20px 24px;
+    box-shadow: 0 6px 16px rgba(6,95,70,0.2);
+    position: relative;
+    transition: all 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+    opacity: 0;
+    transform: translateX(-30px);
+    animation: slideIn 0.5s forwards;
+  }
 
-    .home-btn {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      background: linear-gradient(135deg, #2563eb, #1e40af);
-      color: white;
-      padding: 8px 12px;
-      border-radius: 12px;
-      font-weight: 600;
-      font-size: 14px;
-      text-decoration: none;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      z-index: 1000;
-    }
-    .home-btn:hover {
-      background: linear-gradient(135deg, #1d4ed8, #2563eb);
-      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.6);
-      transform: scale(1.05);
-    }
-    /* Notification actions buttons */
-    .notification-actions {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      display: flex;
-      gap: 8px;
-    }
-    .action-btn {
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(59,130,246,0.4);
-      user-select: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    .mark-read-btn {
-      background: linear-gradient(135deg, #3b82f6, #1e40af);
-      color: white;
-    }
-    .mark-read-btn:hover {
-      background: linear-gradient(135deg, #2563eb, #1d4ed8);
-      transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(37,99,235,0.6);
-    }
-    .mark-unread-btn {
-      background: linear-gradient(135deg, #f59e0b, #b45309);
-      color: white;
-    }
-    .mark-unread-btn:hover {
-      background: linear-gradient(135deg, #d97706, #92400e);
-      transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(202,138,0,0.6);
-    }
-    .delete-btn {
-      background: linear-gradient(135deg, #ef4444, #b91c1c);
-      color: white;
-    }
-    .delete-btn:hover {
-      background: linear-gradient(135deg, #dc2626, #991b1b);
-      transform: scale(1.05);
-      box-shadow: 0 6px 16px rgba(220,38,38,0.6);
-    }
+  @keyframes slideIn {
+    to { opacity: 1; transform: translateX(0); }
+  }
 
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: #6b7280;
-      user-select: none;
-    }
-    .empty-icon {
-      font-size: 64px;
-      margin-bottom: 20px;
-      opacity: 0.6;
-      animation: float 3s ease-in-out infinite;
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
+  .notification-item.unread {
+    border-left-color: #facc15;
+    background: linear-gradient(145deg, #d1f5e0, #a7f0d2);
+    font-weight: 600;
+  }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-      .notifications-container {
-        padding: 20px;
-        margin: 10px;
-      }
-      .notifications-header {
-        flex-direction: column;
-        text-align: center;
-      }
-      .notifications-title {
-        font-size: 24px;
-      }
-      .notification-item {
-        padding: 16px 16px 16px 20px;
-      }
-      .notification-actions {
-        position: static;
-        margin-top: 12px;
-        justify-content: center;
-      }
-    }
-  </style>
+  .notification-title {
+    font-size: 16px;
+    margin: 0 0 6px 0;
+    color: #065f46;
+    line-height: 1.4;
+  }
+
+  .notification-message {
+    font-size: 14px;
+    color: #065f46aa;
+    margin: 0 0 10px 0;
+    line-height: 1.5;
+  }
+
+  small {
+    color: #16a34a;
+    font-size: 12px;
+  }
+
+  /* Notification Actions */
+  .notification-actions {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .action-btn {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .mark-read-btn { background: linear-gradient(135deg, #6ee7b7, #10b981); color: #065f46; }
+  .mark-read-btn:hover { background: linear-gradient(135deg, #34d399, #059669); transform: scale(1.05); }
+  .mark-unread-btn { background: linear-gradient(135deg, #facc15, #ca8a04); color: #065f46; }
+  .mark-unread-btn:hover { background: linear-gradient(135deg, #f59e0b, #b45309); transform: scale(1.05); }
+  .delete-btn { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; }
+  .delete-btn:hover { background: linear-gradient(135deg, #dc2626, #991b1b); transform: scale(1.05); }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: #065f46aa;
+    user-select: none;
+  }
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.6;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(-10px); }
+  }
+
+  /* Home Button */
+  .home-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #34d399, #059669);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(34,197,94,0.3);
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 1000;
+  }
+  .home-btn:hover { background: linear-gradient(135deg, #16a34a, #22c55e); transform: scale(1.05); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .notifications-header { flex-direction: column; text-align: center; gap: 12px; }
+    .notifications-title { font-size: 24px; }
+    .notification-item { padding: 16px 16px 16px 20px; }
+    .notification-actions { position: static; margin-top: 12px; justify-content: center; }
+    .notification-controls { justify-content: center; }
+  }
+</style>
 </head>
 <body>
-  <a href="{% url 'user_dashboard' %}" class="home-btn" title="Home">🏠 Home</a>
+  <a href="{% url 'ecotracksys:citizen_dashboard' %}" class="home-btn">🏠 Home</a>
+
   <div class="notifications-container">
     <div class="notifications-header">
-      <h1 class="notifications-title" aria-label="Notifications">
-        <span>🔔</span>
-        Notifications
+      <h1 class="notifications-title">
+        🔔 Notifications
         <div class="notification-badge" id="notification-badge">0</div>
       </h1>
       <div class="notification-controls">
-        <button class="control-btn active" onclick="filterNotifications('all', this)">
-          <span>📋</span> All
-        </button>
-        <button class="control-btn" onclick="filterNotifications('unread', this)">
-          <span>🔴</span> Unread
-        </button>
-        <button class="control-btn" onclick="filterNotifications('today', this)">
-          <span>📅</span> Today
-        </button>
-        <button class="control-btn" onclick="markAllRead()">
-          <span>✅</span> Mark All Read
-        </button>
+        <button class="control-btn active" data-filter="all">📋 All</button>
+        <button class="control-btn" data-filter="unread">🔴 Unread</button>
+        <button class="control-btn" data-filter="today">📅 Today</button>
+        <button class="control-btn" data-action="mark-all-read">✅ Mark All Read</button>
       </div>
     </div>
 
     <div id="notifications-list">
       {% if notifications %}
         {% for notif in notifications %}
-          <div 
-            class="notification-item {% if notif.status == 'unread' %}unread{% endif %}" 
-            data-id="{{ notif.id }}" 
-            data-date="{{ notif.created_at|date:'Y-m-d' }}"
-          >
+          <div class="notification-item {% if notif.status == 'unread' %}unread{% endif %}" data-id="{{ notif.id }}" data-date="{{ notif.created_at|date:'Y-m-d' }}">
             <h3 class="notification-title">{{ notif.title }}</h3>
             <p class="notification-message">{{ notif.message }}</p>
-            <small>Received on {{ notif.created_at|date:"M d, Y H:i" }}</small>
-
+            <small>Received on <time datetime="{{ notif.created_at|date:'c' }}">{{ notif.created_at|date:"M d, Y H:i" }}</time></small>
             <div class="notification-actions">
               {% if notif.status == 'unread' %}
-                <button class="action-btn mark-read-btn" onclick="markAsRead({{ notif.id }}, this)">Mark Read</button>
+                <button class="action-btn mark-read-btn" data-action="toggle-read" data-id="{{ notif.id }}">Mark Read</button>
               {% else %}
-                <button class="action-btn mark-unread-btn" onclick="markAsUnread({{ notif.id }}, this)">Mark Unread</button>
+                <button class="action-btn mark-unread-btn" data-action="toggle-read" data-id="{{ notif.id }}">Mark Unread</button>
               {% endif %}
-              <button class="action-btn delete-btn" onclick="deleteNotification({{ notif.id }}, this)">Delete</button>
+              <button class="action-btn delete-btn" data-action="delete" data-id="{{ notif.id }}">Delete</button>
             </div>
           </div>
         {% endfor %}
@@ -327,156 +279,77 @@
     </div>
   </div>
 
-  <script>
-    // CSRF token retrieval
-    function getCookie(name) {
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-          cookie = cookie.trim();
-          if (cookie.startsWith(name + '=')) {
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-            break;
-          }
-        }
-      }
-      return cookieValue;
-    }
-    const csrftoken = getCookie('csrftoken');
+<script>
+  // CSRF token
+  function getCookie(name){let cookieValue=null;if(document.cookie&&document.cookie!==''){const cookies=document.cookie.split(';');for(let cookie of cookies){cookie=cookie.trim();if(cookie.startsWith(name+'=')){cookieValue=decodeURIComponent(cookie.substring(name.length+1));break;}}}return cookieValue;}
+  const csrftoken=getCookie('csrftoken');
 
-    // POST helper for AJAX
-    async function postData(url = '', data = {}) {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-CSRFToken': csrftoken,
-        },
-        body: new URLSearchParams(data)
-      });
-      return response.json();
-    }
+  async function postData(url='', data={}){const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','X-CSRFToken':csrftoken},body:new URLSearchParams(data)});return response.json();}
 
-    // Filter notifications by type
-    function filterNotifications(type, btn) {
-      document.querySelectorAll('.control-btn').forEach(b => b.classList.remove('active'));
-      if(type !== 'markAll') btn.classList.add('active');
+  function updateUI(){
+    const unreadCount=document.querySelectorAll('.notification-item.unread').length;
+    const badge=document.getElementById('notification-badge');
+    badge.textContent=unreadCount;
+    badge.style.display=unreadCount>0?'flex':'none';
+    const visibleNotifications=Array.from(document.querySelectorAll('.notification-item')).filter(n=>n.style.display!=='none');
+    document.getElementById('empty-state')?.style.display=visibleNotifications.length===0?'block':'none';
+  }
 
-      const notifications = document.querySelectorAll('.notification-item');
-      const emptyState = document.getElementById('empty-state');
-      let visibleCount = 0;
-      const todayDate = new Date().toISOString().split('T')[0];
-
-      notifications.forEach(notification => {
-        let show = false;
-        switch(type) {
-          case 'all':
-            show = true;
-            break;
-          case 'unread':
-            show = notification.classList.contains('unread');
-            break;
-          case 'today':
-            show = notification.dataset.date === todayDate;
-            break;
-        }
-        notification.style.display = show ? 'block' : 'none';
-        if(show) visibleCount++;
-      });
-
-      emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
-    }
-
-    // Mark as read
-    async function markAsRead(id, btn) {
-      const result = await postData('{% url "mark_notification_read" %}', {notif_id: id});
-      if(result.success) {
-        const notifElem = btn.closest('.notification-item');
-        notifElem.classList.remove('unread');
-        btn.textContent = 'Mark Unread';
-        btn.classList.replace('mark-read-btn', 'mark-unread-btn');
-        btn.onclick = () => markAsUnread(id, btn);
-        updateBadgeCount();
-      } else {
-        alert('Error marking as read: ' + (result.error || 'Unknown error'));
-      }
-    }
-
-    // Mark as unread
-    async function markAsUnread(id, btn) {
-      const result = await postData('{% url "mark_notification_unread" %}', {notif_id: id});
-      if(result.success) {
-        const notifElem = btn.closest('.notification-item');
-        notifElem.classList.add('unread');
-        btn.textContent = 'Mark Read';
-        btn.classList.replace('mark-unread-btn', 'mark-read-btn');
-        btn.onclick = () => markAsRead(id, btn);
-        updateBadgeCount();
-      } else {
-        alert('Error marking as unread: ' + (result.error || 'Unknown error'));
-      }
-    }
-
-    // Delete notification
-    async function deleteNotification(id, btn) {
-      if(!confirm('Are you sure you want to delete this notification?')) return;
-
-      const result = await postData('{% url "delete_notification" %}', {notif_id: id});
-      if(result.success) {
-        const notifElem = btn.closest('.notification-item');
-        notifElem.remove();
-        updateBadgeCount();
-        checkEmptyState();
-      } else {
-        alert('Error deleting notification: ' + (result.error || 'Unknown error'));
-      }
-    }
-
-    // Mark all as read
-    async function markAllRead() {
-      const unreadNotifications = document.querySelectorAll('.notification-item.unread');
-      for(let i=0; i<unreadNotifications.length; i++) {
-        const notif = unreadNotifications[i];
-        const id = notif.dataset.id;
-        // Simulate sequential marking
-        await postData('{% url "mark_notification_read" %}', {notif_id: id});
-        notif.classList.remove('unread');
-        const btn = notif.querySelector('.mark-read-btn');
-        if(btn) {
-          btn.textContent = 'Mark Unread';
-          btn.classList.replace('mark-read-btn', 'mark-unread-btn');
-          btn.onclick = () => markAsUnread(id, btn);
-        }
-      }
-      updateBadgeCount();
-      filterNotifications('all', document.querySelector('.control-btn.active'));
-    }
-
-    // Update unread badge count
-    function updateBadgeCount() {
-      const unreadCount = document.querySelectorAll('.notification-item.unread').length;
-      const badge = document.getElementById('notification-badge');
-      badge.textContent = unreadCount;
-      badge.style.display = unreadCount > 0 ? 'flex' : 'none';
-    }
-
-    // Show empty state if no notifications visible
-    function checkEmptyState() {
-      const visibleNotifications = document.querySelectorAll('.notification-item:not([style*="display: none"])');
-      const emptyState = document.getElementById('empty-state');
-      if(visibleNotifications.length === 0) {
-        emptyState.style.display = 'block';
-      } else {
-        emptyState.style.display = 'none';
-      }
-    }
-
-    // Initialize on DOM ready
-    document.addEventListener('DOMContentLoaded', () => {
-      updateBadgeCount();
-      filterNotifications('all', document.querySelector('.control-btn.active'));
+  function filterNotifications(type){
+    document.querySelectorAll('.control-btn').forEach(btn=>btn.classList.remove('active'));
+    document.querySelector(`[data-filter="${type}"]`)?.classList.add('active');
+    const today=new Date().toISOString().split('T')[0];
+    document.querySelectorAll('.notification-item').forEach(n=>{
+      let show=type==='all'||(type==='unread'&&n.classList.contains('unread'))||(type==='today'&&n.dataset.date===today);
+      n.style.display=show?'block':'none';
     });
-  </script>
+    updateUI();
+  }
+
+  async function toggleReadStatus(id, btn){
+    const isUnread=btn.classList.contains('mark-read-btn');
+    const url=isUnread?'{% url "ecotracksys:mark_notification_read" %}':'{% url "ecotracksys:mark_notification_unread" %}';
+    const result=await postData(url,{notif_id:id});
+    if(result.success){
+      const notifElem=btn.closest('.notification-item');
+      notifElem.classList.toggle('unread');
+      btn.classList.toggle('mark-read-btn');
+      btn.classList.toggle('mark-unread-btn');
+      btn.textContent=isUnread?'Mark Unread':'Mark Read';
+      updateUI();
+    } else alert('Error: '+(result.error||'Unknown error'));
+  }
+
+  async function deleteNotification(id, btn){
+    if(!confirm('Are you sure you want to delete this notification?')) return;
+    const notifElem=btn.closest('.notification-item');
+    notifElem.style.transition='all 0.3s ease'; notifElem.style.opacity='0'; notifElem.style.transform='translateX(-30px)';
+    setTimeout(async ()=>{
+      const result=await postData('{% url "ecotracksys:delete_notification" %}',{notif_id:id});
+      if(result.success){ notifElem.remove(); updateUI(); }
+      else { notifElem.style.opacity='1'; notifElem.style.transform='translateX(0)'; alert('Error: '+(result.error||'Unknown error')); }
+    },300);
+  }
+
+  async function markAllRead(){
+    const unreadNotifications=document.querySelectorAll('.notification-item.unread');
+    for(let notif of unreadNotifications){
+      const id=notif.dataset.id;
+      await postData('{% url "ecotracksys:mark_notification_read" %}',{notif_id:id});
+      notif.classList.remove('unread');
+      const btn=notif.querySelector('[data-action="toggle-read"]');
+      if(btn){btn.classList.replace('mark-read-btn','mark-unread-btn');btn.textContent='Mark Unread';}
+    }
+    updateUI();
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    updateUI();
+    document.querySelectorAll('[data-filter]').forEach(btn=>{btn.addEventListener('click',()=>filterNotifications(btn.dataset.filter));});
+    document.querySelectorAll('[data-action="toggle-read"]').forEach(btn=>{btn.addEventListener('click',()=>toggleReadStatus(btn.dataset.id,btn));});
+    document.querySelector('[data-action="mark-all-read"]')?.addEventListener('click',markAllRead);
+    document.querySelectorAll('[data-action="delete"]').forEach(btn=>{btn.addEventListener('click',()=>deleteNotification(btn.dataset.id,btn));});
+  });
+</script>
 </body>
 </html>

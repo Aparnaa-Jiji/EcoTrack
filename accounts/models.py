@@ -1,7 +1,9 @@
+#miniproject/ecotrack/accounts/models.py
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 import uuid
+from django.conf import settings
 
 # ------------------------
 # Custom user manager
@@ -56,7 +58,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
 
     # Additional user details
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, blank=True, null=True)
+
     
 
     
@@ -65,7 +68,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     # Role assigned to user
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='citizen')
-
+    zone = models.ForeignKey(
+   'ecotracksys.Zone',
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    related_name='users'
+)
     # Status fields
     is_active = models.BooleanField(default=True)   # Whether the user is active (can log in)
     is_staff = models.BooleanField(default=False)   # Whether the user can access admin site
@@ -93,5 +102,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     def __str__(self):
-        # Return the email as string representation of user
-        return self.email
+    # Show name if available, otherwise show email
+        return self.name if self.name else self.email
+
+    @property
+    def full_name(self):
+        return self.name if self.name else self.email           
+
+

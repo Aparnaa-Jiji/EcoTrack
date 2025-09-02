@@ -1,3 +1,4 @@
+<!--- ecotrack/accounts/templates/accounts/login.html --->
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -28,14 +29,14 @@
             /* Glassmorphic shadow layers */
             box-shadow:
                 0 8px 32px 0 rgba(27,127,120,255),
-                0 1.5px 6px 0 #077375,
+                0 1.5px 6px 0 #04706e,
                 0 0 0 4px rgba(78, 188, 174, 0.667) inset;
 
             /* Glassmorphic background */
             background: rgba(109, 148, 135, 0.25);
             backdrop-filter: blur(12px);         /* Frosted glass blur */
             -webkit-backdrop-filter: blur(12px); /* Safari support */
-            border: 1px solid rgba(19, 151, 127, 0.936);
+            border: 1px solid #04706e;
 
             /* Text and sizing */
             color: #fff;
@@ -46,14 +47,14 @@
         /* ====== HEADING ====== */
         h2 {
             text-align: center;
-            color: #0f8a4f;
+            color: #04706e;
         }
 
         /* ====== FORM LABELS ====== */
         form label {
             display: block;
             margin-top: 14px;
-            color: #116d4b;
+            color: #04706e;
             font-weight: 500;
         }
 
@@ -65,7 +66,7 @@
             border-radius: 8px;
             border: none;
             background: #dadcde;
-            color: #187972;
+            color: #04706e;
 
             /* Shadows & border effect */
             box-shadow:
@@ -81,9 +82,9 @@
         /* ====== INPUT FOCUS EFFECT ====== */
         form input:focus {
             box-shadow:
-                0 0 0 2px #116d4b,
+                0 0 0 2px #04706e,
                 0 2px 6px #f4f4f4,
-                0 1px 2px #03684d inset;
+                0 1px 2px #04706e inset;
             transform: scale(1.03);
         }
 
@@ -95,29 +96,29 @@
             font-size: 17px;
             font-weight: bold;
             color: #fff;
-            background: rgba(100,173,169,255);
+            background:  rgba(47, 144, 128, 0.945) ;
             border: none;
             border-radius: 10px;
 
             /* Button shadow effects */
             box-shadow:
-                0 4px 16px #0a0a0a,
-                0 2px 8px rgba(100,173,169,255),
-                0 6px 24px #0a0a0a;
+               
+     
+                0 6px 24px #094746;
 
             cursor: pointer;
             transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
         }
         button:hover {
-            background: #067475;
+            background: #04706e;
             box-shadow:
-                0 12px 32px #0b7e74,
+                0 12px 32px #04706e,
                 0 2px 8px #0a0a0a;
             transform: translateY(-3px) scale(1.05);
         }
         button:active {
             box-shadow:
-                0 2px 8px #087865,
+                0 2px 8px #04706e,
                 0 1px 2px #0a0a0a;
             transform: translateY(1px) scale(0.98);
         }
@@ -146,7 +147,7 @@
             transition: color 0.2s ease;
         }
         .extra-links a:hover {
-            color: #90caf9;
+            color: #85fcde;
             text-shadow: 0 0 6px #0c9676;
         }
     </style>

@@ -1,3 +1,5 @@
+<!-- ecotrack/ecotracksys/templates/ecotracksys/admin_dashboard/pickup_management.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,160 +7,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pickup Management | EcoTrack</title>
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
   <style>
-    /* =======================
-       Root variables for colors and theme
-       ======================= */
     :root {
-      --bg-gradient: linear-gradient(to right, #0f2027, #2c5364); /* page background */
-      --container-gradient: linear-gradient(to right, #232526, #1e3c72); /* sidebar background */
-      --primary: #1976d2;       /* main blue color */
-      --secondary: #0d47a1;     /* darker blue accent */
-      --highlight: #4fc3f7;     /* highlight text/buttons */
-      --light-blue: #90caf9;    /* secondary highlight */
-      --text-light: #f0f0f0;    /* main text color */
-      --shadow: rgba(31, 38, 135, 0.37); /* card/table shadow */
+      --bg-image: url("{% static 'images/bgimg.jpg' %}");
+      --container-gradient: linear-gradient(145deg, rgba(4, 57, 39, 0.9), rgba(5, 111, 79, 0.85));
+      --primary: #04706e;
+      --secondary: #2f9080;
+      --highlight: #85fcde;
+      --shadow: rgba(3, 104, 77, 0.5);
+      --text-light: #e6fef3;
+      --text-dark: #0b3d2e;
     }
 
-    /* =======================
-       Base styles
-       ======================= */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text-light);
+      background: var(--bg-image) no-repeat center center/cover;
+      color: var(--text-dark);
     }
+    .container { display: flex; min-height: 100vh; background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7)); }
 
-    .container {
-      display: flex;           /* sidebar + main content side by side */
-      min-height: 100vh;
-    }
-
-    /* =======================
-       Sidebar styles
-       ======================= */
     .sidebar {
       width: 260px;
-      background: var(--container-gradient);
-      transition: width 0.3s ease; /* smooth collapse animation */
-      overflow: hidden;
-      position: relative;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7));
+      transition: width 0.3s ease, padding 0.3s ease;
+      box-shadow: 2px 0 12px var(--shadow);
+      backdrop-filter: blur(12px);
     }
-
-    .sidebar.collapsed { width: 70px; } /* collapsed sidebar width */
-    
-    .sidebar h2 {
-      text-align: center;
-      padding: 20px 0;
-      font-size: 1.6rem;
-      margin: 0;
-      transition: opacity 0.3s; /* fade text when collapsed */
-    }
+    .sidebar.collapsed { width: 70px; padding: 0px; }
+    .sidebar h2 { text-align: center; padding: 20px 0; font-size: 1.6rem; margin: 0; color: var(--primary); }
     .sidebar.collapsed h2 { opacity: 0; }
+    .sidebar ul { list-style: none; padding: 0; margin: 0; }
+    .sidebar ul li a { display: flex; align-items: center; gap: 12px; padding: 14px 22px; color: var(--text-dark); text-decoration: none; border-radius: 8px; transition: background 0.3s ease; }
+    .sidebar ul li a:hover { background: var(--secondary); color: #fff; }
+    .sidebar ul li a.active { background: var(--primary); color: #fff; font-weight: bold; }
+    .sidebar.collapsed ul li span { display: none; }
+    .toggle-btn { position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 22px; color: var(--text-dark); cursor: pointer; }
 
-    /* Sidebar navigation list */
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .sidebar ul li {
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    .sidebar ul li:hover { background-color: rgba(255, 255, 255, 0.08); }
+    .main { flex: 1; padding: 24px; backdrop-filter: blur(6px); }
+    .header { font-size: 26px; font-weight: bold; color: var(--primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 
-    /* Sidebar icons and text */
-    .sidebar ul li i { font-size: 18px; }
-    .sidebar ul li a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--text-light);
-      text-decoration: none;
-      width: 100%;
-      height: 100%;
-    }
-    .sidebar ul li span { transition: opacity 0.3s ease; }
-    .sidebar.collapsed ul li span { opacity: 0; }
-
-    /* Sidebar toggle button */
-    .toggle-btn {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: none;
-      border: none;
-      font-size: 22px;
-      color: var(--text-light);
-      cursor: pointer;
-    }
-
-    /* =======================
-       Main content styles
-       ======================= */
-    .main {
-      flex: 1;               /* takes remaining width */
-      padding: 24px;
-      transition: margin-left 0.3s ease;
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-    }
-    .header h1 { font-size: 24px; }
-
-    /* =======================
-       Table styles
-       ======================= */
     table {
       width: 100%;
       border-collapse: collapse;
-      background-color: #1c2b4a;
+      background: var(--primary);
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 4px 12px var(--shadow);
     }
-    th, td {
-      padding: 16px;
-      text-align: left;
-      border-bottom: 1px solid #33415c;
-    }
-    th { background-color: #273b61; color: var(--highlight); }
-    tr:hover { background-color: rgba(255, 255, 255, 0.03); }
+    th, td { padding: 16px; text-align: left; border-bottom: 1px solid rgba(3, 104, 77, 0.2); color: #e6fef3; }
+    th { background: var(--primary); color: #fff; }
+    tr:hover { background-color: rgba(4, 112, 110, 0.15); box-shadow: 0 0 12px rgba(133, 252, 222, 0.4); transform: scale(1.01); transition: all 0.2s ease-in-out; }
 
-    /* Action buttons (Assign / Reassign / Reschedule) */
-    .actions { display: flex; gap: 10px; }
-    .action-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 18px;
-      color: var(--light-blue);
-      transition: all 0.2s ease-in-out;
-    }
-    .action-btn:hover {
-      color: var(--highlight);
-      transform: scale(1.1); /* subtle grow effect on hover */
-    }
+    .status { padding: 6px 12px; border-radius: 8px; font-size: 14px; font-weight: bold; }
+    .pending { background: orange; color: #fff; }
+    .inprogress { background: deepskyblue; color: #fff; }
+    .completed { background: seagreen; color: #fff; }
+    .cancelled { background: crimson; color: #fff; }
 
-    /* =======================
-       Responsive design
-       ======================= */
+    .action-btn { background: rgba(255,255,255,0.1); border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; color: var(--highlight); transition: all 0.25s ease-in-out; }
+    .action-btn:hover { background: rgba(133,252,222,0.3); transform: scale(1.1); color: var(--text-dark); }
+
+    .profile-menu { position: absolute; top: 16px; right: 30px; }
+    .profile-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); cursor: pointer; }
+    .profile-dropdown { display: none; position: absolute; right: 0; top: 55px; background: white; border-radius: 10px; box-shadow: 0 4px 15px var(--shadow); overflow: hidden; z-index: 1000; min-width: 150px; }
+    .profile-dropdown a { display: block; padding: 10px 14px; text-decoration: none; color: var(--text-dark); font-size: 14px; }
+    .profile-dropdown a:hover { background: var(--secondary); color: white; }
+
+    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:2000; }
+    .modal-content { background: var(--container-gradient); padding:25px; border-radius:16px; color: var(--text-light); min-width:350px; max-width:520px; position:relative; animation: slideDownFade 0.3s ease forwards; }
+    .close-btn { position:absolute; top:12px; right:16px; cursor:pointer; font-size:24px; }
+    @keyframes slideDownFade { 0%{opacity:0; transform:translateY(-50px);} 100%{opacity:1; transform:translateY(0);} }
+
     @media screen and (max-width: 768px) {
-      .sidebar {
-        position: fixed;
-        z-index: 999;
-        height: 100%;
-      }
+      .sidebar { position: fixed; z-index: 999; height: 100%; }
       .main { margin-left: 70px; }
       .sidebar.collapsed + .main { margin-left: 70px; }
     }
@@ -166,79 +90,186 @@
 </head>
 <body>
   <div class="container">
-    <!-- =======================
-         Sidebar navigation
-         ======================= -->
+
     <div class="sidebar" id="sidebar">
       <h2 id="brandText">EcoTrack</h2>
-      <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+      <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar">☰</button>
+
       <ul>
-        <li><a href="{% url 'admin_dashboard' %}"><i>🏠</i> <span>Dashboard</span></a></li>
-        <li><a href="{% url 'pickup_management' %}"><i>🗑️</i> <span>Pickup Management</span></a></li>
-        <li><a href="{% url 'zone_management' %}"><i>📍</i> <span>Zone Management</span></a></li>
-        <li><a href="{% url 'leave_req_management' %}"><i>📅</i> <span>Leave Requests</span></a></li>
-        <li><a href="{% url 'complaint_management' %}"><i>📢</i> <span>Complaints</span></a></li>
-        <li><a href="{% url 'user_management' %}"><i>🧑‍🤝‍🧑</i> <span>User Management</span></a></li>
-        <li><a href="{% url 'collector_management' %}"><i>👷‍♂️</i> <span>Collector Management</span></a></li>
-        <li><a href="{% url 'analytics' %}"><i>📊</i> <span>Analytics</span></a></li>
-        <li><a href="{% url 'admin_profile' %}"><i>👤</i> <span>Admin Profile</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_dashboard' %}"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'ecotracksys:pickup_management' %}" class="active"><i class="fas fa-trash"></i> <span>Pickup Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:zone_management' %}"><i class="fas fa-map-marker-alt"></i> <span>Zone Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:leave_request_management' %}"><i class="fas fa-calendar-alt"></i> <span>Leave Requests</span></a></li>
+        <li><a href="{% url 'ecotracksys:complaint_management' %}"><i class="fas fa-bullhorn"></i> <span>Complaints</span></a></li>
+        <li><a href="{% url 'ecotracksys:user_management' %}"><i class="fas fa-users"></i> <span>User Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:collector_management' %}"><i class="fas fa-user-cog"></i> <span>Collector Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_profile' %}"><i class="fas fa-user-shield"></i> <span>Admin Profile</span></a></li>
       </ul>
     </div>
 
-    <!-- =======================
-         Main content
-         ======================= -->
     <div class="main">
-      <div class="header">
-        <h1>Pickup Management</h1>
-        <!-- Optional filter or buttons can go here -->
+      <div class="profile-menu">
+        {% if user.is_authenticated %}
+          {% if request.user.profile_image %}
+            <img src="{{ request.user.profile_image.url }}" alt="Profile Image" class="profile-img" onclick="toggleProfileMenu()">
+          {% else %}
+            <img src="{% static 'default_profile.png' %}" alt="Profile Image" class="profile-img" onclick="toggleProfileMenu()">
+          {% endif %}
+        {% endif %}
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="{% url 'ecotracksys:admin_profile' %}">👤 View Profile</a>
+          <a href="{% url 'logout' %}">🚪 Logout</a>
+        </div>
       </div>
 
-      <!-- =======================
-           Pickup requests table
-           ======================= -->
+      <div class="header"><h1>Pickup Management</h1></div>
+
       <table>
         <thead>
           <tr>
-            <th>Request ID</th>
+            <th>ID</th>
             <th>Citizen</th>
-            <th>Location</th>
             <th>Date</th>
             <th>Status</th>
-            <th>Collector</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-  {% for p in pickups %}
-  <tr>
-    <td>{{ p.id }}</td>
-    <td>{{ p.citizen }}</td>
-    <td>{{ p.location }}</td>
-    <td>{{ p.date }}</td>
-    <td style="color: {% if p.status == 'Pending' %}orange{% elif p.status == 'Assigned' %}lime{% else %}white{% endif %}">
-      {{ p.status }}
-    </td>
-    <td>{{ p.collector }}</td>
-    <td class="actions">
-      <button class="action-btn" title="Assign">✅</button>
-      <button class="action-btn" title="Reassign">🔁</button>
-      <button class="action-btn" title="Reschedule">🕒</button>
-    </td>
-  </tr>
-  {% endfor %}
-</tbody>
+          {% for p in pickups %}
+          <tr>
+            <td>{{ p.id }}</td>
+            <td>{{ p.customer_name }}</td>
+            <td>{{ p.pickup_date }}</td>
+            <td>
+              <span class="status 
+                {% if p.status == 'Pending' %}pending
+                {% elif p.status == 'In Progress' %}inprogress
+                {% elif p.status == 'Completed' %}completed
+                {% elif p.status == 'Cancelled' %}cancelled
+                {% endif %}">
+                {{ p.status }}
+              </span>
+            </td>
+            <td>
+              <!-- Use a namespaced URL in data-url so JS doesn't guess paths -->
+              <button
+                class="action-btn"
+                data-url="{% url 'ecotracksys:pickup_details' p.id %}"
+                onclick="openDetailsModal(this)">
+                <i class="fas fa-eye"></i> View
+              </button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" style="text-align:center;">No pickups found.</td></tr>
+          {% endfor %}
+        </tbody>
       </table>
     </div>
   </div>
 
-  <!-- =======================
-       Sidebar toggle script
-       ======================= -->
+  <!-- Details Modal -->
+  <div id="detailsModal" class="modal">
+    <div class="modal-content">
+      <span id="closeDetails" class="close-btn">&times;</span>
+      <h3 style="text-align:center; color: var(--highlight);">Pickup Request Details</h3>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
   <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      sidebar.classList.toggle("collapsed"); // expand/collapse sidebar
+    function toggleSidebar(){ document.getElementById("sidebar").classList.toggle("collapsed"); }
+    function toggleProfileMenu(){
+      const menu = document.getElementById("profileDropdown");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+    document.addEventListener("click", function(e){
+      const profileMenu = document.querySelector(".profile-menu");
+      if (!profileMenu.contains(e.target)) {
+        document.getElementById("profileDropdown").style.display = "none";
+      }
+    });
+
+    const modal = document.getElementById("detailsModal");
+    const closeBtn = document.getElementById("closeDetails");
+    closeBtn.onclick = () => modal.style.display = "none";
+    window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
+
+    function getCSRFToken() {
+      const name = "csrftoken=";
+      const parts = document.cookie.split(";");
+      for (let part of parts) {
+        part = part.trim();
+        if (part.startsWith(name)) return decodeURIComponent(part.substring(name.length));
+      }
+      return "";
+    }
+
+    function statusClass(status) {
+      switch (status) {
+        case "Pending": return "pending";
+        case "In Progress": return "inprogress";
+        case "Completed": return "completed";
+        case "Cancelled": return "cancelled";
+        default: return "";
+      }
+    }
+
+    function openDetailsModal(btn) {
+      const url = btn.dataset.url;
+      fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(r => { if (!r.ok) throw new Error("Failed to fetch details"); return r.json(); })
+        .then(data => {
+          const csrf = getCSRFToken();
+
+          // Build URLs using named patterns rendered server-side (safe & flexible)
+          const assignUrl = "{% url 'ecotracksys:assign_collector' 0 %}".replace("0", data.id);
+          // If you already have a named route, use it. Otherwise keep the hard path below:
+          const rescheduleUrl = "/dashboard/admin/reschedule/" + data.id + "/";
+
+          const body = `
+            <p><b>Citizen:</b> ${data.customer_name}</p>
+            <p><b>Date:</b> ${data.pickup_date}</p>
+            <p><b>Time:</b> ${data.pickup_time}</p>
+            <p><b>Address:</b> ${data.address}</p>
+            <p><b>Status:</b> <span class="status ${statusClass(data.status)}">${data.status}</span></p>
+
+            <h4>Collector Assignment</h4>
+            <form action="${assignUrl}" method="POST" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <input type="hidden" name="csrfmiddlewaretoken" value="${csrf}">
+              <select name="collector_id" required>
+                <option value="">-- Select Collector --</option>
+                ${data.collectors.map(c =>
+                  `<option value="${c.id}" ${c.id === data.collector_id ? 'selected' : ''}>${c.email}</option>`
+                ).join('')}
+              </select>
+              <button type="submit" class="action-btn">${data.collector_id ? 'Reassign' : 'Assign'} Collector</button>
+            </form>
+
+            <h4>Reschedule</h4>
+            <form action="${rescheduleUrl}" method="POST" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px;">
+              <input type="hidden" name="csrfmiddlewaretoken" value="${csrf}">
+              <input type="date" name="new_date" value="${data.pickup_date}" required>
+              <input type="time" name="new_time" value="${data.pickup_time}" required>
+              <button type="submit" class="action-btn">Reschedule</button>
+            </form>
+          `;
+
+          const modalBody = document.getElementById("modalBody");
+          modalBody.innerHTML = body;
+
+          // Show modal with a fresh animation
+          const content = modal.querySelector(".modal-content");
+          content.style.animation = "none";
+          void content.offsetWidth;
+          content.style.animation = "slideDownFade 0.3s ease forwards";
+          modal.style.display = "flex";
+        })
+        .catch(err => {
+          console.error(err);
+          alert("Could not load details. Please confirm the new URL is added and server is running.");
+        });
     }
   </script>
 </body>

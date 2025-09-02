@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Performance Report — Collector | EcoTrack</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Reuse Mint Professional Theme */
+    :root{
+      --bg:#f6fff9;
+      --mint-600:#2e7d32;
+      --mint-500:#43a047;
+      --mint-300:#a5d6a7;
+      --accent:#20c997;
+      --card:#ffffff;
+      --muted:#6b6b6b;
+      --shadow: 0 6px 22px rgba(16, 64, 54, 0.08);
+    }
+    body{margin:0;font-family:Inter,ui-sans-serif; background:linear-gradient(135deg,var(--bg),#e8faf0 60%); color:#0b3d2e;}
+    .app{display:flex;min-height:100vh;gap:20px;}
+    .sidebar{width:240px;background:linear-gradient(180deg,var(--mint-300),#e6f7ec);padding:18px;box-shadow:var(--shadow);}
+    .brand{font-weight:700;color:var(--mint-600);font-size:1.15rem;text-align:center;margin-bottom:14px;}
+    .nav{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px;}
+    .nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;text-decoration:none;color:var(--mint-600);border-radius:10px;font-weight:600;}
+    .nav a:hover, .nav a.active{background:var(--mint-500);color:#fff;transform:translateX(4px);box-shadow:0 6px 18px rgba(66,160,102,0.08);}
+    .main{flex:1;display:flex;flex-direction:column;gap:18px;padding:22px;}
+    .topbar{background:#fff;padding:12px 18px;border-radius:12px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;}
+    h1{margin:0;color:var(--mint-600);}
+    .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;}
+    .kpi{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--shadow);border-left:6px solid var(--mint-500);}
+    .kpi .value{font-size:1.5rem;font-weight:800;color:var(--mint-600);}
+    .kpi .label{color:var(--muted);font-size:0.9rem;}
+    .panel{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow);}
+    .panel h3{margin-top:0;color:var(--mint-600);}
+    canvas{width:100%!important;height:280px!important;}
+
+    /* Profile dropdown */
+    .profile { position:relative; display:flex; align-items:center; cursor:pointer; }
+    .avatar { width:40px; height:40px; border-radius:50%; border:2px solid var(--mint-500); overflow:hidden; }
+    .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .profile .menu { display:none; position:absolute; right:0; top:50px; background:#fff; border-radius:10px; box-shadow:var(--shadow); min-width:160px; overflow:hidden; z-index:50; }
+    .profile.open .menu{ display:block; }
+    .profile .menu a { display:block; padding:10px 12px; text-decoration:none; color:#0b3d2e; font-weight:600; }
+    .profile .menu a:hover{ background:#f3fff7; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">EcoTrack</div>
+    <ul class="nav">
+      <li><a href="{% url 'ecotracksys:collector_dashboard' %}" ><span class="icon"><i class="fas fa-home"></i></span><span class="label">Dashboard</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_assignments' %}"><span class="icon"><i class="fas fa-list-check"></i></span><span class="label">My Assignments</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_pickup_history' %}"><span class="icon"><i class="fas fa-clock-rotate-left"></i></span><span class="label">History</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_performance' %}" class="active"><span class="icon"><i class="fas fa-chart-line"></i></span><span class="label">Performance</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_leave' %}"><span class="icon"><i class="fas fa-calendar-alt"></i></span><span class="label">Leave</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_notifications' %}"><span class="icon"><i class="fas fa-bell"></i></span><span class="label">Notifications</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_complaints' %}"><span class="icon"><i class="fas fa-cog"></i></span><span class="label">Complaints</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_profile' %}"><span class="icon"><i class="fas fa-user"></i></span><span class="label">Profile</span></a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <h1>📊 Performance Report</h1>
+
+      <!-- Profile button -->
+      <div class="profile" id="profileBtn">
+        <div class="avatar">
+          {% if request.user.profile_image %}
+            <img src="{{ request.user.profile_image.url }}">
+          {% else %}
+            <img src="{% static 'default_profile.png' %}">
+          {% endif %}
+        </div>
+        <div class="menu">
+          <a href="{% url 'ecotracksys:collector_profile' %}">👤 View Profile</a>
+          <a href="{% url 'logout' %}">🚪 Logout</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <section class="kpis">
+      <div class="kpi">
+        <div class="value">{{ total_pickups|default:0 }}</div>
+        <div class="label">Total Pickups</div>
+      </div>
+      <div class="kpi">
+        <div class="value">{{ completed_pickups|default:0 }}</div>
+        <div class="label">Completed</div>
+      </div>
+      <div class="kpi">
+        <div class="value">{{ missed_pickups|default:0 }}</div>
+        <div class="label">Missed</div>
+      </div>
+      <div class="kpi">
+        <div class="value">{{ efficiency|default:"0%" }}</div>
+        <div class="label">Efficiency</div>
+      </div>
+    </section>
+
+    <!-- CHARTS -->
+    <div class="panel">
+      <h3>Weekly Performance Trend</h3>
+      <canvas id="weeklyChart"></canvas>
+    </div>
+
+    <div class="panel">
+      <h3>Pickup Breakdown by Waste Type</h3>
+      <canvas id="wasteChart"></canvas>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Profile dropdown toggle
+  const profileBtn = document.getElementById('profileBtn');
+  profileBtn.addEventListener('click', ()=> profileBtn.classList.toggle('open'));
+  document.addEventListener('click', e => {
+    if(!profileBtn.contains(e.target)) profileBtn.classList.remove('open');
+  });
+
+  // Weekly performance line chart
+  const weeklyCtx = document.getElementById('weeklyChart');
+  new Chart(weeklyCtx, {
+    type: 'line',
+    data: {
+      labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+      datasets: [{
+        label: 'Completed Pickups',
+        data: {{ weekly_data|default:"[5,7,6,9,4,8,6]"|safe }},
+        borderColor: '#2e7d32',
+        backgroundColor: 'rgba(46,125,50,0.08)',
+        fill:true,
+        tension:0.3
+      }]
+    },
+    options: {responsive:true, plugins:{legend:{display:false}}}
+  });
+
+  // Waste type pie chart
+  const wasteCtx = document.getElementById('wasteChart');
+  new Chart(wasteCtx, {
+    type: 'doughnut',
+    data: {
+      labels: {{ waste_types|default:"['Organic','Plastic','Paper','Metal']"|safe }},
+      datasets: [{
+        data: {{ waste_counts|default:"[12,9,5,3]"|safe }},
+        backgroundColor: ['#43a047','#20c997','#a5d6a7','#2e7d32']
+      }]
+    },
+    options: {responsive:true, plugins:{legend:{position:'bottom'}}}
+  });
+</script>
+</body>
+</html>

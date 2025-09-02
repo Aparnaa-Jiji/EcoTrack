@@ -1,210 +1,219 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>EcoTrack | My Profile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>EcoTrack | My Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Font Awesome for Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Roboto', sans-serif;
-      background: linear-gradient(to right, #0f2027, #2c5364);
-      color: #ffffff;
-    }
+<style>
+  /* ===== Base Theme ===== */
+  body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #e6f7f1, #d1f5e0);
+    color: #065f46;
+  }
 
+  /* ===== Header ===== */
+  .header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px 30px;
+  }
+
+  .home-btn {
+    padding: 8px 22px;
+    background: linear-gradient(135deg, #34d399, #10b981);
+    border: none;
+    color: #ffffff;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(16,185,129,0.4);
+    transition: all 0.3s ease;
+  }
+
+  .home-btn:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    box-shadow: 0 6px 16px rgba(5,118,87,0.6);
+    transform: translateY(-2px);
+  }
+
+  /* ===== Profile Container ===== */
+  .profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 20px;
+  }
+
+  /* ===== Profile Card ===== */
+  .profile-card {
+    background: linear-gradient(145deg, #f0fdf9, #d9f7ed);
+    padding: 45px 35px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 650px;
+    box-shadow: 0 0 35px rgba(16,185,129,0.3);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 45px rgba(16,185,129,0.5);
+  }
+
+  /* ===== Title ===== */
+  .profile-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #065f46;
+    margin-bottom: 35px;
+    border-bottom: 1px solid #10b981;
+    padding-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .profile-title i {
+    color: #34d399;
+  }
+
+  /* ===== Profile Image ===== */
+  .profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #10b981;
+    box-shadow: 0 0 15px rgba(16,185,129,0.5);
+    margin-bottom: 30px;
+    transition: transform 0.3s ease;
+  }
+
+  .profile-img:hover {
+    transform: scale(1.05);
+  }
+
+  /* ===== Info Section ===== */
+  .info-section {
+    max-width: 450px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+    border-bottom: 1px solid rgba(6,95,70,0.15);
+    padding-bottom: 8px;
+    transition: background 0.3s, padding-left 0.3s;
+    border-radius: 6px;
+  }
+
+  .info-row:hover {
+    background: rgba(16,185,129,0.1);
+    padding-left: 8px;
+  }
+
+  .info-row i {
+    color: #34d399;
+    font-size: 18px;
+    width: 28px;
+    margin-right: 12px;
+  }
+
+  .info-label {
+    font-size: 15px;
+    color: #065f46aa;
+    width: 120px;
+  }
+
+  .info-value {
+    font-size: 16px;
+    font-weight: 500;
+    color: #065f46;
+    flex: 1;
+  }
+
+  /* ===== Edit Button ===== */
+  .edit-btn {
+    margin-top: 35px;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, #34d399, #10b981);
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 12px rgba(16,185,129,0.5);
+  }
+
+  .edit-btn:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    box-shadow: 0 0 25px rgba(5,118,87,0.7);
+    transform: translateY(-2px);
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 600px) {
     .header {
-      display: flex;
-      justify-content: flex-end;
-      padding: 20px 30px;
-    }
-
-    .home-btn {
-      padding: 8px 20px;
-      background-color: #1976d2;
-      border: none;
-      color: #fff;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .home-btn:hover {
-      background-color: #0d47a1;
-    }
-
-    .profile-container {
-      display: flex;
       justify-content: center;
-      align-items: center;
-      padding: 40px 20px;
     }
-
     .profile-card {
-      background: linear-gradient(to right, #1e3c72, #232526);
-      padding: 40px 30px;
-      border-radius: 15px;
-      width: 100%;
-      max-width: 600px;
-      box-shadow: 0 0 25px rgba(25, 118, 210, 0.4);
-      text-align: center;
+      padding: 35px 20px;
     }
-
     .profile-title {
-      font-size: 26px;
-      font-weight: 600;
-      color: #90caf9;
-      margin-bottom: 30px;
-      border-bottom: 1px solid #1976d2;
-      padding-bottom: 10px;
+      font-size: 24px;
     }
-
-    .profile-title i {
-      margin-right: 10px;
-      color: #4fc3f7;
+    .info-label {
+      width: auto;
     }
-
     .profile-img {
       width: 100px;
       height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #1976d2;
-      box-shadow: 0 0 12px rgba(25, 118, 210, 0.6);
       margin-bottom: 25px;
     }
-
-    .info-section {
-      max-width: 400px;
-      margin: 0 auto;
-      text-align: left;
-    }
-
-    .info-row {
-      display: flex;
-      align-items: center;
-      margin-bottom: 18px;
-    }
-
-    .info-row i {
-      color: #4fc3f7;
-      font-size: 18px;
-      width: 25px;
-      margin-right: 10px;
-    }
-
-    .info-label {
-      font-size: 15px;
-      color: #90caf9;
-      width: 110px;
-    }
-
-    .info-value {
-      font-size: 16px;
-      font-weight: 500;
-      color: #ffffff;
-      flex: 1;
-    }
-
-    .edit-btn {
-  margin-top: 30px;
-  padding: 10px 25px;
-  background-color: #1976d2;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  color: #fff;
-  cursor: pointer;
-  transition: background-color 0.3s, box-shadow 0.3s;
-  box-shadow: 0 0 10px rgba(79, 195, 247, 0.6);
-}
-
-.edit-btn:hover {
-  background-color: #0d47a1;
-  box-shadow: 0 0 20px rgba(79, 195, 247, 0.9);
-}
-
-    .info-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 8px;
-}
-.info-row:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
-  padding-left: 5px;
-  transition: background 0.3s, padding-left 0.3s;
-}
-
-
-
-    @media (max-width: 600px) {
-      .header {
-        justify-content: center;
-      }
-
-      .profile-card {
-        padding: 30px 20px;
-      }
-
-      .profile-title {
-        font-size: 22px;
-      }
-
-      .info-label {
-        width: auto;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 
   <!-- Header with Home Button -->
   <div class="header">
-    <button class="home-btn" onclick="window.location.href='{% url 'user_dashboard' %}'">🏠 Home</button>
-
+    <button class="home-btn" onclick="window.location.href='{% url 'ecotracksys:citizen_dashboard' %}'">🏠 Home</button>
   </div>
 
   <!-- Profile Card -->
   <div class="profile-container">
     <div class="profile-card">
       <div class="profile-title"><i class="fas fa-user-circle"></i>My Profile</div>
+
       {% if user.profile_image %}
       <img src="{{ user.profile_image.url }}" alt="{{ user.get_full_name }}'s Profile Picture" class="profile-img">
       {% else %}
       <img src="/static/default-profile.png" alt="Default Profile Picture" class="profile-img">
       {% endif %}
+
       <div class="info-section">
 
         <div class="info-row">
           <i class="fas fa-user"></i>
           <div class="info-label">Name</div>
-          <div class="info-value">{{ user.get_full_name | default:"N/A" }}</div>
+          <div class="info-value">{{ user.full_name| default:"N/A" }}</div>
         </div>
 
-        <div class="info-row">
-          <i class="fas fa-map-marker-alt"></i>
-          <div class="info-label">Address</div>
-          <div class="info-value">{{ user.address | default:"N/A" }}</div>
-        </div>
 
-        <div class="info-row">
-          <i class="fas fa-city"></i>
-          <div class="info-label">City</div>
-          <div class="info-value">{{ user.city | default:"N/A" }}</div>
-        </div>
 
-        <div class="info-row">
-  <i class="fas fa-map"></i>
-  <div class="info-label">Zone</div>
-  <div class="info-value">{{ user.zone|default:"Not Assigned" }}</div>
-</div>
 
         <div class="info-row">
           <i class="fas fa-phone-alt"></i>
@@ -219,14 +228,14 @@
         </div>
 
         <div class="info-row">
-  <i class="fas fa-calendar-alt"></i>
-  <div class="info-label">Joined</div>
-  <div class="info-value">{{ user.date_joined|date:"F j, Y" }}</div>
-</div>
+          <i class="fas fa-calendar-alt"></i>
+          <div class="info-label">Joined</div>
+          <div class="info-value">{{ user.date_joined|date:"F j, Y" }}</div>
+        </div>
 
       </div>
 
-      <button class="edit-btn" onclick="window.location.href='{% url 'edit_profile' %}'">✏️ Edit Profile</button>
+      <button class="edit-btn" onclick="window.location.href='{% url 'ecotracksys:edit_profile' %}'">✏️ Edit Profile</button>
     </div>
   </div>
 

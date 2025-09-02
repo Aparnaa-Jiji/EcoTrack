@@ -1,3 +1,5 @@
+<!-- ecotrack/ecotracksys/templates/ecotracksys/admin_dashboard/collector_management.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,52 +7,48 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Collector Management | EcoTrack</title>
-  <!-- Bootstrap Icons for action icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
-    /* ===========================
-       CSS Variables / Color Palette
-       =========================== */
+    /* =========================== Color Palette =========================== */
     :root {
-      --bg-gradient: linear-gradient(to right, #0f2027, #2c5364);
-      --container-gradient: linear-gradient(to right, #232526, #1e3c72);
-      --primary: #1976d2;
-      --secondary: #0d47a1;
-      --highlight: #4fc3f7;
-      --light-blue: #90caf9;
-      --text-light: #f0f0f0;
-      --shadow: rgba(31, 38, 135, 0.37);
+      --bg-image: url("{% static 'images/bgimg.jpg' %}");
+      --container-gradient: linear-gradient(145deg, rgba(4, 57, 39, 0.9), rgba(5, 111, 79, 0.85));
+      --primary: #04706e;
+      --secondary: #2f9080;
+      --highlight: #85fcde;
+      --light-blue: #85fcde;
+      --shadow: rgba(3, 104, 77, 0.5);
+      --text-light: #e6fef3;
+      --text-dark: #0b3d2e;
     }
 
-    /* ===========================
-       Body / Global Styles
-       =========================== */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text-light);
+      background: var(--bg-image) no-repeat center center/cover;
+      color: var(--text-dark);
     }
 
     .container {
       display: flex;
       min-height: 100vh;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(103, 206, 168, 0.7));
     }
 
-    /* ===========================
-       Sidebar Styles
-       =========================== */
+    /* =========================== Sidebar =========================== */
     .sidebar {
       width: 260px;
-      background: var(--container-gradient);
-      transition: width 0.3s ease;
-      overflow: hidden;
-      position: relative;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(103, 206, 168, 0.7));
+      transition: width 0.3s ease, padding 0.3s ease;
+      box-shadow: 2px 0 12px var(--shadow);
+      backdrop-filter: blur(12px);
     }
 
     .sidebar.collapsed {
       width: 70px;
+      padding: 0px;
     }
 
     .sidebar h2 {
@@ -58,8 +56,7 @@
       padding: 20px 0;
       font-size: 1.6rem;
       margin: 0;
-      transition: opacity 0.3s;
-      color: var(--text-light);
+      color: var(--primary);
     }
 
     .sidebar.collapsed h2 {
@@ -72,31 +69,26 @@
       margin: 0;
     }
 
-    .sidebar ul li {
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .sidebar ul li:hover {
-      background-color: rgba(255, 255, 255, 0.08);
-    }
-
-    .sidebar ul li i {
-      font-size: 18px;
-    }
-
     .sidebar ul li a {
       display: flex;
       align-items: center;
       gap: 12px;
-      color: var(--text-light);
+      padding: 14px 22px;
+      color: var(--text-dark);
       text-decoration: none;
-      width: 100%;
-      height: 100%;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+    }
+
+    .sidebar ul li a:hover {
+      background: var(--secondary);
+      color: #ffffff;
+    }
+
+    .sidebar ul li a.active {
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: bold;
     }
 
     .sidebar ul li span {
@@ -104,7 +96,7 @@
     }
 
     .sidebar.collapsed ul li span {
-      opacity: 0;
+      display: none;
     }
 
     .toggle-btn {
@@ -114,29 +106,25 @@
       background: none;
       border: none;
       font-size: 22px;
-      color: var(--text-light);
+      color: var(--text-dark);
       cursor: pointer;
     }
 
-    /* ===========================
-       Main Content Styles
-       =========================== */
+    /* =========================== Main Content =========================== */
     .main {
       flex: 1;
       padding: 24px;
-      transition: margin-left 0.3s ease;
+      backdrop-filter: blur(6px);
     }
 
     .header {
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--primary);
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 24px;
-    }
-
-    .header h1 {
-      font-size: 24px;
-      color: var(--text-light);
     }
 
     .create-btn {
@@ -154,13 +142,10 @@
       background-color: var(--secondary);
     }
 
-    /* ===========================
-       Table Styles
-       =========================== */
     table {
       width: 100%;
       border-collapse: collapse;
-      background-color: #1c2b4a;
+      background: white;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 4px 12px var(--shadow);
@@ -170,16 +155,16 @@
     td {
       padding: 16px;
       text-align: left;
-      border-bottom: 1px solid #33415c;
+      border-bottom: 1px solid rgb(65, 236, 190);
     }
 
     th {
-      background-color: #273b61;
-      color: var(--highlight);
+      background: var(--primary);
+      color: white;
     }
 
     tr:hover {
-      background-color: rgba(255, 255, 255, 0.03);
+      background-color: rgba(4, 112, 110, 0.08);
     }
 
     .actions {
@@ -201,11 +186,9 @@
       transform: scale(1.15);
     }
 
-    /* ===========================
-       Modal Styles
-       =========================== */
+    /* =========================== Modals =========================== */
     .modal {
-      display: none; /* Hidden by default */
+      display: none;
       position: fixed;
       z-index: 1000;
       left: 0;
@@ -213,23 +196,25 @@
       width: 100%;
       height: 100%;
       overflow: auto;
-      background: rgba(15, 32, 39, 0.9);
-      backdrop-filter: blur(5px);
+      background: rgba(109, 148, 135, 0.25);
+      backdrop-filter: blur(12px);
+      border: 1px solid #04706e;
     }
 
     .modal-content {
-      background: #1c2b4a;
+      background: var(--container-gradient);
       margin: 8% auto;
       padding: 30px;
-      border-radius: 12px;
+      border-radius: 16px;
       width: 90%;
       max-width: 500px;
-      box-shadow: 0 4px 12px var(--shadow);
+      box-shadow: 0 4px 16px var(--shadow);
       color: var(--text-light);
       position: relative;
+      animation: fadeIn 0.3s ease-in-out;
     }
 
-    .close-btn {
+    .close {
       position: absolute;
       top: 12px;
       right: 16px;
@@ -240,43 +225,144 @@
       transition: color 0.3s ease;
     }
 
-    .close-btn:hover {
+    .close:hover {
       color: var(--light-blue);
     }
 
     .modal-content h2 {
       margin-top: 0;
+      margin-bottom: 20px;
       color: var(--highlight);
+      text-align: center;
     }
 
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
+    .modal-content label {
       display: block;
       margin-bottom: 6px;
-      color: var(--light-blue);
-    }
-
-    .form-group input,
-    .form-group select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      background-color: #273b61;
       color: var(--text-light);
     }
 
-    .form-group input:focus,
-    .form-group select:focus {
-      outline: 2px solid var(--primary);
+    .modal-content input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 14px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text-dark);
     }
 
-    /* ===========================
-       Responsive Styles
-       =========================== */
+    .save-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background 0.3s ease, transform 0.2s;
+    }
+
+    .save-btn:hover {
+      background: var(--secondary);
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ========================================== Profile Dropdown ========================================== */
+    .profile-menu {
+      position: absolute;
+      top: 16px;
+      right: 30px;
+    }
+
+    .profile-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+      cursor: pointer;
+      display: block;
+    }
+
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 55px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px var(--shadow);
+      overflow: hidden;
+      z-index: 1000;
+      min-width: 150px;
+    }
+
+    .profile-dropdown a {
+      display: block;
+      padding: 10px 14px;
+      text-decoration: none;
+      color: var(--text-dark);
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .profile-dropdown a:hover {
+      background: var(--secondary);
+    }
+
+    /* Toggle Switch Styles */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: orange;
+      transition: 0.4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px; width: 20px;
+      left: 3px; bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: limegreen;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+
     @media screen and (max-width: 768px) {
       .sidebar {
         position: fixed;
@@ -292,42 +378,115 @@
         margin-left: 70px;
       }
     }
+    /* Toggle switch styles */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: orange;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px; width: 20px;
+  left: 3px; bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: limegreen;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+}
+
+/* Optional: round slider corners */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
   </style>
 </head>
 
 <body>
   <div class="container">
-    <!-- ===========================
-         Sidebar Section
-         =========================== -->
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
       <h2 id="brandText">EcoTrack</h2>
-      <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+      <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar">☰</button>
       <ul>
-        <li><a href="{% url 'admin_dashboard' %}"><i>🏠</i> <span>Dashboard</span></a></li>
-        <li><a href="{% url 'pickup_management' %}"><i>🗑️</i> <span>Pickup Management</span></a></li>
-        <li><a href="{% url 'zone_management' %}"><i>📍</i> <span>Zone Management</span></a></li>
-        <li><a href="{% url 'leave_req_management' %}"><i>📅</i> <span>Leave Requests</span></a></li>
-        <li><a href="{% url 'complaint_management' %}"><i>📢</i> <span>Complaints</span></a></li>
-        <li><a href="{% url 'user_management' %}"><i>🧑‍🤝‍🧑</i> <span>User Management</span></a></li>
-        <li><a href="{% url 'collector_management' %}"><i>👷‍♂️</i> <span>Collector Management</span></a></li>
-        <li><a href="{% url 'analytics' %}"><i>📊</i> <span>Analytics</span></a></li>
-        <li><a href="{% url 'admin_profile' %}"><i>👤</i> <span>Admin Profile</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_dashboard' %}"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'ecotracksys:pickup_management' %}"><i class="fas fa-trash"></i> <span>Pickup Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:zone_management' %}"><i class="fas fa-map-marker-alt"></i> <span>Zone Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:leave_request_management' %}"><i class="fas fa-calendar-alt"></i> <span>Leave Requests</span></a></li>
+        <li><a href="{% url 'ecotracksys:complaint_management' %}"><i class="fas fa-bullhorn"></i> <span>Complaints</span></a></li>
+        <li><a href="{% url 'ecotracksys:user_management' %}"><i class="fas fa-users"></i> <span>User Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:collector_management' %}" class="active"><i class="fas fa-user-cog"></i> <span>Collector Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_profile' %}"><i class="fas fa-user-shield"></i> <span>Admin Profile</span></a></li>
       </ul>
     </div>
 
-    <!-- ===========================
-         Main Content Section
-         =========================== -->
+    <!-- Main Content -->
     <div class="main">
-      <div class="header">
-        <h1>Collector Management</h1>
-        <button class="create-btn" onclick="openModal()">+ New Collector</button>
+      <!-- Profile Menu -->
+      <div class="profile-menu">
+        {% if user.is_authenticated %}
+          {% if request.user.profile_image %}
+            <img src="{{ request.user.profile_image.url }}" alt="Profile Image" class="profile-img" onclick="toggleProfileMenu()">
+          {% else %}
+            <img src="{% static 'default_profile.png' %}" alt="Profile Image" class="profile-img" onclick="toggleProfileMenu()">
+          {% endif %}
+        {% endif %}
+
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="{% url 'ecotracksys:admin_profile' %}">👤 View Profile</a>
+          <a href="{% url 'logout' %}">🚪 Logout</a>
+        </div>
       </div>
 
-      <!-- ===========================
-           Collector Table
-           =========================== -->
+      <!-- Header -->
+      <div class="header">
+        <h1>
+          Collector Management
+          <button class="create-btn" onclick="openAddCollectorModal()">+ New Collector</button>
+        </h1>
+      </div>
+
+      {% if messages %}
+      <div style="margin-bottom: 16px;">
+        {% for message in messages %}
+        <div style="color: {% if message.tags == 'error' %}red{% else %}lime{% endif %}; font-weight: bold;">
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Collector Table -->
       <table>
         <thead>
           <tr>
@@ -335,7 +494,6 @@
             <th>ID</th>
             <th>Phone</th>
             <th>Zone</th>
-            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -345,86 +503,145 @@
             <td>{{ collector.name }}</td>
             <td>{{ collector.id }}</td>
             <td>{{ collector.phone }}</td>
-            <td>{{ collector.zone }}</td>
-            <td style="color: {% if collector.status == 'Active' %}lime{% else %}orange{% endif %}">
-              {{ collector.status }}
-            </td>
+            <td>{{ collector.zone.name }}</td>
+
             <td class="actions">
-              <button class="action-btn" title="Edit">✏️</button>
-              {% if collector.status == 'Active' %}
-              <button class="action-btn" title="Disable">🚫</button>
-              {% else %}
-              <button class="action-btn" title="Enable">✅</button>
-              {% endif %}
+              <button class="action-btn" title="Edit" onclick='openEditCollectorModal({
+    id: {{ collector.id }},
+    name: "{{ collector.name|escapejs }}",
+    email: "{{ collector.email|escapejs }}",
+    phone: "{{ collector.phone|escapejs }}",
+    zone_id: {{ collector.zone_id|default:"null" }},
+    zone_name: "{{ collector.zone.name|default_if_none:""|escapejs }}"
+  })'>✏️</button>
             </td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
 
-      <!-- ===========================
-           Modal Popup for New Collector
-           =========================== -->
-      <div id="collectorModal" class="modal">
+      <!-- Modals: Add & Edit (unchanged, same as your previous code) -->
+
+      <!-- Add Collector Modal -->
+      <div id="addCollectorModal" class="modal">
         <div class="modal-content">
-          <span class="close-btn" onclick="closeModal()">&times;</span>
+          <span class="close" onclick="closeAddCollectorModal()">&times;</span>
           <h2>Add New Collector</h2>
-          <form method="POST" action="#">
+          <form method="POST" action="{% url 'ecotracksys:collector_management' %}" autocomplete="off">
             {% csrf_token %}
-            <div class="form-group">
-              <label for="collectorName">Full Name</label>
-              <input type="text" id="collectorName" name="name" required>
-            </div>
-            <div class="form-group">
-              <label for="collectorPhone">Phone</label>
-              <input type="text" id="collectorPhone" name="phone" required>
-            </div>
-            <div class="form-group">
-              <label for="collectorZone">Zone</label>
-              <input type="text" id="collectorZone" name="zone" required>
-            </div>
-            <div class="form-group">
-              <label for="collectorStatus">Status</label>
-              <select id="collectorStatus" name="status" required>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-              </select>
-            </div>
-            <button type="submit" class="create-btn">Add Collector</button>
+            <label for="collector_name">Full Name</label>
+            <input type="text" id="collector_name" name="collector_name" placeholder="Enter full name" required>
+            <label for="collector_email">Email Address</label>
+            <input type="email" id="collector_email" name="collector_email" placeholder="Enter email" required autocomplete="new-email">
+            <label for="collector_phone">Phone Number</label>
+            <input type="text" id="collector_phone" name="collector_phone" placeholder="Enter phone number" required>
+            <label for="collector_zone">Assigned Zone</label>
+            <input type="text" id="collector_zone" name="collector_zone" placeholder="Enter assigned zone" required>
+            <label for="collector_password">Password</label>
+            <input type="password" id="collector_password" name="collector_password" placeholder="Enter password" required autocomplete="new-password">
+            <button type="submit" class="save-btn">Save Collector</button>
           </form>
         </div>
       </div>
+
+      <!-- Edit Collector Modal -->
+      <div id="editCollectorModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeEditCollectorModal()">&times;</span>
+          <h2>Edit Collector</h2>
+          <form method="POST" id="editCollectorForm" autocomplete="off">
+            {% csrf_token %}
+            <label for="edit_collector_name">Full Name</label>
+            <input type="text" id="edit_collector_name" name="collector_name" required>
+            <label for="edit_collector_email">Email Address</label>
+            <input type="email" id="edit_collector_email" name="collector_email" required>
+            <label for="edit_collector_phone">Phone Number</label>
+            <input type="text" id="edit_collector_phone" name="collector_phone" required>
+            <label for="edit_collector_zone">Assigned Zone</label>
+            <input type="text" id="edit_collector_zone" name="collector_zone" required>
+            <label for="edit_collector_password">Password (leave blank to keep unchanged)</label>
+            <input type="password" id="edit_collector_password" name="collector_password">
+            <button type="submit" class="save-btn">Save Changes</button>
+          </form>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- ===========================
-       JavaScript Section
-       =========================== -->
+  <!-- =========================== JS =========================== -->
   <script>
-    // Sidebar toggle
-    function toggleSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      sidebar.classList.toggle("collapsed");
+  document.addEventListener('DOMContentLoaded', function () {
+    // ===========================
+    // Sidebar & Profile Menu
+    // ===========================
+    window.toggleSidebar = function () {
+      document.getElementById("sidebar").classList.toggle("collapsed");
     }
 
-    // Modal functionality
-    const modal = document.getElementById("collectorModal");
+    window.toggleProfileMenu = function () {
+      const menu = document.getElementById("profileDropdown");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
 
-    function openModal() {
+    // ===========================
+    // Add / Edit Collector Modals
+    // ===========================
+    window.openAddCollectorModal = function () {
+      document.getElementById("addCollectorModal").style.display = "block";
+    }
+    window.closeAddCollectorModal = function () {
+      document.getElementById("addCollectorModal").style.display = "none";
+    }
+
+    window.openEditCollectorModal = function (collector) {
+      const modal = document.getElementById("editCollectorModal");
       modal.style.display = "block";
+
+      document.getElementById("edit_collector_name").value = collector.name;
+      document.getElementById("edit_collector_email").value = collector.email;
+      document.getElementById("edit_collector_phone").value = collector.phone;
+      document.getElementById("edit_collector_zone").value = collector.zone_name;
+      document.getElementById("edit_collector_password").value = "";
+
+      document.getElementById("editCollectorForm").action = "{% url 'ecotracksys:edit_collector' 0 %}".replace('0', collector.id);
+    }
+    window.closeEditCollectorModal = function () {
+      document.getElementById("editCollectorModal").style.display = "none";
     }
 
-    function closeModal() {
-      modal.style.display = "none";
-    }
-
-    // Close modal if clicked outside modal content
+    // Close modals / profile menu if clicked outside
     window.onclick = function (event) {
-      if (event.target === modal) {
-        closeModal();
+      const addModal = document.getElementById("addCollectorModal");
+      const editModal = document.getElementById("editCollectorModal");
+      const profileMenu = document.getElementById("profileDropdown");
+
+      if (event.target === addModal) closeAddCollectorModal();
+      if (event.target === editModal) closeEditCollectorModal();
+      if (!document.querySelector(".profile-menu").contains(event.target)) {
+        profileMenu.style.display = "none";
       }
     }
-  </script>
-</body>
 
+    // ===========================
+    // CSRF Helper
+    // ===========================
+    function getCSRFToken() {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+          cookie = cookie.trim();
+          if (cookie.startsWith('csrftoken=')) {
+            cookieValue = decodeURIComponent(cookie.substring('csrftoken='.length));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  })();
+
+</script>
+</body>
 </html>

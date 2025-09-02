@@ -1,3 +1,4 @@
+<!-- miniproject/ecotrack/ecotracksys/templates/ecotracksys/admin_dashboard/admin_dashboard.html -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -15,52 +16,38 @@
        Internal CSS for Dashboard Styling
        ========================= -->
   <style>
-    /* =====================================================
-       Root Variables
-       Define main colors, shadows, and background image
-       ===================================================== */
     :root {
-      --bg-image: url("{% static 'images/bgimg.jpg' %}"); /* Background image for the page */
-      --primary: #00bfa6;    /* Main accent color for headings and buttons */
-      --secondary: #a8e6cf;  /* Secondary color for hover effects and highlights */
-      --highlight: #00c4cc;  /* Color for icons and highlighted text */
-      --text-dark: #1e293b;  /* Main text color */
-      --shadow: rgba(0, 0, 0, 0.15); /* Shadow color for cards and sidebar */
+      --bg-image: url("{% static 'images/bgimg.jpg' %}");
+      --primary: #04706e;
+      --secondary: #2f9080;
+      --highlight: #85fcde;
+      --bg-overlay: rgba(109, 148, 135, 0.25);
+      --shadow: rgba(3, 104, 77, 0.5);
+      --text-dark: #0b3d2e;
     }
 
-    /* =====================================================
-       Body & Container
-       Define overall page layout, font, and background
-       ===================================================== */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: var(--bg-image) no-repeat center center/cover; /* Set background image */
+      background: var(--bg-image) no-repeat center center/cover;
       color: var(--text-dark);
     }
 
-    /* Main container that holds Sidebar and Main Content */
     .container {
-      display: flex; /* Sidebar + Main content side by side */
+      display: flex;
       min-height: 100vh;
-      background: linear-gradient(to right, rgba(255,255,255,0.8), rgba(168,230,207,0.7)); /* Soft gradient overlay */
+      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7));
     }
 
-    /* =====================================================
-       Sidebar Styling
-       ===================================================== */
+    /* Sidebar */
     .sidebar {
-      width: 260px; /* Full width when expanded */
-      background: linear-gradient(to top, rgba(255,255,255,0.8), rgba(168,230,207,0.7));
-      backdrop-filter: blur(12px); /* Glassmorphism effect */
-      box-shadow: 2px 0 12px var(--shadow); /* Shadow on right edge */
-      transition: width 0.3s ease, padding 0.3s ease; /* Smooth collapse */
+      width: 260px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7));
+      backdrop-filter: blur(12px);
+      box-shadow: 2px 0 12px var(--shadow);
+      transition: width 0.3s ease, padding 0.3s ease;
     }
-
-    /* Collapsed sidebar */
     .sidebar.collapsed { width: 70px; padding: 0; }
-
-    /* Sidebar brand/logo */
     .sidebar h2 {
       text-align: center;
       padding: 20px 0;
@@ -68,8 +55,23 @@
       margin: 0;
       color: var(--primary);
     }
+    .sidebar.collapsed h2 { opacity: 0; }
 
-    /* Toggle button for collapsing sidebar */
+    .sidebar ul { list-style: none; padding:0; margin:0; }
+    .sidebar ul li a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 22px;
+      color: var(--text-dark);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+    }
+    .sidebar ul li a:hover { background: var(--secondary); color:#fff; }
+    .sidebar ul li a.active { background: var(--primary); color:#fff; font-weight:bold; }
+    .sidebar.collapsed ul li span { display: none; }
+
     .toggle-btn {
       position: absolute;
       top: 12px;
@@ -81,37 +83,14 @@
       cursor: pointer;
     }
 
-    /* Sidebar navigation list */
-    .sidebar ul { list-style: none; padding:0; margin:0; }
-
-    /* Sidebar links */
-    .sidebar ul li a {
-      display: flex;
-      align-items: center;
-      gap: 12px; /* Space between icon and text */
-      padding: 14px 22px;
-      color: var(--text-dark);
-      text-decoration: none;
-      border-radius: 8px;
-      transition: background 0.3s ease;
-    }
-
-    /* Hover effect for links */
-    .sidebar ul li a:hover { background: var(--secondary); }
-
-    /* Hide text labels in collapsed state */
-    .sidebar.collapsed ul li span { display: none; }
-
-    /* =====================================================
-       Main Content Styling
-       ===================================================== */
+    /* Main content */
     .main {
-      flex: 1; /* Takes remaining space */
+      flex: 1;
       padding: 24px;
       backdrop-filter: blur(6px);
+      position: relative;
     }
 
-    /* Dashboard header title */
     .dashboard-header {
       font-size: 26px;
       font-weight: bold;
@@ -119,36 +98,25 @@
       color: var(--primary);
     }
 
-    /* =====================================================
-       Card Container
-       ===================================================== */
+    /* Cards */
     .card-container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); /* Responsive grid for cards */
+      grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
       gap: 20px;
     }
-
-    /* Individual cards */
     .card {
-      background: rgba(255,255,255,0.6); /* Transparent background for glass effect */
+      background: rgba(255,255,255,0.85);
       backdrop-filter: blur(10px);
       padding: 24px;
       border-radius: 16px;
       text-align: center;
       box-shadow: 0 4px 20px var(--shadow);
       transition: transform 0.2s;
+      color: #0b3d2e;
     }
-
-    /* Card hover effect */
     .card:hover { transform: translateY(-5px); }
-
-    /* Icon inside card */
     .card i { font-size:26px; color: var(--highlight); margin-bottom:10px; }
-
-    /* Card heading */
     .card h3 { font-size:18px; margin-bottom:8px; color: var(--primary); }
-
-    /* Card value or data */
     .card p {
       font-size:22px;
       font-weight:bold;
@@ -156,55 +124,70 @@
       display:inline-block;
       padding:6px 16px;
       border-radius:12px;
-      color:#ffffff;
+      color:#fff;
       box-shadow:0 2px 10px var(--shadow);
     }
 
-    /* =====================================================
-       Extra Section: Profile & Weekly Chart
-       ===================================================== */
+    /* Extra section */
     .extra-section {
       margin-top:40px;
       display:flex;
       flex-wrap:wrap;
       gap:20px;
     }
-
-    /* Profile box */
-    .profile-box {
+    .profile-box, .bar-chart-box {
       flex: 1 1 300px;
-      background: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.85);
       backdrop-filter: blur(10px);
       padding:20px;
       border-radius:16px;
       box-shadow:0 4px 20px var(--shadow);
+      color:#0b3d2e;
     }
-
-    /* Bar chart box */
-    .bar-chart-box {
-      flex: 1 1 300px;
-      background: rgba(255,255,255,0.6);
-      backdrop-filter: blur(10px);
-      padding:20px;
-      border-radius:16px;
-      box-shadow:0 4px 20px var(--shadow);
-    }
-
-    /* Box headings */
     .profile-box h3, .bar-chart-box h3 { margin-bottom:16px; font-size:20px; color: var(--primary); }
-
-    /* Bar chart individual bar container */
     .bar { height:18px; margin:8px 0; background-color: rgba(0,0,0,0.05); border-radius:10px; }
-
-    /* Bar chart fill */
     .bar span { display:block; height:100%; border-radius:10px; background: var(--primary); }
-
-    /* Bar labels */
     .bar-label { font-size:14px; margin-bottom:4px; }
 
-    /* =====================================================
-       Responsive Styling
-       ===================================================== */
+    /* Profile menu */
+    .profile-menu {
+      position: absolute;
+      top: 16px;
+      right: 30px;
+    }
+    .profile-img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+      cursor: pointer;
+      transition: transform 0.2s;
+      display: block;
+    }
+    .profile-img:hover { transform: scale(1.05); }
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 55px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px var(--shadow);
+      overflow: hidden;
+      z-index: 1000;
+      min-width: 150px;
+    }
+    .profile-dropdown a {
+      display: block;
+      padding: 10px 14px;
+      text-decoration: none;
+      color: var(--text-dark);
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+    .profile-dropdown a:hover { background: var(--secondary); color: #fff; }
+
     @media screen and (max-width:768px){
       .sidebar { position:fixed; height:100%; z-index:1000; }
       .main { margin-left:70px; }
@@ -214,35 +197,46 @@
 
 <body>
   <div class="container">
-    <!-- =====================================================
-         Sidebar Section
-         Contains links to all admin pages
-         ===================================================== -->
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
       <h2 id="brandText">EcoTrack</h2>
-      <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+      <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">☰</button>
+
       <ul>
-        <li><a href="{% url 'admin_dashboard' %}"><i>🏠</i> <span>Dashboard</span></a></li>
-        <li><a href="{% url 'pickup_management' %}"><i>🗑️</i> <span>Pickup Management</span></a></li>
-        <li><a href="{% url 'zone_management' %}"><i>📍</i> <span>Zone Management</span></a></li>
-        <li><a href="{% url 'leave_req_management' %}"><i>📅</i> <span>Leave Requests</span></a></li>
-        <li><a href="{% url 'complaint_management' %}"><i>📢</i> <span>Complaints</span></a></li>
-        <li><a href="{% url 'user_management' %}"><i>🧑‍🤝‍🧑</i> <span>User Management</span></a></li>
-        <li><a href="{% url 'collector_management' %}"><i>👷‍♂️</i> <span>Collector Management</span></a></li>
-        <li><a href="{% url 'analytics' %}"><i>📊</i> <span>Analytics</span></a></li>
-        <li><a href="{% url 'admin_profile' %}"><i>👤</i> <span>Admin Profile</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_dashboard' %}" class="active"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'ecotracksys:pickup_management' %}"><i class="fas fa-trash"></i> <span>Pickup Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:zone_management' %}"><i class="fas fa-map-marker-alt"></i> <span>Zone Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:leave_request_management' %}"><i class="fas fa-calendar-alt"></i> <span>Leave Requests</span></a></li>
+        <li><a href="{% url 'ecotracksys:complaint_management' %}"><i class="fas fa-bullhorn"></i> <span>Complaints</span></a></li>
+        <li><a href="{% url 'ecotracksys:user_management' %}"><i class="fas fa-users"></i> <span>User Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:collector_management' %}"><i class="fas fa-user-cog"></i> <span>Collector Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_profile' %}"><i class="fas fa-user-shield"></i> <span>Admin Profile</span></a></li>
       </ul>
     </div>
 
-    <!-- =====================================================
-         Main Content Section
-         Contains Dashboard Header, Info Cards, and Extra Boxes
-         ===================================================== -->
+    <!-- Main Content -->
     <div class="main">
-      <!-- Dashboard Header -->
+      <!-- Profile Image Dropdown -->
+      <div class="profile-menu">
+        {% if user.is_authenticated %}
+          {% if request.user.profile_image %}
+            <img src="{{ request.user.profile_image.url }}" alt="Profile Image" class="profile-img" onclick="toggleProfileMenu()">
+          {% else %}
+            <img src="{% static 'default_profile.png' %}" alt="Profile Image" class="profile-img" onclick="toggleProfileMenu()">
+          {% endif %}
+        {% endif %}
+
+        <!-- Dropdown Menu -->
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="{% url 'ecotracksys:admin_profile' %}">👤 View Profile</a>
+          <a href="{% url 'logout' %}">🚪 Logout</a>
+        </div>
+      </div>
+
       <div class="dashboard-header">Admin Dashboard Overview</div>
 
-      <!-- Info Cards Grid -->
+      <!-- Info Cards -->
       <div class="card-container">
         <div class="card">
           <i class="fas fa-truck"></i>
@@ -264,36 +258,63 @@
         </div>
       </div>
 
-      <!-- Extra Section: Profile Box and Weekly Bar Chart -->
+      <!-- Extra Section -->
       <div class="extra-section">
-        <!-- Profile Box -->
         <div class="profile-box">
           <h3><i class="fas fa-user-circle"></i> Quick Profile Access</h3>
           <p>Logged in as <strong>Admin (eco_admin01)</strong></p>
           <p><a href="#">Edit Profile</a> | <a href="#">Change Password</a></p>
         </div>
-
-        <!-- Weekly Pickup Bar Chart -->
         <div class="bar-chart-box">
           <h3><i class="fas fa-chart-bar"></i> Weekly Pickup Overview</h3>
-          <div class="bar-label">Monday</div><div class="bar"><span style="width:80%"></span></div>
-          <div class="bar-label">Tuesday</div><div class="bar"><span style="width:60%"></span></div>
-          <div class="bar-label">Wednesday</div><div class="bar"><span style="width:90%"></span></div>
-          <div class="bar-label">Thursday</div><div class="bar"><span style="width:70%"></span></div>
-          <div class="bar-label">Friday</div><div class="bar"><span style="width:75%"></span></div>
+          <canvas id="weeklyChart"></canvas>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- =====================================================
-       JavaScript for Sidebar Toggle
-       ===================================================== -->
+  <!-- Scripts -->
   <script>
     function toggleSidebar() {
       const sidebar = document.getElementById("sidebar");
-      sidebar.classList.toggle("collapsed"); // Adds/removes class for collapse effect
+      sidebar.classList.toggle("collapsed");
     }
+
+    function toggleProfileMenu() {
+      const menu = document.getElementById("profileDropdown");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    // Close menu if clicked outside
+    document.addEventListener("click", function(e) {
+      const profileMenu = document.querySelector(".profile-menu");
+      if (!profileMenu.contains(e.target)) {
+        document.getElementById("profileDropdown").style.display = "none";
+      }
+    });
+  </script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('weeklyChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Pickups Completed',
+          data: [12, 19, 7, 14, 10, 15, 9],
+          backgroundColor: '#66bb6a',
+          borderRadius: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
   </script>
 </body>
 </html>

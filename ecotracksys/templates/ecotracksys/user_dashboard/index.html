@@ -1,3 +1,4 @@
+
 {% load static %}
 
 <!DOCTYPE html>
@@ -10,7 +11,7 @@
   <style>
 /* Background image setup */
 body {
-  background: url("{% static 'bgimg.jpg' %}") no-repeat center center/cover;
+  background: url("{% static 'user_bg.jpg' %}") no-repeat center center/cover;
   position: relative;
   min-height: 100vh;
   margin: 0;
@@ -18,19 +19,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Glassmorphism overlay */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.1); /* transparent white layer */
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  z-index: -1; /* stays behind all content */
-}
+
 
 /* Light mode override */
 body.light-mode {
@@ -55,7 +44,7 @@ body.light-mode table {
 }
 
 body.light-mode thead {
-  background: linear-gradient(90deg, #60a5fa, #3b82f6);
+  background: linear-gradient(90deg, #46ae7f, #049b43);
 }
 
 /* 3D Jump Effect for New Pickup Request Button */
@@ -118,16 +107,16 @@ body.light-mode thead {
   <div class="dashboard-left" style="flex:1 1 auto;display:flex;flex-direction:column;max-width:700px;margin:0 auto;">
     <!-- Button Container Box -->
      <!-- Welcome Box -->
-     <div class="welcome-box" style="width: 100%; background: linear-gradient(to right, #232526, #1e3c72); padding: 20px; border-radius: 12px; color: #ffffff; box-shadow: 0 4px 8px rgba(31, 38, 135, 0.3); margin-bottom: 20px; display: flex; align-items: center; gap: 15px; font-family: 'Segoe UI', 'Roboto', sans-serif;">
+     <div class="welcome-box" style="width: 100%; background: linear-gradient(to right,#295e00, #7aa73e); padding: 20px; border-radius: 12px; color: #ffffff; box-shadow: 0 4px 8px rgba(31, 38, 135, 0.3); margin-bottom: 20px; display: flex; align-items: center; gap: 15px; font-family: 'Segoe UI', 'Roboto', sans-serif;">
     {% if request.user.profile_image %}
-    <img src="{{ request.user.profile_image.url }}" alt="User Photo" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid #4fc3f7; object-fit: cover;" />
+    <img src="{{ request.user.profile_image.url }}" alt="User Photo" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid #2f4508; object-fit: cover;" />
   {% else %}
-    <img src="{% static 'default_profile.png' %}" alt="Default User" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid #4fc3f7; object-fit: cover;" />
+    <img src="{% static 'default_profile.png' %}" alt="Default User" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid #2f4508; object-fit: cover;" />
   {% endif %}
     <div>
       <h2 style="margin: 0; font-size: 22px;">Welcome back, {{ request.user.name|default:request.user.email }} 👋</h2>
       <!-- Display the number of upcoming pickups dynamically -->
-      <p style="margin: 4px 0 0; font-size: 14px; color: #90caf9;">
+      <p style="margin: 4px 0 0; font-size: 14px; color: #b9c9a4;">
        You have {{ upcoming_pickups_count }} upcoming pickups scheduled for today.
       </p>
 
@@ -135,24 +124,24 @@ body.light-mode thead {
   </div>
   <!--End of welcome box-->
   <!-- Pickup Request Form -->
-    <div class="button-container" style="background:linear-gradient(145deg, #1a1a2e, #16213e);border-radius:15px;padding:25px;box-shadow:0 8px 16px rgba(0,0,0,0.4), inset 0 2px 0 rgba(59,130,246,0.3), inset 0 -2px 0 rgba(0,0,0,0.5);margin-bottom:20px;display:flex;flex-direction:column;align-items:flex-start;width:100%;">
-      <h3 style="margin:0 0 20px 0;color:#60A5FA;font-size:24px;font-weight:700;text-align:center;border-bottom:3px solid #2563EB;padding-bottom:12px;text-shadow:0 2px 4px rgba(0,0,0,0.6);background:linear-gradient(90deg, #60A5FA, #3B82F6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;width:100%;font-family:'Segoe UI', 'Roboto', 'Arial Black', sans-serif;letter-spacing:2px;text-transform:uppercase;">Dashboard Menu</h3>
-      <button id="theme-toggle" title="Toggle theme" style="position:absolute;top:20px;right:25px;width:42px;height:42px;border:none;border-radius:50%;background:linear-gradient(135deg,#1e3a8a,#2563eb);display:flex;align-items:center;justify-content:center;color:#fbbf24;font-size:20px;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;box-shadow:0 4px 12px rgba(0,0,0,0.4);">🌙</button>
-      <a href="/" title="Home" style="position:absolute;top:20px;left:25px;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#0f172a,#2563eb);color:#fff;font-size:20px;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,0.4);transition:transform .2s ease,box-shadow .2s ease;">🏠</a>
+    <div class="button-container" style="background:linear-gradient(to right,#295e00, #7aa73e);border-radius:15px;padding:25px;box-shadow:0 8px 16px rgba(0,0,0,0.4), inset 0 2px 0 #295e00, inset 0 -2px 0 rgba(0,0,0,0.5);margin-bottom:20px;display:flex;flex-direction:column;align-items:flex-start;width:100%;">
+      <h3 style="margin:0 0 20px 0;color:#f8f8f8;font-size:24px;font-weight:700;text-align:center;border-bottom:3px solid #295e00;padding-bottom:12px;text-shadow:0 2px 4px rgba(0,0,0,0.6);background:linear-gradient(90deg, #295e00, #7aa73e);-webkit-background-clip:text;width:100%;font-family:'Segoe UI', 'Roboto', 'Arial Black', sans-serif;letter-spacing:2px;text-transform:uppercase;">Dashboard Menu</h3>
+      <button id="theme-toggle" title="Toggle theme" style="position:absolute;top:20px;right:25px;width:42px;height:42px;border:none;border-radius:50%;background:linear-gradient(135deg,#295e00, #7aa73e);display:flex;align-items:center;justify-content:center;color:#fbbf24;font-size:20px;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;box-shadow:0 4px 12px rgba(0,0,0,0.4);">🌙</button>
+      <a href="/" title="Home" style="position:absolute;top:20px;left:25px;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#295e00, #7aa73e);color:#fff;font-size:20px;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,0.4);transition:transform .2s ease,box-shadow .2s ease;">🏠</a>
       
       
 
       <!-- Stats Row: Total Pickups, Pending & Upcoming -->
       <div style="display:flex;justify-content:center;align-items:center;flex-wrap:wrap;column-gap:60px;row-gap:20px;width:100%;max-width:700px;margin:0 auto 25px;">
         <!-- Total Pickups Card -->
-        <a href="#" class="total-pickup-btn" style="display:inline-flex;align-items:center;padding:12px 20px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:4px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.2);border:1px solid #2563eb;min-width:160px;">
+        <a href="#" class="total-pickup-btn" style="display:inline-flex;align-items:center;padding:12px 20px;background:linear-gradient(145deg,#224f00, #235100);color:white;text-decoration:none;border-radius:4px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(12, 136, 60, 0.991), inset 0 1px 0 rgba(255,255,255,0.2);border:1px solid #046024;min-width:160px;">
           <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">📦</span>
          <span class="btn-text">Total Pickups : {{ total_pickups_count }}</span>
           
         </a>
 
         <!-- Pending Request Button with dynamic count -->
-        <a href="#" class="pending-request-btn" style="display:inline-flex;align-items:center;padding:12px 20px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:4px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.2);border:1px solid #2563eb;min-width:160px;">
+        <a href="#" class="pending-request-btn" style="display:inline-flex;align-items:center;padding:12px 20px;background:linear-gradient(145deg,#224f00, #235100);color:white;text-decoration:none;border-radius:4px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(12, 136, 60, 0.991), inset 0 1px 0 rgba(255,255,255,0.2);border:1px solid #046024;min-width:160px;">
           <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">📅</span>
           <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">Pending Requests : {{ pending_requests_count }}</span>
 
@@ -163,13 +152,13 @@ body.light-mode thead {
        <!-- Latest Pickup Requests (dynamic table) -->
        <div style="width:100%;margin-top:5px;display:flex;flex-direction:column;align-items:center;">
          <h4 style="color:#ffffff;font-size:20px;font-weight:700;margin:10px auto 12px;max-width:700px;text-align:center;text-transform:uppercase;letter-spacing:1px;">Latest Pickup Requests</h4>
-          <a href="{% url 'pickup_request' %}" id="pickup-request-btn" class="pickup-request-btn" style="display:inline-block;margin:0 auto 18px;padding:10px 28px;background:linear-gradient(135deg,#3b82f6,#9333ea);color:#fff;font-weight:700;border-radius:30px;text-decoration:none;box-shadow:0 4px 12px rgba(147,51,234,0.5),0 0 10px 2px rgba(59,130,246,0.6);transition:transform .2s ease,box-shadow .2s ease;">
+          <a href="{% url 'ecotracksys:citizen_pickup_request' %}" id="pickup-request-btn" class="pickup-request-btn" style="display:inline-block;margin:0 auto 18px;padding:10px 28px;background:linear-gradient(135deg,#46850b,#c7eb64);color:#fff;font-weight:700;border-radius:30px;text-decoration:none;box-shadow:0 4px 12px rgba(36, 10, 61, 0.5),0 0 10px 2px rgba(6, 13, 1, 0.6);transition:transform .2s ease,box-shadow .2s ease;">
             ➕ New Pickup Request
           </a>
-         <input type="text" placeholder="Search pickup requests…" style="width:100%;max-width:550px;margin:0 auto 20px;display:block;padding:10px 18px;border-radius:30px;border:2px solid #3b82f6;background:#0f172a;color:#fff;font-size:15px;box-shadow:0 0 8px rgba(59,130,246,0.6) inset;outline:none;transition:all .25s ease;" onfocus="this.style.borderColor='#9333ea';this.style.boxShadow='0 0 10px rgba(147,51,234,0.8) inset';" onblur="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 8px rgba(59,130,246,0.6) inset';" />
+         <input type="text" placeholder="Search pickup requests…" style="width:100%;max-width:550px;margin:0 auto 20px;display:block;padding:10px 18px;border-radius:30px;border:2px solid #46850b;background:#a7cda2;color:#fff;font-size:15px;box-shadow:0 0 8px rgba(122, 252, 120, 0.6) inset;outline:none;transition:all .25s ease;" onfocus="this.style.borderColor='#9333ea';this.style.boxShadow='0 0 10px rgba(147,51,234,0.8) inset';" onblur="this.style.borderColor='#3b82f6';this.style.boxShadow='0 0 8px rgba(59,130,246,0.6) inset';" />
           <div style="overflow-x:auto;width:100%;max-width:800px;margin:0 auto;padding:0 10px;box-shadow:0 4px 12px rgba(0,0,0,0.6);border-radius:12px;">
            <table style="width:100%;border-collapse:collapse;text-align:center;background:rgba(17,24,39,0.8);backdrop-filter:blur(6px);color:#e5e7eb;border-radius:12px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,0.5);">
-             <thead style="background:linear-gradient(90deg,#1e3a8a,#2563eb);">
+             <thead style="background:linear-gradient(90deg,#295e00, #295e00);">
                <tr>
                  <th style="padding:10px;">Date</th>
                  <th style="padding:10px;">Status</th>
@@ -181,7 +170,7 @@ body.light-mode thead {
                
                
                <tr>
-                 <td style="padding:8px;color:#2563eb;" colspan="4">No recent pickup requests.</td>
+                 <td style="padding:8px;color:white;" colspan="4">No recent pickup requests.</td>
                </tr>
                
              </tbody>
@@ -192,37 +181,37 @@ body.light-mode thead {
 
       
       <div class="side-nav" style="position:absolute;left:20px;top:80px;display:flex;flex-direction:column;gap:12px;z-index:10;">
-      <a href="{% url 'pickup_request' %}" class="modern-btn pickup-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(30,58,138,0.4), inset 0 1px 0 rgba(255,255,255,0.2);width:100%;max-width:260px;border:1px solid #1E40AF;">
+      <a href="{% url 'ecotracksys:citizen_pickup_request' %}" class="modern-btn pickup-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#295e00, #7aa73e);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px #295e00, inset 0 1px 0 rgba(255,255,255,0.2);width:100%;max-width:260px;border:1px solid #538818;">
         <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">🚛</span>
         <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">Pickup Request</span>
       </a>
 
-      <a href="{% url 'my_requests' %}" class="modern-btn my-request-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.1);width:100%;max-width:260px;border:1px solid #2563eb;">
+      <a href="{% url 'ecotracksys:citizen_history' %}" class="modern-btn my-request-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#295e00, #7aa73e);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px #295e00, inset 0 1px 0 rgba(255,255,255,0.1);width:100%;max-width:260px;border:1px solid #538818;">
         <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.8);">📋</span>
         <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.8);">My Request</span>
       </a>
 
-      <a href="{% url 'raise_complaint' %}" class="modern-btn pickup-map-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.2);width:100%;max-width:260px;border:1px solid #2563eb;">
+      <a href="{% url 'ecotracksys:raise_complaint' %}" class="modern-btn pickup-map-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#295e00, #7aa73e);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px #295e00, inset 0 1px 0 rgba(255,255,255,0.2);width:100%;max-width:260px;border:1px solid #538818;">
         <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">🚨</span>
         <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">Raise Complaint</span>
       </a>
 
-      <a href="{% url 'notifications' %}" class="modern-btn notification-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.1);width:100%;max-width:260px;border:1px solid #2563eb;">
+      <a href="{% url 'ecotracksys:notifications_view' %}" class="modern-btn notification-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#295e00, #7aa73e);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px #295e00, inset 0 1px 0 rgba(255,255,255,0.1);width:100%;max-width:260px;border:1px solid #538818;">
         <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.7);">🔔</span>
         <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.7);">Notification</span>
       </a>
 
-      <a href="{% url 'citizen_profile' %}" class="modern-btn edit-profile-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.2);width:100%;max-width:260px;border:1px solid #2563eb;">
+      <a href="{% url 'ecotracksys:citizen_profile' %}" class="modern-btn edit-profile-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#295e00, #7aa73e);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px #295e00, inset 0 1px 0 rgba(255,255,255,0.2);width:100%;max-width:260px;border:1px solid #538818;">
         <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">⚙️</span>
         <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">My Profile</span>
       </a>
 
-      <a href="{% url 'forgot_password' %}" class="modern-btn forgot-password-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.1);width:100%;max-width:260px;border:1px solid #2563eb;">
+      <a href="{% url 'ecotracksys:update_password' %}" class="modern-btn forgot-password-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#295e00, #7aa73e);color:white;text-decoration:none;border-radius:10px;margin-bottom:12px;transition:all 0.3s ease;box-shadow:0 6px 12px #295e00, inset 0 1px 0 rgba(255,255,255,0.1);width:100%;max-width:260px;border:1px solid #538818;">
         <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.7);">🔐</span>
-        <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.7);">Forgot Password</span>
+        <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.7);">Update Password</span>
       </a>
 
-      <a href="{% url 'logout' %}" class="modern-btn logout-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#0f172a,#2563eb);color:white;text-decoration:none;border-radius:10px;margin-bottom:8px;transition:all 0.3s ease;box-shadow:0 6px 12px rgba(37,99,235,0.4), inset 0 1px 0 rgba(255,255,255,0.2);width:100%;max-width:260px;border:1px solid #2563eb;">
+      <a href="{% url 'logout' %}" class="modern-btn logout-btn" style="display:inline-flex;align-items:center;padding:12px 16px;background:linear-gradient(145deg,#295e00, #7aa73e);color:white;text-decoration:none;border-radius:10px;margin-bottom:8px;transition:all 0.3s ease;box-shadow:0 6px 12px #295e00, inset 0 1px 0 rgba(255,255,255,0.2);width:100%;max-width:260px;border:1px solid #2563eb;">
         <span class="btn-icon" style="margin-right:8px;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">🚪</span>
         <span class="btn-text" style="font-weight:600;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,0.5);">Logout</span>
       </a>
@@ -296,4 +285,5 @@ body.light-mode thead {
 </script>
 </body>
 </html>
+
 

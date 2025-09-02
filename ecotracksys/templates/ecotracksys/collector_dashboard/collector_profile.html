@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>My Profile — EcoTrack</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root{
+      --bg:#f6fff9;
+      --mint-600:#2e7d32;
+      --mint-500:#43a047;
+      --mint-300:#a5d6a7;
+      --accent:#20c997;
+      --card:#ffffff;
+      --muted:#6b6b6b;
+      --shadow:0 6px 22px rgba(16,64,54,0.08);
+    }
+
+    html, body { height: 100%; margin: 0; font-family: Inter, system-ui; background: var(--bg); color: #0b3d2e; }
+    body { display: flex; }
+
+    .app { display: flex; width: 100%; min-height: 100vh; gap: 20px; }
+
+    /* Sidebar */
+    .sidebar { width: 240px; background: linear-gradient(180deg,var(--mint-300),#e6f7ec); padding: 18px; box-shadow: var(--shadow); display: flex; flex-direction: column; }
+    .brand { font-weight:700; color:var(--mint-600); font-size:1.15rem; text-align:center; margin-bottom:14px; }
+    .nav { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px; flex-grow: 1; }
+    .nav a { display:flex; align-items:center; gap:10px; padding:10px 12px; color:var(--mint-600); border-radius:10px; font-weight:600; text-decoration:none; }
+    .nav a:hover, .nav a.active { background:var(--mint-500); color:#fff; }
+
+    /* Main content */
+    .main { flex: 1; display: flex; flex-direction: column; gap:18px; padding:30px; min-height: 100vh; }
+
+    .topbar { display:flex; justify-content:space-between; align-items:center; background:#fff; padding:12px 18px; border-radius:12px; box-shadow:var(--shadow); }
+
+    .card { background: var(--card); padding: 18px; border-radius: 12px; box-shadow: var(--shadow); display: flex; flex-direction: column; }
+
+    h3 { margin-top:0; color: var(--mint-600); }
+
+    form label { display:flex; margin:10px 0 4px; }
+    form input, form select, form textarea { width:100%; padding:10px; border:1px solid #e0e0e0; border-radius:8px; }
+    form button { margin-top:12px; background:var(--mint-500); color:#fff; border:none; padding:10px 16px; border-radius:8px; font-weight:700; cursor:pointer; }
+    form button:hover { background: var(--mint-600); }
+
+    .profile-image { width:120px; height:120px; border-radius:50%; object-fit:cover; border: 2px solid var(--mint-500); margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">EcoTrack</div>
+    <ul class="nav">
+      <li><a href="{% url 'ecotracksys:collector_dashboard' %}"><span class="icon"><i class="fas fa-home"></i></span><span class="label">Dashboard</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_assignments' %}"><span class="icon"><i class="fas fa-list-check"></i></span><span class="label">My Assignments</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_pickup_history' %}"><span class="icon"><i class="fas fa-clock-rotate-left"></i></span><span class="label">History</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_performance' %}"><span class="icon"><i class="fas fa-chart-line"></i></span><span class="label">Performance</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_leave' %}"><span class="icon"><i class="fas fa-calendar-alt"></i></span><span class="label">Leave</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_notifications' %}"><span class="icon"><i class="fas fa-bell"></i></span><span class="label">Notifications</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_complaints' %}"><span class="icon"><i class="fas fa-cog"></i></span><span class="label">Complaints</span></a></li>
+      <li><a href="{% url 'ecotracksys:collector_profile' %}" class="active"><span class="icon"><i class="fas fa-user"></i></span><span class="label">My Profile</span></a></li>
+    </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <h2>My Profile</h2>
+      <div>👤 {{ request.user.get_full_name|default:request.user.full_name }}</div>
+    </div>
+
+    <section class="card">
+      <h3>Update Profile</h3>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div style="display:flex; flex-direction:column; align-items:center;">
+          {% if request.user.profile_image %}
+            <img src="{{ request.user.profile_image.url }}" alt="Profile Image" class="profile-image">
+          {% else %}
+            <img src="{% static 'default_profile.png' %}" alt="Profile Image" class="profile-image">
+          {% endif %}
+          <label for="profile_image">Change Profile Image</label>
+          <input type="file" id="profile_image" name="profile_image">
+        </div>
+
+        <label for="name">Full Name</label>
+        <input type="text" id="name" name="name" value="{{ request.user.name }}" required>
+
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{ request.user.email }}" readonly>
+
+        <label for="phone">Phone</label>
+        <input type="text" id="phone" name="phone" value="{{ request.user.phone }}">
+
+        <button type="submit"><i class="fas fa-save"></i> Save Changes</button>
+      </form>
+    </section>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Leave Requests — EcoTrack</title>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    :root{
+      --bg:#f6fff9;
+      --mint-600:#2e7d32;
+      --mint-500:#43a047;
+      --mint-300:#a5d6a7;
+      --accent:#20c997;
+      --card:#ffffff;
+      --muted:#6b6b6b;
+      --success:#2e7d32;
+      --warning:#f0ad4e;
+      --danger:#e53935;
+      --shadow: 0 6px 22px rgba(16, 64, 54, 0.08);
+    }
+
+    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:linear-gradient(135deg,var(--bg),#e8faf0 60%);color:#0b3d2e;}
+    .app{display:flex;min-height:100vh;gap:20px;}
+
+    /* Sidebar */
+    .sidebar{width:240px;background:linear-gradient(180deg,var(--mint-300), #e6f7ec);padding:18px;box-shadow:var(--shadow);}
+    .brand{font-weight:700;color:var(--mint-600);font-size:1.15rem;text-align:center;margin-bottom:14px;}
+    .nav{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px;}
+    .nav a{display:flex;align-items:center;gap:10px;padding:10px 12px;text-decoration:none;color:var(--mint-600);border-radius:10px;font-weight:600;}
+    .nav a:hover,.nav a.active{background:var(--mint-500);color:#fff;transform:translateX(4px);box-shadow:0 6px 18px rgba(66,160,102,0.08);}
+    .nav a .icon{width:28px;text-align:center;}
+
+    /* Main */
+    .main{flex:1;display:flex;flex-direction:column;gap:18px;padding:22px;}
+
+    /* Topbar */
+    .topbar{display:flex;justify-content:space-between;align-items:center;background:#fff;padding:12px 18px;border-radius:12px;box-shadow:var(--shadow);}
+    .topbar h1{margin:0;color:var(--mint-600);font-size:1.25rem;}
+
+    /* Avatar dropdown */
+    .avatar-dropdown{position:relative;display:inline-block;}
+    .avatar-dropdown button{background:none;border:none;cursor:pointer;padding:0;}
+    .profile-image{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--mint-500);}
+    .dropdown-menu{display:none;position:absolute;right:0;top:50px;background:var(--card);border-radius:10px;box-shadow:var(--shadow);min-width:160px;overflow:hidden;z-index:10;}
+    .dropdown-menu a{display:flex;align-items:center;gap:8px;padding:10px 14px;color:var(--mint-600);text-decoration:none;font-weight:600;}
+    .dropdown-menu a:hover{background:var(--mint-500);color:#fff;}
+
+    /* Card */
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:var(--shadow);}
+    .card h3{margin-top:0;color:var(--mint-600);}
+
+    /* Form */
+    .form-group{margin-bottom:14px;}
+    .form-group label{display:block;margin-bottom:6px;font-weight:600;color:var(--mint-600);}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e0e8e3;font-size:0.95rem;}
+    button{background:var(--mint-500);color:#fff;padding:10px 16px;border:none;border-radius:8px;cursor:pointer;font-weight:600;}
+    button:hover{background:var(--mint-600);}
+
+    /* Table */
+    table{width:100%;border-collapse:collapse;}
+    th,td{padding:12px;text-align:left;border-bottom:1px solid #e9f3ee;}
+    th{background:var(--mint-600);color:#fff;}
+    tbody tr:hover{background:#f9fdfb;}
+    .status{padding:6px 12px;border-radius:999px;font-size:0.8rem;font-weight:700;text-transform:uppercase;}
+    .status.approved{background:#e6fbef;color:#0b6b3d;}
+    .status.pending{background:#fff9e6;color:#8a6b00;}
+    .status.rejected{background:#fff0f0;color:#8a1f1f;}
+
+    @media(max-width:880px){.sidebar{display:none}.main{padding:12px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">EcoTrack</div>
+    <ul class="nav">
+      <li><a href="{% url 'ecotracksys:collector_dashboard' %}"><span class="icon"><i class="fas fa-home"></i></span>Dashboard</a></li>
+      <li><a href="{% url 'ecotracksys:collector_assignments' %}"><span class="icon"><i class="fas fa-list-check"></i></span>My Assignments</a></li>
+      <li><a href="{% url 'ecotracksys:collector_pickup_history' %}"><span class="icon"><i class="fas fa-clock-rotate-left"></i></span>History</a></li>
+      <li><a href="{% url 'ecotracksys:collector_performance' %}"><span class="icon"><i class="fas fa-chart-line"></i></span>Performance</a></li>
+      <li><a href="{% url 'ecotracksys:collector_leave' %}" class="active"><span class="icon"><i class="fas fa-calendar-alt"></i></span>Leave</a></li>
+      <li><a href="{% url 'ecotracksys:collector_notifications' %}"><span class="icon"><i class="fas fa-bell"></i></span>Notifications</a></li>
+      <li><a href="{% url 'ecotracksys:collector_complaints' %}"><span class="icon"><i class="fas fa-cog"></i></span>Complaints</a></li>
+      <li><a href="{% url 'ecotracksys:collector_profile' %}"><span class="icon"><i class="fas fa-user"></i></span>Profile</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <h1>Leave Requests</h1>
+      <div class="avatar-dropdown">
+        <button id="avatarBtn">
+          {% if request.user.profile_image %}
+            <img src="{{ request.user.profile_image.url }}" alt="Profile Image" class="profile-image">
+          {% else %}
+            <img src="{% static 'default_profile.png' %}" alt="Profile Image" class="profile-image">
+          {% endif %}
+        </button>
+        <div class="dropdown-menu" id="avatarMenu">
+          <a href="{% url 'ecotracksys:collector_profile' %}"><i class="fas fa-user"></i> View Profile</a>
+          <a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leave Form -->
+    <div class="card">
+      <h3>Apply for Leave</h3>
+      <form method="post" action="{% url 'ecotracksys:collector_leave' %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="leave_type">Leave Type</label>
+          <select name="leave_type" id="leave_type" required>
+            <option value="">Select Type</option>
+            <option value="Sick">Sick Leave</option>
+            <option value="Casual">Casual Leave</option>
+            <option value="Annual">Annual Leave</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="from_date">From</label>
+          <input type="date" name="from_date" id="from_date" required>
+        </div>
+        <div class="form-group">
+          <label for="to_date">To</label>
+          <input type="date" name="to_date" id="to_date" required>
+        </div>
+        <div class="form-group">
+          <label for="reason">Reason</label>
+          <textarea name="reason" id="reason" rows="3" required></textarea>
+        </div>
+        <button type="submit"><i class="fa-solid fa-paper-plane"></i> Submit Request</button>
+      </form>
+    </div>
+
+    <!-- Leave History -->
+    <div class="card">
+      <h3>Leave History</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for leave in leaves %}
+          <tr>
+            <td>{{ leave.leave_type }}</td>
+            <td>{{ leave.from_date }}</td>
+            <td>{{ leave.to_date }}</td>
+            <td><span class="status {{ leave.status|lower }}">{{ leave.status }}</span></td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" style="text-align:center;color:var(--muted);">No leave requests found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+  const avatarBtn = document.getElementById('avatarBtn');
+  const avatarMenu = document.getElementById('avatarMenu');
+
+  avatarBtn.addEventListener('click', () => {
+    avatarMenu.style.display = avatarMenu.style.display === 'block' ? 'none' : 'block';
+  });
+
+  window.addEventListener('click', function(e) {
+    if (!avatarBtn.contains(e.target) && !avatarMenu.contains(e.target)) {
+      avatarMenu.style.display = 'none';
+    }
+  });
+</script>
+</body>
+</html>

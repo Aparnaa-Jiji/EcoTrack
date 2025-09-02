@@ -1,23 +1,36 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+  <!-- Basic HTML metadata -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>User Management | EcoTrack</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- Bootstrap Icons for UI icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <style>
-    :root {
-      --bg-gradient: linear-gradient(to right, #0f2027, #2c5364);
-      --container-gradient: linear-gradient(to right, #232526, #1e3c72);
-      --primary: #1976d2;
-      --secondary: #0d47a1;
-      --highlight: #4fc3f7;
-      --light-blue: #90caf9;
-      --text-light: #f0f0f0;
-      --shadow: rgba(31, 38, 135, 0.37);
-    }
 
+  <!-- Inline CSS styling -->
+<style>
+/* ==========================================
+   ROOT THEME VARIABLES
+   ========================================== */
+:root {
+      --bg-image: url("{% static 'images/bgimg.jpg' %}");
+      --container-gradient: linear-gradient(145deg, rgba(4, 57, 39, 0.9), rgba(5, 111, 79, 0.85));
+      --primary: #04706e;         /* main accent */
+      --secondary: #2f9080;       /* secondary tone */
+      --highlight: #85fcde;       /* minty highlight */
+      --light-blue: #85fcde;      /* alias for highlight (fix for undefined var) */
+      --shadow: rgba(3, 104, 77, 0.5); /* depth shadow */
+      --text-light: #e6fef3;      /* light text */
+      --text-dark: #0b3d2e;       /* dark text */
+}
+
+/* ==========================================
+   BASE PAGE STYLES
+   ========================================== */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -26,77 +39,82 @@
     }
 
     .container {
-      display: flex;
-      min-height: 100vh;
+      display: flex;           /* Sidebar + main content horizontally */
+      min-height: 100vh;       /* Full height page */
+      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7)); /* Soft gradient overlay */
     }
 
+/* ==========================================
+   SIDEBAR STYLES
+   ========================================== */
+    /* ========= Sidebar styles ========= */
     .sidebar {
       width: 260px;
-      background: var(--container-gradient);
-      transition: width 0.3s ease;
-      overflow: hidden;
-      position: relative;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7));
+      transition: width 0.3s ease, padding 0.3s ease; /* Smooth collapse animation */
+      box-shadow: 2px 0 12px var(--shadow);
+      backdrop-filter: blur(12px);
     }
 
-    .sidebar.collapsed {
-      width: 70px;
+    /* Collapsed sidebar */
+    .sidebar.collapsed { 
+      width: 70px; 
+      padding: 0px; 
     }
 
+    /* Sidebar brand text */
     .sidebar h2 {
       text-align: center;
       padding: 20px 0;
       font-size: 1.6rem;
       margin: 0;
-      transition: opacity 0.3s;
-      color: #f0f0f0;
+      color: var(--primary);
+    }
+    .sidebar.collapsed h2 { 
+      opacity: 0; /* Hide brand text when collapsed */
     }
 
-    .sidebar.collapsed h2 {
-      opacity: 0;
-    }
-
+    /* Sidebar navigation list */
     .sidebar ul {
       list-style: none;
       padding: 0;
       margin: 0;
     }
 
-    .sidebar ul li {
-      padding: 16px 24px;
+    /* Sidebar links */
+    .sidebar ul li a {
       display: flex;
       align-items: center;
-      gap: 12px;
-      cursor: pointer;
+      gap: 12px; /* Space between icon and text */
+      padding: 14px 22px;
+      color: var(--text-dark);
+      text-decoration: none;
+      border-radius: 8px;
       transition: background 0.3s ease;
     }
 
-    .sidebar ul li:hover {
-      background-color: rgba(255, 255, 255, 0.08);
+    /* Hover effect for sidebar links */
+    .sidebar ul li a:hover {
+      background: var(--secondary);
+      color: #ffffff; /* make text/icons white when hovered */
     }
 
-    .sidebar ul li i {
-      font-size: 18px;
+    /* Active link style */
+    .sidebar ul li a.active {
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: bold;
     }
 
-    .sidebar ul li a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text-light);
-  text-decoration: none;
-  width: 100%;
-  height: 100%;
-}
-
-
-    .sidebar ul li span {
-      transition: opacity 0.3s ease;
+    /* Sidebar text visibility when collapsed */
+    .sidebar ul li span { 
+      transition: opacity 0.3s ease; 
+    }
+    .sidebar.collapsed ul li span { 
+      display: none; /* Hide menu text when collapsed */
     }
 
-    .sidebar.collapsed ul li span {
-      opacity: 0;
-    }
-
+    /* Sidebar toggle button (hamburger icon) */
     .toggle-btn {
       position: absolute;
       top: 12px;
@@ -104,154 +122,475 @@
       background: none;
       border: none;
       font-size: 22px;
-      color: var(--text-light);
+      color: var(--text-dark);
       cursor: pointer;
     }
 
+/* ==========================================
+   MAIN CONTENT
+   ========================================== */
+/* ========= Main content styles ========= */
     .main {
-      flex: 1;
+      flex: 1;  /* Take remaining horizontal space */
       padding: 24px;
-      transition: margin-left 0.3s ease;
+      backdrop-filter: blur(6px);
     }
 
+    /* Header inside main content */
     .header {
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--primary);
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 24px;
     }
+    .header h1 { font-size: 26px; }
 
-    .header h1 {
-      font-size: 24px;
-      color: #f0f0f0;
-    }
-
+    /* ========= Table styles ========= */
     table {
       width: 100%;
       border-collapse: collapse;
-      background-color: #1c2b4a;
+      background: white;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 4px 12px var(--shadow);
     }
 
-    th,
-    td {
+    th, td {
       padding: 16px;
       text-align: left;
-      border-bottom: 1px solid #33415c;
+      border-bottom: 1px solid rgb(65, 236, 190); /* soft teal divider */
+      color: var(--text-dark);
     }
 
     th {
-      background-color: #273b61;
-      color: var(--highlight);
+      background: var(--primary);  /* header background */
+      color: white;       /* header text */
     }
 
     tr:hover {
-      background-color: rgba(255, 255, 255, 0.03);
+      background-color: rgba(4, 112, 110, 0.08); /* subtle row hover */
     }
 
-    .actions {
-      display: flex;
-      gap: 10px;
-    }
 
-    .action-btn {
-      background: none;
-      border: none;
+
+
+/* Edit button */
+.edit-btn {
+  background: yellow
+  box-shadow: 0 4px 10px rgba(4,112,110,0.4);
+}
+
+.edit-btn:hover {
+  background: yellow;
+  box-shadow: 0 6px 14px rgb(144, 199, 24);
+  transform: translateY(-2px);
+}
+
+/* Delete button */
+.delete-btn {
+  background: linear-gradient(135deg, #ff5252, #d32f2f);
+  box-shadow: 0 4px 10px rgba(255,82,82,0.4);
+}
+
+.delete-btn:hover {
+  background: linear-gradient(135deg, #ff6f61, #c62828);
+  box-shadow: 0 6px 14px rgba(255,111,97,0.5);
+  transform: translateY(-2px);
+}
+
+/* ==========================================
+   PROFILE BOX & DROPDOWN
+   ========================================== */
+.profile-box {
+  flex: 1 1 300px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px var(--shadow);
+  color: #0b3d2e;
+}
+
+.profile-menu {
+  position: absolute;
+  top: 16px;
+  right: 30px;
+}
+
+.profile-img {
+width: 50px;
+      height: 50px;     /* make width and height equal */
+      border-radius: 50%;
+      object-fit: cover; /* fill the circle without distortion */
+      border: 2px solid var(--primary);
       cursor: pointer;
-      font-size: 18px;
-      color: var(--light-blue);
-      transition: all 0.2s ease-in-out;
+      display: block;
+}
+
+.profile-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 55px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px var(--shadow);
+  overflow: hidden;
+  z-index: 1000;
+  min-width: 150px;
+}
+
+.profile-dropdown a {
+  display: block;
+  padding: 10px 14px;
+  text-decoration: none;
+  color: var(--text-dark);
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.profile-dropdown a:hover {
+  background: var(--secondary);
+}
+/* Modal Overlay */
+.modal {
+  display: none; /* hide by default */
+  position: fixed;
+  z-index: 10000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.5); /* dark transparent overlay */
+}
+
+/* Modal Content Box */
+.modal-content {
+      background: var(--container-gradient);
+      margin: 8% auto;
+      padding: 30px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 4px 16px var(--shadow);
+      color: var(--text-light);
+      position: relative;
+      animation: fadeIn 0.3s ease-in-out;
     }
 
-    .action-btn:hover {
-      color: var(--highlight);
-      transform: scale(1.15);
-    }
+/* Close Button */
+.modal .close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--primary);
+  cursor: pointer;
+}
 
-    @media screen and (max-width: 768px) {
-      .sidebar {
-        position: fixed;
-        z-index: 999;
-        height: 100%;
-      }
+/* Save Button */
+.save-btn {
+  background: var(--primary);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  margin-top: 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.save-btn:hover {
+  background: var(--secondary);
+  transform: translateY(-2px);
+}
 
-      .main {
-        margin-left: 70px;
-      }
+/* Inputs */
+.modal input[type="text"],
+.modal input[type="email"],
+.modal input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0 12px 0;
+  border-radius: 8px;
+  border: 1px solid #2f9080;
+  outline: none;
+}
 
-      .sidebar.collapsed + .main {
-        margin-left: 70px;
-      }
-    }
-  </style>
+/* Add Admin / Create Button */
+.create-btn {
+  background: var(--primary);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.create-btn:hover {
+  background: var(--secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(3,104,77,0.4);
+}
+
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+@media screen and (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    z-index: 999;
+    height: 100%;
+  }
+  .main {
+    margin-left: 70px;
+  }
+}
+</style>
+
 </head>
 
 <body>
   <div class="container">
+    <!-- Sidebar Menu -->
     <div class="sidebar" id="sidebar">
       <h2 id="brandText">EcoTrack</h2>
-      <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
-      <ul>
-        <li><a href="{% url 'admin_dashboard' %}"><i>🏠</i> <span>Dashboard</span></a></li>
-        <li><a href="{% url 'pickup_management' %}"><i>🗑️</i> <span>Pickup Management</span></a></li>
-        <li><a href="{% url 'zone_management' %}"><i>📍</i> <span>Zone Management</span></a></li>
-        <li><a href="{% url 'leave_req_management' %}"><i>📅</i> <span>Leave Requests</span></a></li>
-        <li><a href="{% url 'complaint_management' %}"><i>📢</i> <span>Complaints</span></a></li>
-        <li><a href="{% url 'user_management' %}"><i>🧑‍🤝‍🧑</i> <span>User Management</span></a></li>
-        <li><a href="{% url 'collector_management' %}"><i>👷‍♂️</i> <span>Collector Management</span></a></li>
-        <li><a href="{% url 'analytics' %}"><i>📊</i> <span>Analytics</span></a></li>
-        <li><a href="{% url 'admin_profile' %}"><i>👤</i> <span>Admin Profile</span></a></li>
+      <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar">☰</button>
+       <ul>
+        <li><a href="{% url 'ecotracksys:admin_dashboard' %}" ><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'ecotracksys:pickup_management' %}" ><i class="fas fa-trash"></i> <span>Pickup Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:zone_management' %}"><i class="fas fa-map-marker-alt"></i> <span>Zone Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:leave_request_management' %}"><i class="fas fa-calendar-alt"></i> <span>Leave Requests</span></a></li>
+        <li><a href="{% url 'ecotracksys:complaint_management' %}"><i class="fas fa-bullhorn"></i> <span>Complaints</span></a></li>
+        <li><a href="{% url 'ecotracksys:user_management' %}" class="active"><i class="fas fa-users"></i> <span>User Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:collector_management' %}"><i class="fas fa-user-cog"></i> <span>Collector Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_profile' %}"><i class="fas fa-user-shield"></i> <span>Admin Profile</span></a></li>
       </ul>
     </div>
 
-    <div class="main">
-      <div class="header">
-        <h1>User Management</h1>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Alice Johnson</td>
-            <td>alice@example.com</td>
-            <td>Citizen</td>
-            <td style="color: lime">Active</td>
-            <td class="actions">
-              <button class="action-btn" title="Edit">✏️</button>
-              <button class="action-btn" title="Disable">🚫</button>
-            </td>
-          </tr>
-          <tr>
-            <td>Bob Williams</td>
-            <td>bob@example.com</td>
-            <td>Collector</td>
-            <td style="color: orange">Inactive</td>
-            <td class="actions">
-              <button class="action-btn" title="Edit">✏️</button>
-              <button class="action-btn" title="Enable">✅</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Main Content Area -->
+    <!-- User Management Page Updated -->
+<div class="main">
+  <!-- Profile Image Dropdown -->
+  <div class="profile-menu">
+        {% if user.is_authenticated %}
+          {% if request.user.profile_image %}
+            <img src="{{ request.user.profile_image.url }}" alt="Profile Image" class="profile-img" onclick="toggleProfileMenu()">
+          {% else %}
+            <img src="{% static 'default_profile.png' %}" alt="Profile Image" class="profile-img" onclick="toggleProfileMenu()">
+          {% endif %}
+        {% endif %}
+
+    <div class="profile-dropdown" id="profileDropdown">
+      <a href="{% url 'ecotracksys:admin_profile' %}">👤 View Profile</a>
+      <a href="{% url 'logout' %}">🚪 Logout</a>
     </div>
   </div>
 
+  <div class="header">
+    <h1>User Management</h1>
+  </div>
+
+  <!-- ===== Admins Section ===== -->
+  <!-- ===== Admins Section ===== -->
+<div style="margin-bottom: 24px;">
+  <div style="display:flex;color: #04706e; justify-content: space-between; align-items:center; margin-bottom: 8px;">
+    <h2>Admins</h2>
+    <!-- Button now triggers the modal instead of a missing URL -->
+    <button type="button" class="create-btn" onclick="openAddAdminModal()">+ New Admin</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for admin in admins %}
+      <tr>
+        <td>{{ admin.get_full_name|default:admin.name }}</td>
+        <td>{{ admin.email }}</td>
+        <td style="color: {% if admin.is_active %}lime{% else %}orange{% endif %}">
+          {% if admin.is_active %}Active{% else %}Inactive{% endif %}
+        </td>
+        <td>
+          <button class="action-btn edit-btn" 
+        onclick="openEditAdminModal({{ admin.id }}, '{{ admin.get_full_name|escapejs }}', '{{ admin.email|escapejs }}')">
+  ✏ Edit
+</button>
+
+          <form action="{% url 'ecotracksys:delete_user' admin.id %}" method="POST" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this admin?')">🗑 Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" style="text-align:center; color: gray;">No admins found.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<!-- Edit Admin Modal -->
+<div id="editAdminModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeEditAdminModal()">&times;</span>
+    <h2>Edit Admin</h2>
+    <!-- action will be set dynamically in JS -->
+    <form method="POST" id="editAdminForm">
+      {% csrf_token %}
+      <input type="hidden" id="edit_admin_id" name="user_id">
+      
+      <label for="edit_admin_name">Full Name</label>
+      <input type="text" id="edit_admin_name" name="name" required>
+      
+      <label for="edit_admin_email">Email</label>
+      <input type="email" id="edit_admin_email" name="email" required>
+      
+      <label for="edit_admin_password">Password (leave blank to keep current)</label>
+      <input type="password" id="edit_admin_password" name="password">
+      
+      <button type="submit" class="save-btn">Update Admin</button>
+    </form>
+  </div>
+</div>
+
+
+
+  <!-- ===== Users Section ===== -->
+  <div>
+
+    <h2 style="color: #04706e;">Users <span style="font-size: 14px; color: #04706e;">(Total: {{ users.count }})</span></h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.get_full_name|default:user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role|title }}</td>
+          <td style="color: {% if user.is_active %}lime{% else %}orange{% endif %}">
+            {% if user.is_active %}Active{% else %}Inactive{% endif %}
+          </td>
+          <td>
+            <a href="{% url 'ecotracksys:edit_user' user.id %}" class="action-btn edit-btn">✏ Edit</a>
+            <form action="{% url 'ecotracksys:delete_user' user.id %}" method="POST" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this user?')">🗑 Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" style="text-align:center; color: gray;">No users found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+<!-- Add Admin Modal -->
+<div id="addAdminModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeAddAdminModal()">&times;</span>
+    <h2>Add New Admin</h2>
+    <form method="POST" action="{% url 'ecotracksys:user_management' %}">
+      {% csrf_token %}
+      <input type="hidden" name="role" value="admin">
+      
+      <label for="admin_name">Full Name</label>
+      <input type="text" id="admin_name" name="name" placeholder="Enter full name" required>
+      
+      <label for="admin_email">Email</label>
+      <input type="email" id="admin_email" name="email" placeholder="Enter email" required>
+      
+      <label for="admin_password">Password</label>
+      <input type="password" id="admin_password" name="password" placeholder="Enter password" required>
+      
+      <button type="submit" class="save-btn">Save Admin</button>
+    </form>
+  </div>
+</div>
+
+
+  <!-- Sidebar Toggle Script -->
   <script>
     function toggleSidebar() {
       const sidebar = document.getElementById("sidebar");
       sidebar.classList.toggle("collapsed");
     }
+
+    function toggleProfileMenu() {
+    const menu = document.getElementById("profileDropdown");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+  }
+
+  // Close menu if clicked outside
+  document.addEventListener("click", function(e) {
+    const profileMenu = document.querySelector(".profile-menu");
+    if (!profileMenu.contains(e.target)) {
+      document.getElementById("profileDropdown").style.display = "none";
+    }
+  });
+
+function openAddAdminModal() {
+  document.getElementById("addAdminModal").style.display = "block";
+}
+function closeAddAdminModal() {
+  document.getElementById("addAdminModal").style.display = "none";
+}
+
+// Close modal if clicked outside
+window.onclick = function(event) {
+  const modal = document.getElementById("addAdminModal");
+  if (event.target === modal) modal.style.display = "none";
+}
+function openEditAdminModal(id, name, email) {
+  const form = document.getElementById("editAdminForm");
+  // dynamically set the correct URL with user_id
+  form.action = `/admin/user/edit-inline/${id}/`; 
+
+  document.getElementById('edit_admin_id').value = id;
+  document.getElementById('edit_admin_name').value = name;
+  document.getElementById('edit_admin_email').value = email;
+  document.getElementById('edit_admin_password').value = ''; // blank by default
+  document.getElementById('editAdminModal').style.display = 'block';
+}
+
+
+function closeEditAdminModal() {
+  document.getElementById('editAdminModal').style.display = 'none';
+}
+
+// Optional: close modal if clicked outside
+window.addEventListener('click', function(event) {
+  const modal = document.getElementById('editAdminModal');
+  if (event.target === modal) modal.style.display = 'none';
+});
+
   </script>
 </body>
-
 </html>

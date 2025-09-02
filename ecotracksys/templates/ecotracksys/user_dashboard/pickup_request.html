@@ -1,230 +1,397 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>New Pickup Request</title>
-  <link rel="icon" href="favicon.ico">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pickup Request | EcoTrack</title>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+body {
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  color: #064e3b;
+  background-image: url("{% static 'user_bg.jpg' %}");
+  background-size: cover;
+  background-position: center;
+}
+
+.pickup-form-wrapper {
+  background: rgba(198, 255, 220, 0.85);
+  border-radius: 15px;
+  padding: 30px;
+  max-width: 800px;
+  margin: 40px auto;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  backdrop-filter: blur(8px);
+  position: relative;
+}
+
+.home-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 22px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.home-btn:hover { transform: scale(1.1) rotate(-10deg); box-shadow:0 6px 16px rgba(0,0,0,0.35); }
+
+.pickup-form-wrapper h3 {
+  text-align: center;
+  font-size: 26px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 30px;
+  color: #10b981;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.user-profile img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #4ade80;
+  box-shadow: 0 0 10px rgba(16,185,129,0.6);
+}
+.user-profile .name { font-size: 1.2rem; font-weight: 700; color: #16a34a; }
+
+.form-row { display: flex; gap: 16px; flex-wrap: wrap; }
+.form-col { flex: 1; min-width: 150px; }
+
+.pickup-form-wrapper label { display: block; margin-top: 12px; font-weight: 600; color: #064e3b; }
+
+.pickup-form-wrapper input,
+.pickup-form-wrapper textarea,
+.pickup-form-wrapper select {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 2px solid #4ade80;
+  background: rgba(255, 255, 255, 0.85);
+  color: #064e3b;
+  font-size: 1rem;
+  outline: none;
+  height: 38px;
+}
+.pickup-form-wrapper textarea { height: auto; }
+.pickup-form-wrapper input:focus,
+.pickup-form-wrapper textarea:focus,
+.pickup-form-wrapper select:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16,185,129,0.4);
+}
+
+.map-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  margin-top: 24px;
+}
+.map-button:hover { transform: translateY(-2px) scale(1.05); }
+
+.pickup-form-wrapper button {
+  width: 220px;
+  padding: 12px 0;
+  margin: 20px auto 0 auto;
+  display: block;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #fff;
+  background: linear-gradient(180deg, #34d399 0%, #10b981 60%, #059669 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #059669, 0 8px 12px rgba(0,0,0,0.2);
+}
+.pickup-form-wrapper button:hover { transform: translateY(-3px) scale(1.05); }
+
+#errorMessage, #locationError {
+  color: #b91c1c;
+  font-weight: bold;
+  margin-top: 8px;
+  display: none;
+}
+
+#modalMapContainer {
+  display: none;
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 600px;
+  height: 450px;
+  z-index: 1000;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  flex-direction: column;
+  display: none;
+}
+#modalMapHeader {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:8px 12px; background:#10b981; color:#fff;
+  border-top-left-radius:12px; border-top-right-radius:12px;
+}
+#modalMapHeader button { background:#fff; color:#10b981; border:none; border-radius:6px; padding:4px 8px; cursor:pointer; }
+#modalSearch { display:flex; gap:6px; margin:8px; }
+
+#modalMap { flex:1; width:100%; border-radius:12px; }
+
+@media (max-width: 768px) {
+  .pickup-form-wrapper { width: 90%; padding: 20px; }
+  .form-col { min-width: 100%; }
+}
+</style>
 </head>
 <body>
 
+<div class="pickup-form-wrapper">
+  <a href="{% url 'ecotracksys:citizen_dashboard' %}" class="home-btn">🏠</a>
+  <h3>Pickup Request</h3>
 
-
-<style>
-  body {
-    background: #0f172a !important;
-    color: #e5e7eb;
-    min-height: 100vh;
-    transition: background .3s ease, color .3s ease;
-  }
-  .form-label {
-  display: block;
-  margin-top: 18px;
-  font-weight: 600;
-  color: #fff;
-}
-
-@keyframes fadeIn {
-  0% {opacity: 0; transform: translate(-50%, -60%);}
-  100% {opacity: 1; transform: translate(-50%, -50%);}
-}
-#successModal.show {
-  display: block;
-  animation: fadeIn 0.4s ease forwards;
-}
-
-  
-  .pickup-form-wrapper{
-    max-width:600px;margin:40px auto;background:#1a1a1a;border:2px solid #2563eb;border-radius:12px;padding:30px;box-shadow:0 8px 16px rgba(0,0,0,0.5);
-  }
-  .pickup-form-wrapper h1{color:#60A5FA;text-align:center;margin-bottom:25px;font-size:1.8rem;text-shadow:0 2px 4px #000;}
-  .pickup-form-wrapper label{display:block;color:#fff;font-weight:600;margin-top:18px;}
-  .pickup-form-wrapper input, .pickup-form-wrapper select, .pickup-form-wrapper textarea{
-    width:100%;padding:6px 10px;margin-top:4px;border-radius:6px;border:1px solid #666;background:#4a4a4a;color:#fff;font-size:0.9rem;box-sizing:border-box;outline:none;transition:border-color .2s,box-shadow .2s;
-  }
-  .pickup-form-wrapper input:focus, .pickup-form-wrapper select:focus, .pickup-form-wrapper textarea:focus{border-color:#60A5FA;box-shadow:0 0 0 2px rgba(96,165,250,.4);}  
-  .pickup-form-wrapper button{width:220px;margin-top:28px;padding:12px 0;font-size:1.05rem;font-weight:700;color:#fff;background:linear-gradient(180deg,#3b82f6 0%,#2563eb 60%,#1e40af 100%);border:none;border-radius:8px;cursor:pointer;transition:transform .25s,box-shadow .25s,filter .25s;box-shadow:0 6px 0 #1e40af,0 12px 14px rgba(0,0,0,0.35),inset 0 2px 4px rgba(255,255,255,0.3);}  
-  .pickup-form-wrapper button:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 9px 0 #1e40af,0 18px 18px rgba(0,0,0,0.45),inset 0 3px 4px rgba(255,255,255,0.4);filter:brightness(1.05);}  
-  .pickup-form-wrapper button:active{transform:translateY(2px) scale(0.97);box-shadow:0 5px 0 #1e40af,0 10px 10px rgba(0,0,0,0.4),inset 0 1px 3px rgba(0,0,0,0.55);}
-
-
-  
-  /* User profile styles */
-  .user-profile{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
-  .user-profile img{width:60px;height:60px;border-radius:50%;object-fit:cover;border:3px solid #2563eb;box-shadow:0 0 10px rgba(59,130,246,0.6);}  
-  .user-profile .name{font-size:1.2rem;font-weight:700;color:#60A5FA;text-shadow:0 2px 4px rgba(0,0,0,.6);}  
-  /* Slide Animation Styles */
-  @keyframes pulse {
-    0%, 100% { transform: scale(1); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-    50% { transform: scale(1.05); box-shadow: 0 6px 20px rgba(59,130,246,0.6); }
-  }
-  
-  @keyframes slideOut {
-    0% { transform: translateX(0) scale(1); opacity: 1; }
-    100% { transform: translateX(100vw) scale(0.8); opacity: 0; }
-  }
-  
-  .slide-out {
-    animation: slideOut 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-  }
-  
-  .button-container {
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-</style>
-
-<script>
-function slideToPage(event, url) {
-  event.preventDefault();
-  
-  // Add slide-out animation to the container
-  const container = document.querySelector('.button-container');
-  container.classList.add('slide-out');
-  
-  // Navigate after animation completes
-  setTimeout(() => {
-    window.location.href = url;
-  }, 800);
-}
-</script>
-
-<div class="pickup-form-wrapper" style="background:linear-gradient(145deg, #1a1a2e, #16213e);border-radius:15px;padding:25px;box-shadow:0 8px 16px rgba(0,0,0,0.4), inset 0 2px 0 rgba(59,130,246,0.3), inset 0 -2px 0 rgba(0,0,0,0.5);margin-bottom:20px;display:flex;flex-direction:column;align-items:flex-start;width:50%;margin:40px auto 0;">
-  <h3 style="margin:0 0 25px 0;color:#60A5FA;font-size:24px;font-weight:700;text-align:center;border-bottom:3px solid #2563EB;padding-bottom:12px;text-shadow:0 2px 4px rgba(0,0,0,0.6);background:linear-gradient(90deg,#60A5FA,#3B82F6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;width:100%;font-family:'Segoe UI','Roboto','Arial Black',sans-serif;letter-spacing:2px;text-transform:uppercase;">🚛 Pickup Request</h3>
-  
-  <span title="Home"
-      onclick="window.location.href='{% url 'user_dashboard' %}'"
-      style="position:absolute;top:22px;left:25px;width:46px;height:46px;
-      border-radius:50%;display:flex;align-items:center;justify-content:center;
-      background:linear-gradient(135deg,#000000 0%, #2563eb 100%);
-      color:#fff;font-size:22px;text-decoration:none;
-      box-shadow:0 4px 12px rgba(0,0,0,0.4);
-      transition:transform .3s ease,box-shadow .3s ease;
-      animation:pulse 2s infinite;
-      cursor: pointer;">
-  🏠
-</span>
-
-
-  <!-- User Profile -->
   <div class="user-profile">
     {% if user.profile_image %}
-  <img src="{{ user.profile_image.url }}" alt="{{ user.name }}">
-{% else %}
-  <img src="{% static 'default_profile.png' %}" alt="Default Avatar">
-{% endif %}
-
-
-    <span id="profile-name" class="name">Your Name</span>
+      <img src="{{ user.profile_image.url }}" alt="{{ user.name }}">
+    {% else %}
+      <img src="{% static 'default_profile.png' %}" alt="Default Avatar">
+    {% endif %}
+    <span id="profile-name" class="name">{{ user.name }}</span>
   </div>
 
-  <form method="post" novalidate style="display:flex;flex-direction:column;gap:8px;width:100%;">
-  {% csrf_token %}
-  
-  <label for="customer_name" style="color:#fff;font-weight:600;margin-top:18px;">Name</label>
-  <input type="text" id="customer_name" name="customer_name" value="{{ user.name }}" style="width:100%;padding:10px 14px;margin-top:6px;border-radius:8px;border:2px solid #666;background:#4a4a4a;color:#fff;font-size:1rem;box-sizing:border-box;outline:none;transition:border-color .2s,box-shadow .2s;" required>
-
-  <label for="phone" class="form-label">Phone</label>
-  <input type="tel" id="phone" name="phone" value="{{ user.phone }}" style="width:100%;padding:10px 14px;margin-top:6px;border-radius:8px;border:2px solid #666;background:#4a4a4a;color:#fff;font-size:1rem;box-sizing:border-box;outline:none;transition:border-color .2s,box-shadow .2s;" required>
-
-  <label for="email" style="color:#fff;font-weight:600;margin-top:18px;">Email</label>
-  <input type="email" id="email" name="email" value="{{ user.email }}" style="width:100%;padding:10px 14px;margin-top:6px;border-radius:8px;border:2px solid #666;background:#4a4a4a;color:#fff;font-size:1rem;box-sizing:border-box;outline:none;transition:border-color .2s,box-shadow .2s;" required>
-
-  <label for="address" style="color:#fff;font-weight:600;margin-top:18px;">Address</label>
-  <div style="display:flex;gap:16px;align-items:center;">
-    <div style="position:relative;flex:1;">
-      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;">📍</span>
-      <textarea id="address" name="address" rows="3" placeholder="Street, City" style="width:100%;padding:6px 10px 6px 38px;margin-top:4px;border-radius:6px;border:1px solid #666;background:#4a4a4a;color:#fff;font-size:0.9rem;box-sizing:border-box;outline:none;transition:border-color .2s,box-shadow .2s;resize:vertical;">{{ user.profile.address|default_if_none:"" }}</textarea>
+  {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <div class="{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
     </div>
-    <a href="https://www.google.com/maps" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 14px;background:linear-gradient(135deg,#fb923c 0%,#f97316 100%);border-radius:8px;color:#fff;font-weight:600;text-decoration:none;box-shadow:0 4px 10px rgba(249,115,22,0.4);transition:border-color .2s,box-shadow .2s;margin-top:6px;margin-left:24px;">
-      <span style="font-size:16px;">🗺️</span><span style="white-space:nowrap;">Map</span>
-    </a>
-  </div>
-   <label for="pickup_date" style="color:#fff;font-weight:600;margin-top:18px;">Preferred Date</label>
-    <div style="position:relative;">
-      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;">📅</span>
-      <input type="date" id="pickup_date" name="pickup_date" style="width:100%;padding:10px 14px 10px 38px;margin-top:6px;border-radius:8px;border:2px solid #666;background:#4a4a4a;color:#fff;font-size:1rem;box-sizing:border-box;outline:none;transition:border-color .2s,box-shadow .2s;" required>
+  {% endif %}
+
+  <form id="pickupForm" method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="form-row">
+      <div class="form-col">
+        <label for="customer_name">Name</label>
+        <input type="text" id="customer_name" name="customer_name" value="{{ user.name }}" required>
+      </div>
+      <div class="form-col">
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" name="phone" value="{{ user.phone }}" required>
+      </div>
     </div>
 
-    <label for="pickup_time" style="color:#fff;font-weight:600;margin-top:18px;">Preferred Time</label>
-    <div style="position:relative;">
-      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;">⏰</span>
-      <input type="time" id="pickup_time" name="pickup_time" style="width:100%;padding:10px 14px 10px 38px;margin-top:6px;border-radius:8px;border:2px solid #666;background:#4a4a4a;color:#fff;font-size:1rem;box-sizing:border-box;outline:none;transition:border-color .2s,box-shadow .2s;" required>
+    <div class="form-row">
+      <div class="form-col">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{ user.email }}" required>
+      </div>
+      <div class="form-col">
+        <label for="address">Address</label>
+        <textarea id="address" name="address" rows="2">{{ user.profile.address|default_if_none:"" }}</textarea>
+      </div>
     </div>
 
-    <label for="waste_type" style="color:#fff;font-weight:600;margin-top:18px;">Type of Waste</label>
-    <div style="position:relative;">
-      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;">🗑️</span>
-      <select id="waste_type" name="waste_type" style="width:100%;padding:10px 14px 10px 38px;margin-top:6px;border-radius:8px;border:2px solid #666;background:#4a4a4a;color:#fff;font-size:1rem;box-sizing:border-box;outline:none;transition:border-color .2s,box-shadow .2s;appearance:none;background-image:url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 20 20" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M6 8l4 4 4-4"/></svg>');background-repeat:no-repeat;background-position:right 12px center;background-size:16px;" required>
-        <option value="">-- Select --</option>
-        <option value="organic">Organic</option>
-        <option value="recyclable">Recyclable</option>
-        <option value="hazardous">Hazardous</option>
-        <option value="mixed">Mixed</option>
-      </select>
+    <input type="hidden" id="lat" name="lat">
+    <input type="hidden" id="lng" name="lng">
+
+    <button type="button" class="map-button" id="geocodeBtn">📍 Locate on Map</button>
+    <div id="locationError"></div>
+
+    <div class="form-row">
+      <div class="form-col">
+        <label for="pickup_date">Preferred Date</label>
+        <input type="date" id="pickup_date" name="pickup_date" required>
+      </div>
+      <div class="form-col">
+        <label>Preferred Time</label>
+        <div style="display:flex; gap:10px;">
+          <input type="time" id="pickup_time_from" name="pickup_time_from" required>
+          <input type="time" id="pickup_time_to" name="pickup_time_to" required>
+        </div>
+        <div id="errorMessage">❌ "From" time must be earlier than "To" time</div>
+      </div>
     </div>
 
-    <label for="special_instructions" style="color:#fff;font-weight:600;margin-top:18px;">Special Instructions</label>
-    <textarea id="special_instructions" name="special_instructions" rows="3" style="width:100%;padding:10px 14px;margin-top:6px;border-radius:8px;border:2px solid #666;background:#4a4a4a;color:#fff;font-size:1rem;box-sizing:border-box;outline:none;transition:border-color .2s,box-shadow .2s;resize:vertical;"></textarea>
+    <div class="form-row">
+      <div class="form-col">
+        <label for="waste_type">Type of Waste</label>
+        <select id="waste_type" name="waste_type" required>
+          <option value="">-- Select --</option>
+          <option value="organic">Biodegradable / Organic Waste</option>
+          <option value="recyclable">Recyclable Waste</option>
+          <option value="nonrecyclable">Non-Recyclable / Residual Waste</option>
+          <option value="ewaste">E-Waste</option>
+          <option value="hazardous">Hazardous Waste</option>
+          <option value="construction">Construction & Demolition Waste</option>
+        </select>
+      </div>
+      <div class="form-col">
+        <label for="special_instructions">Special Instructions</label>
+        <textarea id="special_instructions" name="special_instructions" rows="2"></textarea>
+      </div>
+    </div>
 
-    <button type="submit" class="submit-btn pickup-form-wrapper-btn" style="width:220px;padding:12px 0;display:flex;align-items:center;justify-content:center;gap:8px;margin:0 auto;background:linear-gradient(180deg,#3b82f6 0%,#2563eb 60%,#1e40af 100%);border:none;border-radius:8px;box-shadow:0 6px 0 #1e40af,0 12px 14px rgba(0,0,0,0.35),inset 0 2px 4px rgba(255,255,255,0.3);color:#fff;font-weight:700;font-size:1.05rem;transition:transform .25s,box-shadow .25s,filter .25s;">
-      <span>📤</span><span>Submit Request</span>
-    </button>
+    <div class="form-row">
+      <div class="form-col">
+        <label for="quantity">Quantity (kg)</label>
+        <input type="number" id="quantity" name="quantity" value="1" min="1" required>
+      </div>
+      <div class="form-col">
+        <label for="price">Estimated Price</label>
+        <input type="text" id="price" name="price" readonly value="0">
+      </div>
+    </div>
+
+    <button type="submit">Submit Request</button>
   </form>
 </div>
 
-  
-  <!-- ✅ Success Modal Box -->
-<div id="successModal" style="
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: linear-gradient(135deg, #10b981, #059669);
-  padding: 20px 32px;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #fff;
-  z-index: 1000;
-  text-align: center;
-">
-  ✅ Your Request has been submitted successfully
+<!-- Modal Map -->
+<div id="modalMapContainer">
+  <div id="modalMapHeader">
+    <span>Choose Location</span>
+    <button id="closeMapBtn">✖</button>
+  </div>
+  <div id="modalSearch">
+    <input type="text" id="searchInput" placeholder="Search address..." style="flex:1; padding:6px 8px;">
+    <button id="searchBtn">Search</button>
+  </div>
+  <div id="modalMap"></div>
 </div>
-<!-- ✅ JavaScript Logic -->
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const nameInput = document.getElementById('customer_name');
-      const profileName = document.getElementById('profile-name');
-      if (nameInput && profileName) {
-        const sync = () => { profileName.textContent = nameInput.value.trim() || 'Your Name'; };
-        nameInput.addEventListener('input', sync);
-        sync();
-      }
 
-      const form = document.querySelector("form");
-      const successModal = document.getElementById("successModal");
+<script>
+const profileName = document.getElementById('profile-name');
+const nameInput = document.getElementById('customer_name');
+nameInput.addEventListener('input', ()=>{ profileName.textContent = nameInput.value || 'Your Name'; });
 
-      form.addEventListener("submit", function (event) {
-        event.preventDefault(); // Prevent real form submission
+// Time validation
+const fromTime = document.getElementById("pickup_time_from");
+const toTime = document.getElementById("pickup_time_to");
+const errorMessage = document.getElementById("errorMessage");
+function validateTime() {
+  if(fromTime.value && toTime.value && fromTime.value >= toTime.value){
+    errorMessage.style.display="block"; return false;
+  } else { errorMessage.style.display="none"; return true; }
+}
+fromTime.addEventListener("input", validateTime);
+toTime.addEventListener("input", validateTime);
 
-        // Show modal
-        successModal.style.display = "block";
-        successModal.classList.add("show");
+// Price calculation
+const wasteCost = {'organic':20,'recyclable':15,'nonrecyclable':25,'ewaste':30,'hazardous':50,'construction':40};
+function updatePrice(){
+  const type=document.getElementById('waste_type').value;
+  const qty=parseInt(document.getElementById('quantity').value)||1;
+  document.getElementById('price').value=wasteCost[type]?wasteCost[type]*qty:0;
+}
+document.getElementById('waste_type').addEventListener('change',updatePrice);
+document.getElementById('quantity').addEventListener('input',updatePrice);
 
+// Modal map logic
+const mapModal = document.getElementById('modalMapContainer');
+const geocodeBtn = document.getElementById('geocodeBtn');
+const closeMapBtn = document.getElementById('closeMapBtn');
+const searchBtn = document.getElementById('searchBtn');
+const searchInput = document.getElementById('searchInput');
+const latInput = document.getElementById('lat');
+const lngInput = document.getElementById('lng');
+const locationError = document.getElementById('locationError');
 
-        // Hide modal after 3 seconds
-        setTimeout(() => {
-          successModal.classList.remove("show");
-          successModal.style.display = "none";
-          form.reset(); // Optional: clear form
-        }, 3000);
+let modalMap, marker;
+
+geocodeBtn.addEventListener('click', ()=>{
+  mapModal.style.display='flex';
+  setTimeout(()=>{
+    if(!modalMap){
+      modalMap = L.map('modalMap').setView([20.5937,78.9629],5);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(modalMap);
+
+      modalMap.on('click', async function(e){
+        const {lat,lng}=e.latlng;
+        if(marker) modalMap.removeLayer(marker);
+        marker = L.marker([lat,lng], {draggable:true}).addTo(modalMap);
+        latInput.value=lat; lngInput.value=lng;
+        marker.on('dragend', function(evt){
+          const pos = evt.target.getLatLng();
+          latInput.value = pos.lat; lngInput.value = pos.lng;
+        });
+        try{
+          const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+          const data = await resp.json();
+          if(data && data.display_name) document.getElementById('address').value = data.display_name;
+        }catch(e){ console.error(e); }
       });
+    } else {
+      modalMap.invalidateSize();
+    }
+  }, 100);
+});
+
+closeMapBtn.addEventListener('click', ()=>{ mapModal.style.display='none'; });
+
+searchBtn.addEventListener('click', async ()=>{
+  const address = searchInput.value.trim();
+  if(!address) return alert('Please enter an address.');
+  try{
+    const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
+    const data = await resp.json();
+    if(!data.length) return alert('Address not found.');
+    const lat=parseFloat(data[0].lat);
+    const lng=parseFloat(data[0].lon);
+    if(marker) modalMap.removeLayer(marker);
+    marker = L.marker([lat,lng], {draggable:true}).addTo(modalMap);
+    modalMap.setView([lat,lng],15);
+    latInput.value=lat; lngInput.value=lng;
+    marker.on('dragend', function(evt){
+      const pos = evt.target.getLatLng();
+      latInput.value = pos.lat; lngInput.value = pos.lng;
     });
-  </script>
+    document.getElementById('address').value = data[0].display_name;
+  }catch(e){ alert('Error locating address'); console.error(e); }
+});
+
+// Form submit validation
+const form = document.getElementById('pickupForm');
+form.addEventListener('submit', function(e){
+  if(!validateTime() || !latInput.value || !lngInput.value){
+    e.preventDefault();
+    if(!latInput.value || !lngInput.value){
+      locationError.textContent='❌ Please select a location on the map.';
+      locationError.style.display='block';
+    }
+  }
+});
+</script>
 
 </body>
 </html>

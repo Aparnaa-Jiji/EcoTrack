@@ -1,0 +1,39 @@
+<!-- Title for the page -->
+<h2>Edit User</h2>
+
+<!-- Form for editing user details -->
+<!-- method="POST" → sends data securely to the server -->
+<form method="POST">
+    <!-- CSRF token is required in Django to protect against cross-site request forgery -->
+    {% csrf_token %}
+
+    <!-- First Name field -->
+    <label>First Name:</label>
+    <input 
+        type="text"                <!-- Text input -->
+        name="first_name"          <!-- Field name that the backend will receive -->
+        value="{{ user.first_name }}" <!-- Pre-fill with current user's first name -->
+        required                   <!-- User must fill this field -->
+    >
+
+    <!-- Last Name field -->
+    <label>Last Name:</label>
+    <input 
+        type="text" 
+        name="last_name" 
+        value="{{ user.last_name }}" 
+        required
+    >
+
+    <!-- Email field -->
+    <label>Email:</label>
+    <input 
+        type="email"               <!-- Email type validates proper format -->
+        name="email" 
+        value="{{ user.email }}" 
+        required
+    >
+
+    <!-- Submit button -->
+    <button type="submit">Save Changes</button>
+</form>
