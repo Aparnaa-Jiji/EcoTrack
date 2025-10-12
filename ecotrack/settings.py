@@ -1,4 +1,4 @@
-# miniproject/ecotrack/ecotrack/settings.py
+pl# miniproject/ecotrack/ecotrack/settings.py
 
 from pathlib import Path
 import os
@@ -163,6 +163,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'ecotracksys.mca@gmail.com'      # <-- your email
-EMAIL_HOST_PASSWORD = 'pglo ybip dyzm impg'   # <-- app password if using Gmail
+EMAIL_HOST_USER = 'example@gmail.com'      # <-- your email
+EMAIL_HOST_PASSWORD = 'app password'   # <-- app password if using Gmail
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
