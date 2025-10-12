@@ -8,7 +8,7 @@ from .models import Complaint, Collector, PickupRequest
 # ComplaintForm
 # =========================
 from django import forms
-from .models import Complaint, PickupRequest
+from .models import Complaint
 
 class ComplaintForm(forms.ModelForm):
     class Meta:
@@ -21,6 +21,21 @@ class ComplaintForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 5, 'placeholder': 'Describe your complaint'}),
             'photo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
+
+    def clean_photo(self):
+        photo = self.cleaned_data.get("photo")
+        if photo:
+            # ✅ File size check (max 5MB)
+            if photo.size > 5 * 1024 * 1024:
+                raise forms.ValidationError("File size must not exceed 5 MB.")
+
+            # ✅ File type check
+            valid_types = ["image/jpeg", "image/png"]
+            if hasattr(photo, "content_type") and photo.content_type not in valid_types:
+                raise forms.ValidationError("Only JPG and PNG formats are allowed.")
+
+        return photo
+
 
 # =========================
 # CollectorForm
@@ -35,7 +50,6 @@ class CollectorForm(forms.ModelForm):
         fields = [
             'name',
             'phone',
-            'zone',
             'status'
         ]
         widgets = {
@@ -77,34 +91,13 @@ class CollectorForm(forms.ModelForm):
             raise forms.ValidationError("Name must contain only letters and spaces.")
         return name.strip()
 
-    def clean_zone(self):
-        """
-        Ensure the zone is not empty and contains only valid characters.
-        """
-        zone = self.cleaned_data.get('zone')
-        if not zone:
-            raise forms.ValidationError("Zone cannot be empty.")
-        if not all(c.isalnum() or c in [' ', '-', '_'] for c in zone):
-            raise forms.ValidationError("Zone can only contain letters, numbers, spaces, hyphens, or underscores.")
-        return zone.strip()
+
 
 # ecotracksys/forms.py
+# core/forms.py
 from django import forms
 from .models import Zone
-
-class ZoneForm(forms.ModelForm):
-    class Meta:
-        model = Zone
-        fields = ['name', 'ward', 'collector', 'lat_min', 'lat_max', 'lng_min', 'lng_max']
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'ward': forms.TextInput(attrs={'class': 'form-control'}),
-            'collector': forms.Select(attrs={'class': 'form-control'}),
-            'lat_min': forms.NumberInput(attrs={'class': 'form-control'}),
-            'lat_max': forms.NumberInput(attrs={'class': 'form-control'}),
-            'lng_min': forms.NumberInput(attrs={'class': 'form-control'}),
-            'lng_max': forms.NumberInput(attrs={'class': 'form-control'}),
-        }
+from accounts.models import CustomUser
 
 
 
@@ -116,9 +109,89 @@ class EditProfileForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'placeholder': 'Full Name'}),
             'phone': forms.TextInput(attrs={'placeholder': 'Phone Number'}),
         }
-
-    def clean_phone(self):
-        phone = self.cleaned_data.get('phone')
-        if phone and not phone.isdigit():
+def clean_phone(self):
+    phone = self.cleaned_data.get('phone')
+    if phone:
+        if not phone.isdigit():
             raise forms.ValidationError("Phone number must contain only digits.")
-        return phone
+        if len(phone) != 10:
+            raise forms.ValidationError("Phone number must be exactly 10 digits.")
+    return phone
+
+
+
+# ecotracksys/forms.py
+from django import forms
+from accounts.models import CustomUser
+from django import forms
+from accounts.models import CustomUser
+
+from django import forms
+from django.contrib.auth import update_session_auth_hash
+from accounts.models import CustomUser
+
+class AdminProfileForm(forms.ModelForm):
+    password = forms.CharField(
+        required=False,  # optional
+        widget=forms.PasswordInput(render_value=False,attrs={'placeholder': '••••••••'}),
+        help_text="Leave blank if you don't want to change the password"
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = ['name', 'email', 'profile_image',]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make name and email read-only
+        self.fields['name'].widget.attrs['readonly'] = True
+        self.fields['email'].widget.attrs['readonly'] = True
+
+    def save(self, request=None, commit=True):
+        user = super().save(commit=False)
+        password = self.cleaned_data.get('password')
+        password_changed = False
+        if password:
+            user.set_password(password)  # hash password only if provided
+            password_changed = True
+        if commit:
+            user.save()
+            if request and password_changed:
+                # Update session hash if password changed so user won't be logged out
+                update_session_auth_hash(request, user)
+        return user
+# ecotracksys/forms.py
+from django import forms
+from accounts.models import CustomUser
+from django.contrib.auth import update_session_auth_hash
+
+class CollectorProfileForm(forms.ModelForm):
+    password = forms.CharField(
+        required=False,
+        widget=forms.PasswordInput(render_value=False, attrs={'placeholder': '••••••••'}),
+        help_text="Leave blank if you don't want to change the password"
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = ['name', 'email', 'phone', 'profile_image']  # email included
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make email read-only
+        self.fields['email'].widget.attrs['readonly'] = True
+        # Make phone read-only
+        self.fields['phone'].widget.attrs['readonly'] = True
+
+    def save(self, request=None, commit=True):
+        user = super().save(commit=False)
+        password = self.cleaned_data.get('password')
+        password_changed = False
+        if password:
+            user.set_password(password)
+            password_changed = True
+        if commit:
+            user.save()
+            if request and password_changed:
+                update_session_auth_hash(request, user)  # prevent logout
+        return user

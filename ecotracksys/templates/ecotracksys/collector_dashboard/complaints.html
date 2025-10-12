@@ -21,7 +21,6 @@
       --shadow:0 6px 22px rgba(16,64,54,0.08);
     }
 
-    /* Full height setup */
     html, body {
       height: 100%;
       margin: 0;
@@ -36,7 +35,7 @@
 
     .app {
       display: flex;
-      min-height: 100vh; /* full viewport height */
+      min-height: 100vh;
       width: 100%;
       gap: 20px;
     }
@@ -166,25 +165,6 @@
 
     h3 { margin-top:0; color: var(--mint-600); }
 
-    form label { display:flex; margin:10px 0 4px; }
-    form input, form select, form textarea {
-      width:100%;
-      padding:10px;
-      border:1px solid #e0e0e0;
-      border-radius:8px;
-    }
-    form button {
-      margin-top:12px;
-      background:var(--mint-500);
-      color:#fff;
-      border:none;
-      padding:10px 16px;
-      border-radius:8px;
-      font-weight:700;
-      cursor:pointer;
-    }
-    form button:hover { background: var(--mint-600); }
-
     table {
       width:100%;
       border-collapse:collapse;
@@ -214,7 +194,6 @@
   <aside class="sidebar">
     <div class="brand">EcoTrack</div>
     <ul class="nav">
-      <li><a href="{% url 'ecotracksys:collector_dashboard' %}" ><span class="icon"><i class="fas fa-home"></i></span><span class="label">Dashboard</span></a></li>
       <li><a href="{% url 'ecotracksys:collector_assignments' %}"><span class="icon"><i class="fas fa-list-check"></i></span><span class="label">My Assignments</span></a></li>
       <li><a href="{% url 'ecotracksys:collector_pickup_history' %}"><span class="icon"><i class="fas fa-clock-rotate-left"></i></span><span class="label">History</span></a></li>
       <li><a href="{% url 'ecotracksys:collector_performance' %}"><span class="icon"><i class="fas fa-chart-line"></i></span><span class="label">Performance</span></a></li>
@@ -243,29 +222,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Complaint Form -->
-    <section class="card">
-      <h3>Submit a Complaint</h3>
-      <form method="post">
-        {% csrf_token %}
-        <label for="subject">Subject</label>
-        <input type="text" id="subject" name="subject" required>
-
-        <label for="ctype">Type</label>
-        <select id="ctype" name="complaint_type" required>
-          <option value="system">System</option>
-          <option value="assignment">Assignment</option>
-          <option value="citizen">Citizen</option>
-          <option value="other">Other</option>
-        </select>
-
-        <label for="desc">Description</label>
-        <textarea id="desc" name="description" rows="4" required></textarea>
-
-        <button type="submit"><i class="fa fa-paper-plane"></i> Submit</button>
-      </form>
-    </section>
 
     <!-- Complaint History -->
     <section class="card">

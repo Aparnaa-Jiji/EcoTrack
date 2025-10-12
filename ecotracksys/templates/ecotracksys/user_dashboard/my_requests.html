@@ -91,7 +91,7 @@
     }
     .modal-content h2 { margin-bottom: 20px; }
     .modal-content form label { display: block; margin-bottom: 12px; text-align: left; font-size: 14px; }
-    .modal-content form input, .modal-content form textarea { width: 100%; padding: 8px 10px; margin-top: 4px; border-radius: 6px; border: 1px solid #6ee7b7; font-size: 14px; }
+    .modal-content form input, .modal-content form textarea, .modal-content form select { width: 100%; padding: 8px 10px; margin-top: 4px; border-radius: 6px; border: 1px solid #6ee7b7; font-size: 14px; }
     .modal-actions { display: flex; justify-content: space-between; margin-top: 20px; }
   </style>
 </head>
@@ -104,7 +104,7 @@
       <p>Quickly view and manage your pickup requests</p>
     </div>
     <div class="top-actions">
-      <a href="{% url 'ecotracksys:citizen_pickup_request' %}" class="btn btn-primary">➕ New Pickup</a>
+      <a href="{% url 'ecotracksys:citizen_pickup_request' %}" class="btn btn-primary">➕ New Pickup Request</a>
       <a href="{% url 'ecotracksys:citizen_dashboard' %}" class="btn btn-secondary">🏠 Dashboard</a>
     </div>
   </div>
@@ -149,7 +149,24 @@
             <span><strong>Type:</strong> {{ req.waste_type }}</span>
             <span><strong>Quantity:</strong> {{ req.quantity }}</span>
             <span><strong>Address:</strong> {{ req.address }}</span>
-            <span><strong>Collector:</strong> {{ req.collector.get_full_name|default:"Not assigned" }}</span>
+            <span>
+              <strong>Collector:</strong>
+              {% if req.assigned_collector %}
+                {{ req.assigned_collector.name }} ({{ req.assigned_collector.phone }})
+              {% else %}
+                <span style="color: gray;">Not Assigned</span>
+              {% endif %}
+            </span>
+            <span>
+              <strong>OTP:</strong>
+              {% if req.otp %}
+                <span style="background:#22c55e;color:white;padding:2px 6px;border-radius:6px;font-weight:600;">
+                  {{ req.otp }}
+                </span>
+              {% else %}
+                <span style="color: gray;">Not Generated</span>
+              {% endif %}
+            </span>
           </div>
           <div class="action-buttons">
             {% if req.status != 'Cancelled' and req.status != 'Completed' %}
@@ -191,23 +208,34 @@
     <form id="editForm">
       <label>
         Pickup Date:
-        <input type="date" name="pickup_date" required>
+        <input type="date" name="pickup_date" >
       </label>
       <label>
-        Time Slot:
-        <input type="text" name="pickup_time_slot" placeholder="10:00 - 12:00" required>
+        Pickup Time:
+        <div style="display: flex; gap: 10px;">
+          <select name="pickup_start_time" id="pickup_start_time" style="flex:1; padding:8px; font-size:14px;"></select>
+          <select name="pickup_end_time" id="pickup_end_time" style="flex:1; padding:8px; font-size:14px;"></select>
+        </div>
       </label>
       <label>
         Address:
-        <input type="text" name="address" required>
+        <input type="text" name="address" >
       </label>
       <label>
         Waste Category:
-        <input type="text" name="waste_type" required>
+        <select name="waste_type" style="width: 100%; padding: 8px; font-size: 14px;">
+          <option value="">-- Select --</option>
+          <option value="organic">Biodegradable / Organic Waste</option>
+          <option value="recyclable">Recyclable Waste</option>
+          <option value="nonrecyclable">Non-Recyclable / Residual Waste</option>
+          <option value="ewaste">E-Waste</option>
+          <option value="hazardous">Hazardous Waste</option>
+          <option value="construction">Construction & Demolition Waste</option>
+        </select>
       </label>
       <label>
         Quantity:
-        <input type="number" name="quantity" min="1" required>
+        <input type="number" name="quantity" min="1" >
       </label>
       <div class="modal-actions">
         <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -218,7 +246,29 @@
 </div>
 
 <script>
-  // Filtering logic
+document.addEventListener('DOMContentLoaded', function() {
+
+  // --- Populate time dropdowns ---
+  function populateTimeSelects() {
+    const startSelect = document.getElementById('pickup_start_time');
+    const endSelect = document.getElementById('pickup_end_time');
+    startSelect.innerHTML = '';
+    endSelect.innerHTML = '';
+
+    for (let h = 9; h <= 18; h++) {
+      for (let m = 0; m < 60; m += 30) {
+        const hour12 = h <= 12 ? h : h - 12;
+        const ampm = h < 12 ? 'AM' : 'PM';
+        const display = `${hour12.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')} ${ampm}`;
+        const value = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
+        startSelect.insertAdjacentHTML('beforeend', `<option value="${value}">${display}</option>`);
+        endSelect.insertAdjacentHTML('beforeend', `<option value="${value}">${display}</option>`);
+      }
+    }
+  }
+  populateTimeSelects();
+
+  // --- Filter requests ---
   const statusFilter = document.getElementById('status-filter');
   const dateFilter = document.getElementById('date-filter');
   const searchInput = document.getElementById('search-input');
@@ -232,12 +282,13 @@
 
     function matchesDate(dateStr) {
       const date = new Date(dateStr);
-      if(dateValue === 'today') return date.toDateString() === now.toDateString();
-      if(dateValue === 'week') {
-        const weekAgo = new Date(); weekAgo.setDate(now.getDate() - 7);
+      if (dateValue === 'today') return date.toDateString() === now.toDateString();
+      if (dateValue === 'week') {
+        const weekAgo = new Date();
+        weekAgo.setDate(now.getDate() - 7);
         return date >= weekAgo && date <= now;
       }
-      if(dateValue === 'month') return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+      if (dateValue === 'month') return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
       return true;
     }
 
@@ -253,7 +304,7 @@
   dateFilter.addEventListener('change', filterRequests);
   searchInput.addEventListener('input', filterRequests);
 
-  // Cancel Modal
+  // --- Cancel Modal ---
   const cancelButtons = document.querySelectorAll('.btn-cancel[data-id]');
   const cancelModal = document.getElementById('cancelModal');
   const closeCancel = document.getElementById('closeCancel');
@@ -265,21 +316,24 @@
     cancelModal.style.display = 'flex';
   }));
 
-  closeCancel.addEventListener('click', () => { cancelModal.style.display = 'none'; currentCancelId = null; });
+  closeCancel.addEventListener('click', () => {
+    cancelModal.style.display = 'none';
+    currentCancelId = null;
+  });
 
   confirmCancel.addEventListener('click', () => {
-    if(!currentCancelId) return;
+    if (!currentCancelId) return;
     fetch("{% url 'ecotracksys:cancel_pickup_request' %}", {
       method: 'POST',
-      headers: {'Content-Type':'application/json','X-CSRFToken':'{{ csrf_token }}'},
-      body: JSON.stringify({request_id: currentCancelId})
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+      body: JSON.stringify({ request_id: currentCancelId })
     }).then(res => res.json())
       .then(data => { alert(data.message || data.error); location.reload(); })
       .catch(err => alert(err))
       .finally(() => { cancelModal.style.display = 'none'; currentCancelId = null; });
   });
 
-  // Edit Modal
+  // --- Edit Modal ---
   const editButtons = document.querySelectorAll('.btn-edit[data-id]');
   const editModal = document.getElementById('editModal');
   const closeEditBtn = document.getElementById('closeEditModal');
@@ -289,11 +343,20 @@
   editButtons.forEach(btn => btn.addEventListener('click', () => {
     const card = btn.closest('.request-card');
     currentEditId = card.dataset.id;
+
     editForm.pickup_date.value = card.dataset.pickup_date;
-    editForm.pickup_time_slot.value = card.dataset.pickup_time_slot;
+
+    // Pre-select start/end time
+    if (card.dataset.pickup_time_slot.includes(' - ')) {
+      const [start, end] = card.dataset.pickup_time_slot.split(' - ');
+      editForm.pickup_start_time.value = start;
+      editForm.pickup_end_time.value = end;
+    }
+
     editForm.address.value = card.dataset.address;
     editForm.waste_type.value = card.dataset.waste_type;
     editForm.quantity.value = card.dataset.quantity;
+
     editModal.style.display = 'flex';
   }));
 
@@ -301,23 +364,49 @@
 
   editForm.addEventListener('submit', function(e) {
     e.preventDefault();
-    if(!currentEditId) return;
+    if (!currentEditId) return;
+
+    const pickupDate = editForm.pickup_date.value;
+    const pickup_time_from = editForm.pickup_start_time.value;
+    const pickup_time_to = editForm.pickup_end_time.value;
+    const quantity = Number(editForm.quantity.value);
+
+    const today = new Date(); today.setHours(0,0,0,0);
+    const selectedDate = new Date(pickupDate);
+    if (selectedDate <= today){ alert("Please select a date after today."); return; }
+
+    const [startH, startM] = pickup_time_from.split(':').map(Number);
+    const [endH, endM] = pickup_time_to.split(':').map(Number);
+    if (endH*60 + endM <= startH*60 + startM){ alert("End time must be after start time."); return; }
+
+    if (quantity < 1){ alert("Quantity must be at least 1."); return; }
+
     fetch("{% url 'ecotracksys:edit_pickup_request' %}", {
-      method:'POST',
-      headers:{'Content-Type':'application/json','X-CSRFToken':'{{ csrf_token }}'},
-      body:JSON.stringify({
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+      body: JSON.stringify({
         request_id: currentEditId,
-        pickup_date: editForm.pickup_date.value,
-        pickup_time_slot: editForm.pickup_time_slot.value,
-        address: editForm.address.value,
+        pickup_date: pickupDate,
+        pickup_time_from: pickup_time_from,
+        pickup_time_to: pickup_time_to,
+        address: editForm.address.value.trim(),
         waste_type: editForm.waste_type.value,
-        quantity: editForm.quantity.value
+        quantity: quantity
       })
-    }).then(res=>res.json())
-      .then(data=>{ alert(data.message||data.error); location.reload(); })
-      .catch(err=>alert(err))
-      .finally(()=>{ editModal.style.display='none'; currentEditId=null; });
+    }).then(res => res.json())
+      .then(data => { alert(data.message || data.error); location.reload(); })
+      .catch(err => alert(err))
+      .finally(() => { editModal.style.display = 'none'; currentEditId = null; });
   });
+
+  // --- Close modals on outside click ---
+  window.addEventListener('click', e => {
+    if(e.target === cancelModal) cancelModal.style.display = 'none';
+    if(e.target === editModal) editModal.style.display = 'none';
+  });
+
+});
 </script>
+
 </body>
 </html>

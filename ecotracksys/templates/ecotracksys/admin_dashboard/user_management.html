@@ -176,30 +176,46 @@
 
 
 
-
-/* Edit button */
+/* ===== EDIT BUTTON ===== */
 .edit-btn {
-  background: yellow
-  box-shadow: 0 4px 10px rgba(4,112,110,0.4);
+  background: linear-gradient(135deg, #47c9af, #04706e); /* gradient teal */
+  color: white;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(4,112,110,0.5);
+  transition: all 0.3s ease;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .edit-btn:hover {
-  background: yellow;
-  box-shadow: 0 6px 14px rgb(144, 199, 24);
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #85fcde, #04706e);
+  box-shadow: 0 6px 20px rgba(4,112,110,0.6);
+  transform: translateY(-2px) scale(1.05);
 }
 
-/* Delete button */
+/* ===== DELETE BUTTON ===== */
 .delete-btn {
-  background: linear-gradient(135deg, #ff5252, #d32f2f);
-  box-shadow: 0 4px 10px rgba(255,82,82,0.4);
+  background: linear-gradient(135deg, #ff4e50, #d32f2f); /* gradient red */
+  color: white;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255,82,82,0.5);
+  transition: all 0.3s ease;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .delete-btn:hover {
   background: linear-gradient(135deg, #ff6f61, #c62828);
-  box-shadow: 0 6px 14px rgba(255,111,97,0.5);
-  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255,111,97,0.6);
+  transform: translateY(-2px) scale(1.05);
 }
+
 
 /* ==========================================
    PROFILE BOX & DROPDOWN
@@ -367,12 +383,13 @@ width: 50px;
        <ul>
         <li><a href="{% url 'ecotracksys:admin_dashboard' %}" ><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
         <li><a href="{% url 'ecotracksys:pickup_management' %}" ><i class="fas fa-trash"></i> <span>Pickup Management</span></a></li>
-        <li><a href="{% url 'ecotracksys:zone_management' %}"><i class="fas fa-map-marker-alt"></i> <span>Zone Management</span></a></li>
+        
         <li><a href="{% url 'ecotracksys:leave_request_management' %}"><i class="fas fa-calendar-alt"></i> <span>Leave Requests</span></a></li>
         <li><a href="{% url 'ecotracksys:complaint_management' %}"><i class="fas fa-bullhorn"></i> <span>Complaints</span></a></li>
         <li><a href="{% url 'ecotracksys:user_management' %}" class="active"><i class="fas fa-users"></i> <span>User Management</span></a></li>
         <li><a href="{% url 'ecotracksys:collector_management' %}"><i class="fas fa-user-cog"></i> <span>Collector Management</span></a></li>
-        <li><a href="{% url 'ecotracksys:analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_notifications' %}" ><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
         <li><a href="{% url 'ecotracksys:admin_profile' %}"><i class="fas fa-user-shield"></i> <span>Admin Profile</span></a></li>
       </ul>
     </div>
@@ -403,6 +420,46 @@ width: 50px;
   <!-- ===== Admins Section ===== -->
   <!-- ===== Admins Section ===== -->
 <div style="margin-bottom: 24px;">
+  <!-- ===== Users Section ===== -->
+  <div>
+
+    <h2 style="color: #04706e;">Users <span style="font-size: 14px; color: #04706e;">(Total: {{ users.count }})</span></h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.get_full_name|default:user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role|title }}</td>
+          <td style="color: {% if user.is_active %}lime{% else %}orange{% endif %}">
+            {% if user.is_active %}Active{% else %}Inactive{% endif %}
+          </td>
+          <td>
+            <a href="{% url 'ecotracksys:edit_user' user.id %}" class="action-btn edit-btn">✏ Edit</a>
+            <form action="{% url 'ecotracksys:delete_user' user.id %}" method="POST" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this user?')">🗑 Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" style="text-align:center; color: gray;">No users found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
   <div style="display:flex;color: #04706e; justify-content: space-between; align-items:center; margin-bottom: 8px;">
     <h2>Admins</h2>
     <!-- Button now triggers the modal instead of a missing URL -->
@@ -472,46 +529,7 @@ width: 50px;
 
 
 
-  <!-- ===== Users Section ===== -->
-  <div>
-
-    <h2 style="color: #04706e;">Users <span style="font-size: 14px; color: #04706e;">(Total: {{ users.count }})</span></h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for user in users %}
-        <tr>
-          <td>{{ user.get_full_name|default:user.name }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.role|title }}</td>
-          <td style="color: {% if user.is_active %}lime{% else %}orange{% endif %}">
-            {% if user.is_active %}Active{% else %}Inactive{% endif %}
-          </td>
-          <td>
-            <a href="{% url 'ecotracksys:edit_user' user.id %}" class="action-btn edit-btn">✏ Edit</a>
-            <form action="{% url 'ecotracksys:delete_user' user.id %}" method="POST" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this user?')">🗑 Delete</button>
-            </form>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="5" style="text-align:center; color: gray;">No users found.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
+  
 <!-- Add Admin Modal -->
 <div id="addAdminModal" class="modal">
   <div class="modal-content">

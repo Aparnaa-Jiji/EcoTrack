@@ -1,0 +1,476 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Notifications | EcoTrack</title>
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Notifications JS (optional custom functions) -->
+  <script src="{% static 'js/notifications.js' %}"></script>
+  <script>
+    const csrfToken = "{{ csrf_token }}"; // CSRF token for POST requests
+  </script>
+
+  <style>
+    /* =====================
+       Root variables
+       ===================== */
+    :root {
+      --bg-image: url("{% static 'images/bgimg.jpg' %}");
+      --container-gradient: linear-gradient(145deg, rgba(4, 57, 39, 0.9), rgba(5, 111, 79, 0.85));
+      --primary: #04706e;
+      --secondary: #2f9080;
+      --highlight: #85fcde;
+      --text-light: #e6fef3;
+      --text-dark: #0b3d2e;
+      --shadow: rgba(3, 104, 77, 0.5);
+    }
+
+    /* =====================
+       Body & container
+       ===================== */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg-image) no-repeat center center/cover;
+      color: var(--text-dark);
+    }
+
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* =====================
+       Sidebar styling
+       ===================== */
+    .sidebar {
+      width: 260px;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(103, 206, 168, 0.7));
+      box-shadow: 2px 0 12px var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      padding: 20px 0;
+      font-size: 1.6rem;
+      color: var(--primary);
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar ul li a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 22px;
+      color: var(--text-dark);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+    }
+
+    .sidebar ul li a:hover {
+      background: var(--secondary);
+      color: #ffffff;
+    }
+
+    .sidebar ul li a.active {
+      background: var(--primary);
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    /* =====================
+       Main content area
+       ===================== */
+    .main {
+      flex: 1;
+      padding: 24px;
+      backdrop-filter: blur(6px);
+    }
+
+    .header {
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    /* =====================
+       Tabs filter buttons
+       ===================== */
+    .tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: var(--secondary);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+    }
+
+    /* =====================
+       Bulk action buttons
+       ===================== */
+    .notif-actions {
+      margin-bottom: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .notif-actions button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .notif-actions #deleteSelected {
+      background: crimson; /* Delete button */
+    }
+
+    .notif-actions .mark-read-btn {
+      background: var(--primary); /* Bulk mark as read */
+    }
+
+    .notif-actions .mark-unread-btn {
+      background: var(--secondary); /* Bulk mark as unread */
+    }
+
+    /* =====================
+       Notifications list
+       ===================== */
+    .notifications {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 65vh;
+      overflow-y: auto;
+    }
+
+    .notification {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 14px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.85);
+      border-left: 6px solid var(--primary);
+      box-shadow: 0 4px 12px var(--shadow);
+      transition: 0.2s;
+    }
+
+    .notification:hover {
+      transform: translateX(2px);
+      box-shadow: 0 6px 18px var(--shadow);
+    }
+
+    .notif-text {
+      flex: 1;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notif-title {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .notif-msg {
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      margin-top: 2px;
+    }
+
+    .notif-time {
+      font-size: 0.8rem;
+      color: var(--highlight);
+      margin-top: 4px;
+    }
+
+    .notif-status {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      align-self: center;
+      margin-left: 10px;
+    }
+
+    .unread {
+      background-color: #2f9080;
+      color: #fff;
+    }
+
+    .read {
+      background-color: #eee;
+      color: #333;
+    }
+
+    .notif-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .delete-btn {
+      background: crimson;
+      border: none;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Toggle read/unread button */
+    .toggle-read-btn {
+      background: var(--primary);
+      border: none;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .toggle-read-btn.unread {
+      background: var(--secondary);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- =====================
+         Sidebar section
+         ===================== -->
+    <div class="sidebar">
+      <h2>EcoTrack</h2>
+      <ul>
+        <li><a href="{% url 'ecotracksys:admin_dashboard' %}"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+        <li><a href="{% url 'ecotracksys:pickup_management' %}"><i class="fas fa-trash"></i> <span>Pickup Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:leave_request_management' %}"><i class="fas fa-calendar-alt"></i> <span>Leave Requests</span></a></li>
+        <li><a href="{% url 'ecotracksys:complaint_management' %}"><i class="fas fa-bullhorn"></i> <span>Complaints</span></a></li>
+        <li><a href="{% url 'ecotracksys:user_management' %}"><i class="fas fa-users"></i> <span>User Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:collector_management' %}"><i class="fas fa-user-cog"></i> <span>Collector Management</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_notifications' %}" class="active"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_profile' %}"><i class="fas fa-user-shield"></i> <span>Admin Profile</span></a></li>
+      </ul>
+    </div>
+
+    <!-- =====================
+         Main content area
+         ===================== -->
+    <div class="main">
+      <div class="header">
+        <h1><i class="fas fa-bell"></i> Notifications</h1>
+      </div>
+
+      <!-- Tabs filter -->
+      <div class="tabs">
+        <button class="tab-btn active" data-filter="all">All</button>
+        <button class="tab-btn" data-filter="read">Read</button>
+        <button class="tab-btn" data-filter="unread">Unread</button>
+      </div>
+
+      <!-- Bulk action buttons -->
+      <div class="notif-actions">
+        <button id="deleteSelected">Delete Selected</button>
+        <button id="markReadSelected" class="mark-read-btn">Mark as Read</button>
+        <button id="markUnreadSelected" class="mark-unread-btn">Mark as Unread</button>
+      </div>
+
+      <!-- Notifications list -->
+      <div class="notifications" id="notifList">
+        {% for n in notifications %}
+        <div class="notification {% if n.status == 'unread' %}unread{% else %}read{% endif %}" 
+             data-id="{{ n.id }}" data-status="{{ n.status }}">
+          <!-- Checkbox for bulk actions -->
+          <input type="checkbox" class="notif-check">
+
+          <!-- Notification text -->
+          <div class="notif-text">
+            <div class="notif-title">{{ n.title }}</div>
+            <div class="notif-msg">{{ n.message }}</div>
+            <div class="notif-time">{{ n.created_at|date:"M d, H:i" }}</div>
+          </div>
+
+          <!-- Notification controls -->
+          <div class="notif-controls">
+            <!-- Status badge -->
+            <div class="notif-status">{% if n.status == 'read' %}Read{% else %}Unread{% endif %}</div>
+
+            <!-- Delete single notification -->
+            <button class="delete-btn" onclick="deleteNotification('{{ n.id }}')">Delete</button>
+
+            <!-- Toggle read/unread -->
+            <button class="toggle-read-btn {% if n.status == 'unread' %}unread{% endif %}" 
+                    onclick="toggleReadUnread(this, '{{ n.id }}')">
+              {% if n.status == 'read' %}Mark Unread{% else %}Mark Read{% endif %}
+            </button>
+          </div>
+        </div>
+        {% empty %}
+        <div style="padding:18px; text-align:center; color: var(--highlight);">
+          No notifications yet.
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // -----------------------
+    // Tabs filter
+    // -----------------------
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+
+        document.querySelectorAll('.notification').forEach(notif => {
+          if (filter === 'all' || notif.dataset.status === filter) {
+            notif.style.display = 'flex';
+          } else {
+            notif.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // -----------------------
+    // Mark notification as read
+    // -----------------------
+    function markAsRead(notif) {
+      notif.classList.remove('unread');
+      notif.classList.add('read');
+      notif.dataset.status = 'read';
+      notif.querySelector('.notif-status').innerText = 'Read';
+      notif.querySelector('.toggle-read-btn').innerText = 'Mark Unread';
+      notif.querySelector('.toggle-read-btn').classList.remove('unread');
+
+      // Send to backend
+      fetch(`/api/admin/notifications/${notif.dataset.id}/mark_read/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      }).catch(err => console.warn(err));
+    }
+
+    // -----------------------
+    // Mark notification as unread
+    // -----------------------
+    function markAsUnread(notif) {
+      notif.classList.remove('read');
+      notif.classList.add('unread');
+      notif.dataset.status = 'unread';
+      notif.querySelector('.notif-status').innerText = 'Unread';
+      notif.querySelector('.toggle-read-btn').innerText = 'Mark Read';
+      notif.querySelector('.toggle-read-btn').classList.add('unread');
+
+      // Send to backend
+      fetch(`/api/admin/notifications/${notif.dataset.id}/mark_unread/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      }).catch(err => console.warn(err));
+    }
+
+    // -----------------------
+    // Toggle read/unread via button
+    // -----------------------
+    function toggleReadUnread(btn, id) {
+      const notif = btn.closest('.notification');
+      if (notif.dataset.status === 'unread') {
+        markAsRead(notif);
+      } else {
+        markAsUnread(notif);
+      }
+    }
+
+    // -----------------------
+    // Delete single notification
+    // -----------------------
+    function deleteNotification(id) {
+      fetch(`/api/admin/notifications/${id}/delete/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      }).then(() => {
+        document.querySelector(`.notification[data-id="${id}"]`).remove();
+      }).catch(err => console.warn(err));
+    }
+
+    // -----------------------
+    // Bulk actions helpers
+    // -----------------------
+    function getSelectedNotifications() {
+      return Array.from(document.querySelectorAll('.notif-check:checked'))
+        .map(cb => cb.closest('.notification'));
+    }
+
+    // Bulk delete
+    document.getElementById('deleteSelected').addEventListener('click', () => {
+      getSelectedNotifications().forEach(n => deleteNotification(n.dataset.id));
+    });
+
+    // Bulk mark as read
+    document.getElementById('markReadSelected').addEventListener('click', () => {
+      getSelectedNotifications().forEach(n => markAsRead(n));
+    });
+
+    // Bulk mark as unread
+    document.getElementById('markUnreadSelected').addEventListener('click', () => {
+      getSelectedNotifications().forEach(n => markAsUnread(n));
+    });
+
+    // -----------------------
+    // Optional: click on text marks as read
+    // -----------------------
+    document.querySelectorAll('.notif-text').forEach(notifText => {
+      notifText.addEventListener('click', () => {
+        const notif = notifText.closest('.notification');
+        markAsRead(notif);
+      });
+    });
+  </script>
+</body>
+</html>

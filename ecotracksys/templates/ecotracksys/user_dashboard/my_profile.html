@@ -201,7 +201,7 @@
       {% if user.profile_image %}
       <img src="{{ user.profile_image.url }}" alt="{{ user.get_full_name }}'s Profile Picture" class="profile-img">
       {% else %}
-      <img src="/static/default-profile.png" alt="Default Profile Picture" class="profile-img">
+      <img src="/static/default_profile.png" alt="Default Profile Picture" class="profile-img">
       {% endif %}
 
       <div class="info-section">
@@ -211,16 +211,11 @@
           <div class="info-label">Name</div>
           <div class="info-value">{{ user.full_name| default:"N/A" }}</div>
         </div>
-
-
-
-
         <div class="info-row">
           <i class="fas fa-phone-alt"></i>
           <div class="info-label">Phone</div>
           <div class="info-value">{{ user.phone | default:"N/A" }}</div>
         </div>
-
         <div class="info-row">
           <i class="fas fa-envelope"></i>
           <div class="info-label">Email</div>
@@ -235,7 +230,7 @@
 
       </div>
 
-      <button class="edit-btn" onclick="window.location.href='{% url 'ecotracksys:edit_profile' %}'">✏️ Edit Profile</button>
+      <button class="edit-btn" onclick="window.location.href='{% url 'ecotracksys:update_password' %}'">✏️ Update Password</button>
     </div>
   </div>
 

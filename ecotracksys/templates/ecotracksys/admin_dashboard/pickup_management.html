@@ -1,4 +1,3 @@
-<!-- ecotrack/ecotracksys/templates/ecotracksys/admin_dashboard/pickup_management.html -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -52,12 +51,12 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      background: var(--primary);
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 4px 12px var(--shadow);
+      background: white;  
     }
-    th, td { padding: 16px; text-align: left; border-bottom: 1px solid rgba(3, 104, 77, 0.2); color: #e6fef3; }
+    th, td { padding: 16px; text-align: left; border-bottom: 1px solid rgba(3, 104, 77, 0.2); color: #000; }
     th { background: var(--primary); color: #fff; }
     tr:hover { background-color: rgba(4, 112, 110, 0.15); box-shadow: 0 0 12px rgba(133, 252, 222, 0.4); transform: scale(1.01); transition: all 0.2s ease-in-out; }
 
@@ -67,8 +66,8 @@
     .completed { background: seagreen; color: #fff; }
     .cancelled { background: crimson; color: #fff; }
 
-    .action-btn { background: rgba(255,255,255,0.1); border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; color: var(--highlight); transition: all 0.25s ease-in-out; }
-    .action-btn:hover { background: rgba(133,252,222,0.3); transform: scale(1.1); color: var(--text-dark); }
+    .action-btn { background: rgba(255,255,255,0.1); border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; color: var(--primary); transition: all 0.25s ease-in-out; }
+    .action-btn:hover { background: rgb(31, 137, 110); transform: scale(1.1); color: var(--text-dark); }
 
     .profile-menu { position: absolute; top: 16px; right: 30px; }
     .profile-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); cursor: pointer; }
@@ -86,6 +85,26 @@
       .main { margin-left: 70px; }
       .sidebar.collapsed + .main { margin-left: 70px; }
     }
+
+    .filter-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 20px;
+      background: var(--secondary);
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .filter-btn:hover { background: var(--primary); transform: scale(1.05); }
+    .filter-btn.active { background: var(--highlight); color: var(--text-dark); font-weight: bold; }
+
   </style>
 </head>
 <body>
@@ -98,13 +117,13 @@
       <ul>
         <li><a href="{% url 'ecotracksys:admin_dashboard' %}"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
         <li><a href="{% url 'ecotracksys:pickup_management' %}" class="active"><i class="fas fa-trash"></i> <span>Pickup Management</span></a></li>
-        <li><a href="{% url 'ecotracksys:zone_management' %}"><i class="fas fa-map-marker-alt"></i> <span>Zone Management</span></a></li>
         <li><a href="{% url 'ecotracksys:leave_request_management' %}"><i class="fas fa-calendar-alt"></i> <span>Leave Requests</span></a></li>
         <li><a href="{% url 'ecotracksys:complaint_management' %}"><i class="fas fa-bullhorn"></i> <span>Complaints</span></a></li>
         <li><a href="{% url 'ecotracksys:user_management' %}"><i class="fas fa-users"></i> <span>User Management</span></a></li>
         <li><a href="{% url 'ecotracksys:collector_management' %}"><i class="fas fa-user-cog"></i> <span>Collector Management</span></a></li>
-        <li><a href="{% url 'ecotracksys:analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
         <li><a href="{% url 'ecotracksys:admin_profile' %}"><i class="fas fa-user-shield"></i> <span>Admin Profile</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_notifications' %}" ><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
       </ul>
     </div>
 
@@ -124,6 +143,13 @@
       </div>
 
       <div class="header"><h1>Pickup Management</h1></div>
+      <div class="filter-tabs">
+        <button class="filter-btn active" data-status="all">All</button>
+        <button class="filter-btn" data-status="Pending">Pending</button>
+        <button class="filter-btn" data-status="In Progress">In Progress</button>
+        <button class="filter-btn" data-status="Missed">Missed</button>
+        <button class="filter-btn" data-status="Completed">Completed</button>
+      </div>
 
       <table>
         <thead>
@@ -137,7 +163,7 @@
         </thead>
         <tbody>
           {% for p in pickups %}
-          <tr>
+          <tr data-status="{{ p.status }}">            
             <td>{{ p.id }}</td>
             <td>{{ p.customer_name }}</td>
             <td>{{ p.pickup_date }}</td>
@@ -152,7 +178,6 @@
               </span>
             </td>
             <td>
-              <!-- Use a namespaced URL in data-url so JS doesn't guess paths -->
               <button
                 class="action-btn"
                 data-url="{% url 'ecotracksys:pickup_details' p.id %}"
@@ -179,98 +204,105 @@
   </div>
 
   <script>
-    function toggleSidebar(){ document.getElementById("sidebar").classList.toggle("collapsed"); }
-    function toggleProfileMenu(){
-      const menu = document.getElementById("profileDropdown");
-      menu.style.display = menu.style.display === "block" ? "none" : "block";
+function toggleSidebar(){ document.getElementById("sidebar").classList.toggle("collapsed"); }
+function toggleProfileMenu(){
+  const menu = document.getElementById("profileDropdown");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+document.addEventListener("click", function(e){
+  const profileMenu = document.querySelector(".profile-menu");
+  if (!profileMenu.contains(e.target)) {
+    document.getElementById("profileDropdown").style.display = "none";
+  }
+});
+
+const modal = document.getElementById("detailsModal");
+const closeBtn = document.getElementById("closeDetails");
+closeBtn.onclick = () => modal.style.display = "none";
+window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
+
+function getCSRFToken() {
+  const name = "csrftoken=";
+  const parts = document.cookie.split(";");
+  for (let part of parts) {
+    part = part.trim();
+    if (part.startsWith(name)) return decodeURIComponent(part.substring(name.length));
+  }
+  return "";
+}
+
+function statusClass(status) {
+  switch (status) {
+    case "Pending": return "pending";
+    case "In Progress": return "inprogress";
+    case "Completed": return "completed";
+    case "Cancelled": return "cancelled";
+    default: return "";
+  }
+}
+
+function openDetailsModal(btn) {
+  const url = btn.dataset.url;
+  fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+    .then(r => { if (!r.ok) throw new Error("Failed to fetch details"); return r.json(); })
+    .then(data => {
+      const csrf = getCSRFToken();
+
+      const assignUrlTemplate = "{% url 'ecotracksys:assign_collector' 0 %}";
+      const assignUrl = assignUrlTemplate.replace("0", data.id);
+
+      const body = `
+  <p><b>Citizen:</b> ${data.customer_name}</p>
+  <p><b>Date:</b> ${data.pickup_date}</p>
+  <p><b>Time:</b> ${data.pickup_time}</p>
+  <p><b>Address:</b> ${data.address}</p>
+  <p><b>Status:</b> <span class="status ${statusClass(data.status)}">${data.status}</span></p>
+
+  <h4>Collector Assignment</h4>
+  ${ (data.status === "Completed" || data.status === "Missed") 
+      ? `<p style="color:red; font-weight:bold;">Collector cannot be reassigned for completed or missed pickups.</p>` 
+      : `<form action="${assignUrl}" method="POST" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <input type="hidden" name="csrfmiddlewaretoken" value="${csrf}">
+          <select name="collector_id" required>
+            <option value="">-- Select Collector --</option>
+            ${data.collectors.map(c =>
+              `<option value="${c.id}" ${c.id === data.collector_id ? 'selected' : ''}>${c.email}</option>`
+            ).join('')}
+          </select>
+          <button type="submit" class="action-btn">${data.collector_id ? 'Reassign' : 'Assign'} Collector</button>
+          ${data.collector_id ? `<p style="margin-left:10px;"><b>Assigned to:</b> ${data.email}</p>` : ''}
+        </form>` 
     }
-    document.addEventListener("click", function(e){
-      const profileMenu = document.querySelector(".profile-menu");
-      if (!profileMenu.contains(e.target)) {
-        document.getElementById("profileDropdown").style.display = "none";
-      }
+`;
+
+      const modalBody = document.getElementById("modalBody");
+      modalBody.innerHTML = body;
+
+      const content = modal.querySelector(".modal-content");
+      content.style.animation = "none";
+      void content.offsetWidth;
+      content.style.animation = "slideDownFade 0.3s ease forwards";
+      modal.style.display = "flex";
+    })
+    .catch(err => {
+      console.error(err);
+      alert("Could not load details. Please confirm the server is running.");
     });
+}
 
-    const modal = document.getElementById("detailsModal");
-    const closeBtn = document.getElementById("closeDetails");
-    closeBtn.onclick = () => modal.style.display = "none";
-    window.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 
-    function getCSRFToken() {
-      const name = "csrftoken=";
-      const parts = document.cookie.split(";");
-      for (let part of parts) {
-        part = part.trim();
-        if (part.startsWith(name)) return decodeURIComponent(part.substring(name.length));
-      }
-      return "";
-    }
-
-    function statusClass(status) {
-      switch (status) {
-        case "Pending": return "pending";
-        case "In Progress": return "inprogress";
-        case "Completed": return "completed";
-        case "Cancelled": return "cancelled";
-        default: return "";
-      }
-    }
-
-    function openDetailsModal(btn) {
-      const url = btn.dataset.url;
-      fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
-        .then(r => { if (!r.ok) throw new Error("Failed to fetch details"); return r.json(); })
-        .then(data => {
-          const csrf = getCSRFToken();
-
-          // Build URLs using named patterns rendered server-side (safe & flexible)
-          const assignUrl = "{% url 'ecotracksys:assign_collector' 0 %}".replace("0", data.id);
-          // If you already have a named route, use it. Otherwise keep the hard path below:
-          const rescheduleUrl = "/dashboard/admin/reschedule/" + data.id + "/";
-
-          const body = `
-            <p><b>Citizen:</b> ${data.customer_name}</p>
-            <p><b>Date:</b> ${data.pickup_date}</p>
-            <p><b>Time:</b> ${data.pickup_time}</p>
-            <p><b>Address:</b> ${data.address}</p>
-            <p><b>Status:</b> <span class="status ${statusClass(data.status)}">${data.status}</span></p>
-
-            <h4>Collector Assignment</h4>
-            <form action="${assignUrl}" method="POST" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-              <input type="hidden" name="csrfmiddlewaretoken" value="${csrf}">
-              <select name="collector_id" required>
-                <option value="">-- Select Collector --</option>
-                ${data.collectors.map(c =>
-                  `<option value="${c.id}" ${c.id === data.collector_id ? 'selected' : ''}>${c.email}</option>`
-                ).join('')}
-              </select>
-              <button type="submit" class="action-btn">${data.collector_id ? 'Reassign' : 'Assign'} Collector</button>
-            </form>
-
-            <h4>Reschedule</h4>
-            <form action="${rescheduleUrl}" method="POST" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:8px;">
-              <input type="hidden" name="csrfmiddlewaretoken" value="${csrf}">
-              <input type="date" name="new_date" value="${data.pickup_date}" required>
-              <input type="time" name="new_time" value="${data.pickup_time}" required>
-              <button type="submit" class="action-btn">Reschedule</button>
-            </form>
-          `;
-
-          const modalBody = document.getElementById("modalBody");
-          modalBody.innerHTML = body;
-
-          // Show modal with a fresh animation
-          const content = modal.querySelector(".modal-content");
-          content.style.animation = "none";
-          void content.offsetWidth;
-          content.style.animation = "slideDownFade 0.3s ease forwards";
-          modal.style.display = "flex";
-        })
-        .catch(err => {
-          console.error(err);
-          alert("Could not load details. Please confirm the new URL is added and server is running.");
-        });
-    }
-  </script>
+    const filter = btn.dataset.status.toLowerCase();
+    document.querySelectorAll('tbody tr').forEach(row => {
+      const status = row.dataset.status.toLowerCase();
+      if (filter === 'all' || filter === status) row.style.display = '';
+      else row.style.display = 'none';
+    });
+  });
+});
+</script>
 </body>
 </html>

@@ -59,22 +59,18 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     # Additional user details
     name = models.CharField(max_length=100, blank=True, null=True)
-
-    
-
-    
     phone = models.CharField(max_length=15, blank=True, null=True)
-    profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
+    profile_image = models.ImageField(
+    upload_to='profile_images/', 
+    default='profile_images/default-profile.png',  # default image
+    blank=True,
+    null=True
+)
+
     date_joined = models.DateTimeField(default=timezone.now)
     # Role assigned to user
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='citizen')
-    zone = models.ForeignKey(
-   'ecotracksys.Zone',
-    on_delete=models.SET_NULL,
-    null=True,
-    blank=True,
-    related_name='users'
-)
+    shift_active = models.BooleanField(default=False)
     # Status fields
     is_active = models.BooleanField(default=True)   # Whether the user is active (can log in)
     is_staff = models.BooleanField(default=False)   # Whether the user can access admin site

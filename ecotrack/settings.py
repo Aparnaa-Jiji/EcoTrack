@@ -45,6 +45,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "accounts.middleware.NoCacheMiddleware",
+    
 ]
 
 # ================================
@@ -130,7 +132,8 @@ USE_TZ = True
 # Static & Media Files
 # ================================
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "ecotracksys", "static")]
+
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 MEDIA_URL = '/media/'
@@ -140,3 +143,26 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default Primary Key Field Type
 # ================================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+# middleware.py
+from django.utils.deprecation import MiddlewareMixin
+
+class DisableBackMiddleware(MiddlewareMixin):
+    def process_response(self, request, response):
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response['Pragma'] = 'no-cache'
+        response['Expires'] = '0'
+        return response
+
+
+# settings.py
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'ecotracksys.mca@gmail.com'      # <-- your email
+EMAIL_HOST_PASSWORD = 'pglo ybip dyzm impg'   # <-- app password if using Gmail
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

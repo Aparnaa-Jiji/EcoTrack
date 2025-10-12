@@ -1,4 +1,5 @@
 # ecotracksys/admin.py
+from time import timezone
 from django.contrib import admin
 from .models import PickupRequest, Complaint, Notification, LeaveRequest, Collector
 
@@ -35,13 +36,28 @@ class NotificationAdmin(admin.ModelAdmin):
 # -------------------------
 # LeaveRequest Admin
 # -------------------------
+
+# ecotracksys/admin.py
+from django.contrib import admin
+from .models import LeaveRequest
+from django.utils import timezone
+
 @admin.register(LeaveRequest)
 class LeaveRequestAdmin(admin.ModelAdmin):
-    list_display = ('collector', 'leave_type', 'start_date', 'end_date', 'status', 'created_at')
-    list_filter = ('leave_type', 'status', 'start_date')
-    search_fields = ('collector__email', 'reason')
-    ordering = ('-created_at',)
+    list_display = ('collector', 'leave_type', 'start_date', 'end_date', 'status', 'applied_at')
+    list_filter = ('status', 'leave_type', 'applied_at')
+    search_fields = ('collector__email', 'collector__first_name', 'collector__last_name')
+    readonly_fields = ('applied_at', 'reviewed_at')
+    actions = ['mark_approved', 'mark_rejected']
 
+    def mark_approved(self, request, queryset):
+        queryset.update(status='Approved', reviewed_at=timezone.now())
+    mark_approved.short_description = "Mark selected as approved"
+
+    def mark_rejected(self, request, queryset):
+        queryset.update(status='Rejected', reviewed_at=timezone.now())
+    mark_rejected.short_description = "Mark selected as rejected"
+    
 # -------------------------
 # Collector Admin
 # -------------------------

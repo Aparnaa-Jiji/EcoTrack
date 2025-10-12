@@ -1,5 +1,7 @@
 <!-- miniproject/ecotrack/ecotracksys/templates/ecotracksys/admin_dashboard/admin_dashboard.html -->
-{% load static %}
+
+{% load static %} <!-- Load Django static files -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,38 +18,49 @@
        Internal CSS for Dashboard Styling
        ========================= -->
   <style>
+    /* =========================
+       CSS Variables (Color Palette & Images)
+       ========================= */
     :root {
-      --bg-image: url("{% static 'images/bgimg.jpg' %}");
-      --primary: #04706e;
-      --secondary: #2f9080;
-      --highlight: #85fcde;
-      --bg-overlay: rgba(109, 148, 135, 0.25);
-      --shadow: rgba(3, 104, 77, 0.5);
-      --text-dark: #0b3d2e;
+      --bg-image: url("{% static 'images/bgimg.jpg' %}"); /* Background image */
+      --primary: #04706e; /* Primary theme color */
+      --secondary: #2f9080; /* Secondary theme color */
+      --highlight: #85fcde; /* Highlight color for icons/elements */
+      --bg-overlay: rgba(109, 148, 135, 0.25); /* Semi-transparent overlay */
+      --shadow: rgba(3, 104, 77, 0.5); /* Shadow color */
+      --text-dark: #0b3d2e; /* Dark text color */
     }
 
+    /* =========================
+       Body styling
+       ========================= */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: var(--bg-image) no-repeat center center/cover;
+      background: var(--bg-image) no-repeat center center/cover; /* Background image cover */
       color: var(--text-dark);
     }
 
+    /* =========================
+       Container for Sidebar + Main Content
+       ========================= */
     .container {
       display: flex;
       min-height: 100vh;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7));
+      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7)); /* Gradient overlay */
     }
 
-    /* Sidebar */
+    /* =========================
+       Sidebar Styling
+       ========================= */
     .sidebar {
-      width: 260px;
+      width: 260px; /* Expanded width */
       background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7));
-      backdrop-filter: blur(12px);
-      box-shadow: 2px 0 12px var(--shadow);
-      transition: width 0.3s ease, padding 0.3s ease;
+      backdrop-filter: blur(12px); /* Frosted glass effect */
+      box-shadow: 2px 0 12px var(--shadow); /* Shadow on the right */
+      transition: width 0.3s ease, padding 0.3s ease; /* Smooth collapse */
     }
-    .sidebar.collapsed { width: 70px; padding: 0; }
+    .sidebar.collapsed { width: 70px; padding: 0; } /* Collapsed state */
     .sidebar h2 {
       text-align: center;
       padding: 20px 0;
@@ -55,23 +68,24 @@
       margin: 0;
       color: var(--primary);
     }
-    .sidebar.collapsed h2 { opacity: 0; }
+    .sidebar.collapsed h2 { opacity: 0; } /* Hide text when collapsed */
 
-    .sidebar ul { list-style: none; padding:0; margin:0; }
+    .sidebar ul { list-style: none; padding:0; margin:0; } /* Remove default list styles */
     .sidebar ul li a {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 12px; /* Space between icon and text */
       padding: 14px 22px;
       color: var(--text-dark);
       text-decoration: none;
       border-radius: 8px;
       transition: background 0.3s ease;
     }
-    .sidebar ul li a:hover { background: var(--secondary); color:#fff; }
-    .sidebar ul li a.active { background: var(--primary); color:#fff; font-weight:bold; }
-    .sidebar.collapsed ul li span { display: none; }
+    .sidebar ul li a:hover { background: var(--secondary); color:#fff; } /* Hover effect */
+    .sidebar ul li a.active { background: var(--primary); color:#fff; font-weight:bold; } /* Active page */
+    .sidebar.collapsed ul li span { display: none; } /* Hide text in collapsed sidebar */
 
+    /* Sidebar toggle button */
     .toggle-btn {
       position: absolute;
       top: 12px;
@@ -83,11 +97,13 @@
       cursor: pointer;
     }
 
-    /* Main content */
+    /* =========================
+       Main Content Styling
+       ========================= */
     .main {
-      flex: 1;
+      flex: 1; /* Take remaining space */
       padding: 24px;
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px); /* Light blur effect */
       position: relative;
     }
 
@@ -98,7 +114,9 @@
       color: var(--primary);
     }
 
-    /* Cards */
+    /* =========================
+       Info Cards (Dashboard Metrics)
+       ========================= */
     .card-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
@@ -114,9 +132,9 @@
       transition: transform 0.2s;
       color: #0b3d2e;
     }
-    .card:hover { transform: translateY(-5px); }
-    .card i { font-size:26px; color: var(--highlight); margin-bottom:10px; }
-    .card h3 { font-size:18px; margin-bottom:8px; color: var(--primary); }
+    .card:hover { transform: translateY(-5px); } /* Hover lift effect */
+    .card i { font-size:26px; color: var(--highlight); margin-bottom:10px; } /* Card icons */
+    .card h3 { font-size:18px; margin-bottom:8px; color: var(--primary); } /* Card titles */
     .card p {
       font-size:22px;
       font-weight:bold;
@@ -128,7 +146,9 @@
       box-shadow:0 2px 10px var(--shadow);
     }
 
-    /* Extra section */
+    /* =========================
+       Extra Section (Profile Box & Chart)
+       ========================= */
     .extra-section {
       margin-top:40px;
       display:flex;
@@ -136,7 +156,7 @@
       gap:20px;
     }
     .profile-box, .bar-chart-box {
-      flex: 1 1 300px;
+      flex: 1 1 300px; /* Responsive sizing */
       background: rgba(255,255,255,0.85);
       backdrop-filter: blur(10px);
       padding:20px;
@@ -149,7 +169,9 @@
     .bar span { display:block; height:100%; border-radius:10px; background: var(--primary); }
     .bar-label { font-size:14px; margin-bottom:4px; }
 
-    /* Profile menu */
+    /* =========================
+       Profile Image Menu
+       ========================= */
     .profile-menu {
       position: absolute;
       top: 16px;
@@ -167,7 +189,7 @@
     }
     .profile-img:hover { transform: scale(1.05); }
     .profile-dropdown {
-      display: none;
+      display: none; /* Hidden by default */
       position: absolute;
       right: 0;
       top: 55px;
@@ -188,6 +210,9 @@
     }
     .profile-dropdown a:hover { background: var(--secondary); color: #fff; }
 
+    /* =========================
+       Responsive Design for Mobile
+       ========================= */
     @media screen and (max-width:768px){
       .sidebar { position:fixed; height:100%; z-index:1000; }
       .main { margin-left:70px; }
@@ -197,74 +222,130 @@
 
 <body>
   <div class="container">
-    <!-- Sidebar -->
+    <!-- =========================
+         Sidebar Navigation
+         ========================= -->
     <div class="sidebar" id="sidebar">
-      <h2 id="brandText">EcoTrack</h2>
-      <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">☰</button>
+      <h2 id="brandText">EcoTrack</h2> <!-- Brand/Logo -->
+      <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle sidebar">☰</button> <!-- Sidebar collapse button -->
 
       <ul>
+        <!-- Navigation Links with Icons -->
         <li><a href="{% url 'ecotracksys:admin_dashboard' %}" class="active"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
         <li><a href="{% url 'ecotracksys:pickup_management' %}"><i class="fas fa-trash"></i> <span>Pickup Management</span></a></li>
-        <li><a href="{% url 'ecotracksys:zone_management' %}"><i class="fas fa-map-marker-alt"></i> <span>Zone Management</span></a></li>
         <li><a href="{% url 'ecotracksys:leave_request_management' %}"><i class="fas fa-calendar-alt"></i> <span>Leave Requests</span></a></li>
         <li><a href="{% url 'ecotracksys:complaint_management' %}"><i class="fas fa-bullhorn"></i> <span>Complaints</span></a></li>
         <li><a href="{% url 'ecotracksys:user_management' %}"><i class="fas fa-users"></i> <span>User Management</span></a></li>
         <li><a href="{% url 'ecotracksys:collector_management' %}"><i class="fas fa-user-cog"></i> <span>Collector Management</span></a></li>
-        <li><a href="{% url 'ecotracksys:analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
         <li><a href="{% url 'ecotracksys:admin_profile' %}"><i class="fas fa-user-shield"></i> <span>Admin Profile</span></a></li>
       </ul>
     </div>
 
-    <!-- Main Content -->
+    <!-- =========================
+         Main Content Area
+         ========================= -->
     <div class="main">
       <!-- Profile Image Dropdown -->
       <div class="profile-menu">
         {% if user.is_authenticated %}
           {% if request.user.profile_image %}
+            <!-- User uploaded profile image -->
             <img src="{{ request.user.profile_image.url }}" alt="Profile Image" class="profile-img" onclick="toggleProfileMenu()">
           {% else %}
+            <!-- Default profile image -->
             <img src="{% static 'default_profile.png' %}" alt="Profile Image" class="profile-img" onclick="toggleProfileMenu()">
           {% endif %}
         {% endif %}
 
-        <!-- Dropdown Menu -->
+        <!-- Profile Dropdown Menu -->
         <div class="profile-dropdown" id="profileDropdown">
           <a href="{% url 'ecotracksys:admin_profile' %}">👤 View Profile</a>
           <a href="{% url 'logout' %}">🚪 Logout</a>
         </div>
       </div>
 
+      <!-- Dashboard Header -->
       <div class="dashboard-header">Admin Dashboard Overview</div>
 
-      <!-- Info Cards -->
+      <!-- =========================
+           Info Cards (Metrics)
+           ========================= -->
       <div class="card-container">
+        <!-- Total Pickup Requests Card -->
         <div class="card">
           <i class="fas fa-truck"></i>
           <h3>Total Pickup Requests</h3>
           <p>{{ total_pickup_requests }}</p>
-          <span style="display:block; margin-top:6px;">Completed: {{ completed_pickups }} &nbsp;&nbsp; 🕒 Active: {{ active_pickups }}</span>
+          <span style="display:block; margin-top:6px;">Completed: {{ completed_pickups }} &nbsp;&nbsp; </span>
         </div>
-        <div class="card"><i class="fas fa-plus-circle"></i><h3>New Pickup Requests</h3><p>{{ new_pickup_requests }}</p></div>
-        <div class="card"><i class="fas fa-times-circle"></i><h3>Missed Pickups</h3><p>{{ missed_pickups }}</p></div>
-        <div class="card"><i class="fas fa-comment-alt"></i><h3>New Complaints</h3><p>{{ new_complaints }}</p></div>
-        <div class="card"><i class="fas fa-calendar-minus"></i><h3>New Leave Requests</h3><p>{{ new_leave_requests }}</p></div>
-        <div class="card"><i class="fas fa-user-plus"></i><h3>New Collectors</h3><p>{{ new_collectors }}</p></div>
-        <div class="card"><i class="fas fa-exclamation-triangle"></i><h3>System Alerts</h3><p>{{ system_alerts }}</p></div>
+
+        <!-- New Pickup Requests Card -->
+        <div class="card">
+          <i class="fas fa-plus-circle"></i>
+          <h3>New Pickup Requests</h3>
+          <p>{{ new_pickup_requests }}</p>
+        </div>
+
+        <!-- Missed Pickups Card -->
+        <div class="card">
+          <i class="fas fa-times-circle"></i>
+          <h3>Missed Pickups</h3>
+          <p>{{ missed_pickups }}</p>
+        </div>
+
+        <!-- New Complaints Card -->
+        <div class="card">
+          <i class="fas fa-comment-alt"></i>
+          <h3>New Complaints</h3>
+          <p>{{ new_complaints }}</p>
+        </div>
+
+        <!-- New Leave Requests Card -->
+        <div class="card">
+          <i class="fas fa-calendar-minus"></i>
+          <h3>New Leave Requests</h3>
+          <p>{{ new_leave_requests }}</p>
+        </div>
+
+        <!-- New Collectors Card -->
+        <div class="card">
+          <i class="fas fa-user-plus"></i>
+          <h3>New Collectors</h3>
+          <p>{{ new_collectors }}</p>
+        </div>
+
+        <!-- System Alerts Card -->
+        <div class="card">
+          <i class="fas fa-exclamation-triangle"></i>
+          <h3>System Alerts</h3>
+          <p>{{ system_alerts }}</p>
+        </div>
+
+        <!-- Active Collectors Card -->
         <div class="card">
           <i class="fas fa-user"></i>
           <h3>Active Collectors</h3>
           <p>{{ active_collectors }}</p>
-          <strong style="color:#ff5252; display:block; margin-top:6px;">{{ collectors_on_leave_today }} on leave today</strong>
+          <strong style="color:#ff5252; display:block; margin-top:6px;">
+            {{ collectors_on_leave_today }} on leave today
+          </strong>
         </div>
       </div>
 
-      <!-- Extra Section -->
+      <!-- =========================
+           Extra Section (Profile & Weekly Chart)
+           ========================= -->
       <div class="extra-section">
+        <!-- Quick Profile Access -->
         <div class="profile-box">
           <h3><i class="fas fa-user-circle"></i> Quick Profile Access</h3>
           <p>Logged in as <strong>Admin (eco_admin01)</strong></p>
           <p><a href="#">Edit Profile</a> | <a href="#">Change Password</a></p>
         </div>
+
+        <!-- Weekly Pickup Overview Chart -->
         <div class="bar-chart-box">
           <h3><i class="fas fa-chart-bar"></i> Weekly Pickup Overview</h3>
           <canvas id="weeklyChart"></canvas>
@@ -273,19 +354,23 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- =========================
+       Scripts
+       ========================= -->
   <script>
+    // Toggle sidebar collapse
     function toggleSidebar() {
       const sidebar = document.getElementById("sidebar");
       sidebar.classList.toggle("collapsed");
     }
 
+    // Toggle profile dropdown menu
     function toggleProfileMenu() {
       const menu = document.getElementById("profileDropdown");
       menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
 
-    // Close menu if clicked outside
+    // Close profile dropdown if clicked outside
     document.addEventListener("click", function(e) {
       const profileMenu = document.querySelector(".profile-menu");
       if (!profileMenu.contains(e.target)) {
@@ -294,25 +379,27 @@
     });
   </script>
 
-  <!-- Chart.js -->
+  <!-- =========================
+       Chart.js for Weekly Pickup Overview
+       ========================= -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const ctx = document.getElementById('weeklyChart').getContext('2d');
     new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], // Weekdays
         datasets: [{
           label: 'Pickups Completed',
-          data: [12, 19, 7, 14, 10, 15, 9],
-          backgroundColor: '#66bb6a',
+          data: [12, 19, 7, 14, 10, 15, 9], // Sample data
+          backgroundColor: '#66bb6a', // Bar color
           borderRadius: 8
         }]
       },
       options: {
         responsive: true,
-        plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true } }
+        plugins: { legend: { display: false } }, // Hide legend
+        scales: { y: { beginAtZero: true } } // Y-axis starts at zero
       }
     });
   </script>

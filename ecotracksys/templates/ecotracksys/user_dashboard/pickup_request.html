@@ -2,282 +2,388 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pickup Request | EcoTrack</title>
-
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<style>
-body {
-  font-family: 'Segoe UI', 'Roboto', sans-serif;
-  margin: 0;
-  min-height: 100vh;
-  color: #064e3b;
-  background-image: url("{% static 'user_bg.jpg' %}");
-  background-size: cover;
-  background-position: center;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pickup Request – EcoTrack</title>
+  <!-- Flatpickr CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', 'Roboto', sans-serif;
+      margin: 0;
+      background: url("{% static 'user_bg.jpg' %}") no-repeat center/cover;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 30px 15px;
+    }
+    .pickup-form-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 30px;
+      width: 100%;
+      max-width: 650px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    h2 {
+      text-align: center;
+      color: #059669;
+      margin-bottom: 25px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+      width: 100%;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #065f46;
+    }
+    input, textarea, select, button.select-map {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1.5px solid #10b981;
+      font-size: 1rem;
+      background: #f9f9f9;
+      color: #064e3b;
+      box-sizing: border-box;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: #059669;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(5,150,105,0.2);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+    .inline-fields {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .inline-fields .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+    .error-msg {
+      color: #b91c1c;
+      font-size: 0.9rem;
+      margin-top: 5px;
+      display: none;
+    }
+    button.select-map {
+      background: #2563eb;
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+    button.select-map:hover {
+      background: #1d4ed8;
+    }
+    .modal {/* Modal for map */
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+    }
+    .modal-content {
+      background: #fff;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 700px;
+      position: relative;
+    }
+    #map {
+      width: 100%;
+      height: 400px;
+      border-radius: 8px;
+    }
+    .close {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #333;
+    }
+    /* ---------- Profile ---------- */
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .user-profile img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #4ade80;
+      box-shadow: 0 0 10px rgba(16,185,129,0.6);
+    }
+    .user-profile .name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #16a34a;
+    }
+    /* ---------- Map ---------- */
+    .map-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      border-radius: 8px;
+      color: #fff;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      margin-top: 24px;
+      transition: 0.3s;
+    }
+    .map-button:hover {
+      transform: translateY(-2px) scale(1.05);
+    }
+    /* ---------- Modal Map ---------- */
+    #modalMapContainer {
+      display: none;
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 600px;
+      height: 450px;
+      z-index: 1000;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      flex-direction: column;
+    }
+    #modalMapHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: #10b981;
+      color: #fff;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+    }
+    #modalMapHeader button {
+      background: transparent;
+      color: #fff;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0 6px;
+      line-height: 1;
+    }
+    #modalMapHeader button:hover {
+      color: #f87171;
+    }
+    #modalSearch {
+      display: flex;
+      gap: 6px;
+      margin: 8px;
+    }
+    #modalMap {
+      flex: 1;
+      width: 100%;
+      border-radius: 12px;
+    }
+    .cancel-btn {
+      width: 100%;
+      padding: 12px;
+      background: #b91c1c; /* Red */
+      color: #fff;
+      font-weight: 600;
+      border:none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 10px;
+      display: inline-block;
+      text-align: center;  
+      text-decoration: none;
 }
+.cancel-btn:hover {
+  background: #991b1b; /* Darker red on hover */
+  transform: scale(1.02);
+}
+button.submit-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #34d399, #059669);
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 10px;
+    }
 
-.pickup-form-wrapper {
-  background: rgba(198, 255, 220, 0.85);
-  border-radius: 15px;
+    button.submit-btn:hover {
+      background: linear-gradient(135deg, #10b981, #047857);
+    }
+/* Pickup Time row */
+.time-row {
+  display: flex;
+  gap: 15px;
+  align-items: flex-end; /* keeps inputs aligned at the bottom */
+}
+.time-row .form-group {
+  flex: 1;
+  margin-bottom: 0; /* remove extra gap */
+}
+.time-row label {
+  margin-bottom: 4px; /* reduce spacing under labels */
+}
+.pickup-form-card {
+  position: relative; /* Add this to allow absolute positioning inside */
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
   padding: 30px;
-  max-width: 800px;
-  margin: 40px auto;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  backdrop-filter: blur(8px);
-  position: relative;
+  width: 100%;
+  max-width: 650px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
 }
-
 .home-btn {
   position: absolute;
   top: 20px;
-  left: 20px;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 22px;
+  right: 20px; /* top-right corner of card */
+  font-size: 1.5rem;
   text-decoration: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-.home-btn:hover { transform: scale(1.1) rotate(-10deg); box-shadow:0 6px 16px rgba(0,0,0,0.35); }
-
-.pickup-form-wrapper h3 {
-  text-align: center;
-  font-size: 26px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 30px;
-  color: #10b981;
-}
-
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-.user-profile img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #4ade80;
-  box-shadow: 0 0 10px rgba(16,185,129,0.6);
-}
-.user-profile .name { font-size: 1.2rem; font-weight: 700; color: #16a34a; }
-
-.form-row { display: flex; gap: 16px; flex-wrap: wrap; }
-.form-col { flex: 1; min-width: 150px; }
-
-.pickup-form-wrapper label { display: block; margin-top: 12px; font-weight: 600; color: #064e3b; }
-
-.pickup-form-wrapper input,
-.pickup-form-wrapper textarea,
-.pickup-form-wrapper select {
-  width: 100%;
-  padding: 10px 14px;
+  color: #059669;
+  background: rgba(255,255,255,0.9);
+  padding: 6px 10px;
   border-radius: 8px;
-  border: 2px solid #4ade80;
-  background: rgba(255, 255, 255, 0.85);
-  color: #064e3b;
-  font-size: 1rem;
-  outline: none;
-  height: 38px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: 0.3s;
 }
-.pickup-form-wrapper textarea { height: auto; }
-.pickup-form-wrapper input:focus,
-.pickup-form-wrapper textarea:focus,
-.pickup-form-wrapper select:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 0 2px rgba(16,185,129,0.4);
-}
-
-.map-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
-  border-radius: 8px;
+.home-btn:hover {
+  background: #10b981;
   color: #fff;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  font-size: 0.95rem;
-  margin-top: 24px;
-}
-.map-button:hover { transform: translateY(-2px) scale(1.05); }
-
-.pickup-form-wrapper button {
-  width: 220px;
-  padding: 12px 0;
-  margin: 20px auto 0 auto;
-  display: block;
-  font-weight: 700;
-  font-size: 1.05rem;
-  color: #fff;
-  background: linear-gradient(180deg, #34d399 0%, #10b981 60%, #059669 100%);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 4px 0 #059669, 0 8px 12px rgba(0,0,0,0.2);
-}
-.pickup-form-wrapper button:hover { transform: translateY(-3px) scale(1.05); }
-
-#errorMessage, #locationError {
-  color: #b91c1c;
-  font-weight: bold;
-  margin-top: 8px;
-  display: none;
-}
-
-#modalMapContainer {
-  display: none;
-  position: fixed;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 600px;
-  height: 450px;
-  z-index: 1000;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-  flex-direction: column;
-  display: none;
-}
-#modalMapHeader {
-  display:flex; justify-content:space-between; align-items:center;
-  padding:8px 12px; background:#10b981; color:#fff;
-  border-top-left-radius:12px; border-top-right-radius:12px;
-}
-#modalMapHeader button { background:#fff; color:#10b981; border:none; border-radius:6px; padding:4px 8px; cursor:pointer; }
-#modalSearch { display:flex; gap:6px; margin:8px; }
-
-#modalMap { flex:1; width:100%; border-radius:12px; }
-
-@media (max-width: 768px) {
-  .pickup-form-wrapper { width: 90%; padding: 20px; }
-  .form-col { min-width: 100%; }
+  transform: translateY(-2px) scale(1.05);
 }
 </style>
 </head>
 <body>
-
-<div class="pickup-form-wrapper">
-  <a href="{% url 'ecotracksys:citizen_dashboard' %}" class="home-btn">🏠</a>
-  <h3>Pickup Request</h3>
-
-  <div class="user-profile">
-    {% if user.profile_image %}
-      <img src="{{ user.profile_image.url }}" alt="{{ user.name }}">
-    {% else %}
-      <img src="{% static 'default_profile.png' %}" alt="Default Avatar">
-    {% endif %}
-    <span id="profile-name" class="name">{{ user.name }}</span>
-  </div>
-
-  {% if messages %}
-    <div class="messages">
-      {% for message in messages %}
+  <div class="pickup-form-wrapper">
+    <a href="{% url 'ecotracksys:citizen_dashboard' %}" class="home-btn">🏠</a>
+    <div class="pickup-form-card">
+      <h2>Request a Pickup</h2>
+        <!-- User Info -->
+      <div class="user-profile">
+        {% if user.profile_image %}
+        <img src="{{ user.profile_image.url }}" alt="{{ user.name }}">
+        {% else %}
+        <img src="{% static 'default_profile.png' %}" alt="Default Avatar">
+        {% endif %}
+        <span id="profile-name" class="name">{{ user.name }}</span>
+      </div>
+        <!-- Django Messages -->
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
         <div class="{{ message.tags }}">{{ message }}</div>
-      {% endfor %}
-    </div>
-  {% endif %}
-
-  <form id="pickupForm" method="post" novalidate>
-    {% csrf_token %}
-
-    <div class="form-row">
-      <div class="form-col">
-        <label for="customer_name">Name</label>
-        <input type="text" id="customer_name" name="customer_name" value="{{ user.name }}" required>
+        {% endfor %}
       </div>
-      <div class="form-col">
-        <label for="phone">Phone</label>
-        <input type="tel" id="phone" name="phone" value="{{ user.phone }}" required>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-col">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" value="{{ user.email }}" required>
-      </div>
-      <div class="form-col">
-        <label for="address">Address</label>
-        <textarea id="address" name="address" rows="2">{{ user.profile.address|default_if_none:"" }}</textarea>
-      </div>
-    </div>
-
-    <input type="hidden" id="lat" name="lat">
-    <input type="hidden" id="lng" name="lng">
-
-    <button type="button" class="map-button" id="geocodeBtn">📍 Locate on Map</button>
-    <div id="locationError"></div>
-
-    <div class="form-row">
-      <div class="form-col">
-        <label for="pickup_date">Preferred Date</label>
-        <input type="date" id="pickup_date" name="pickup_date" required>
-      </div>
-      <div class="form-col">
-        <label>Preferred Time</label>
-        <div style="display:flex; gap:10px;">
-          <input type="time" id="pickup_time_from" name="pickup_time_from" required>
-          <input type="time" id="pickup_time_to" name="pickup_time_to" required>
+      {% endif %}
+      <form method="POST" id="pickupForm">
+        {% csrf_token %}
+        <div class="inline-fields">
+          <div class="form-group">
+            <label for="customer_name">Name</label>
+            <input type="text" id="customer_name" name="customer_name" value="{{ user.name }}" readonly>
+          </div>
         </div>
-        <div id="errorMessage">❌ "From" time must be earlier than "To" time</div>
+        <div class="inline-fields">
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" name="phone" value="{{ user.phone }}" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}" readonly>
+          </div>
+        </div>
+      <div class="inline-fields">
+        <div class="form-group">
+          <label for="address">Address</label>
+          <textarea id="address" name="address" rows="2">{{ user.profile.address|default_if_none:"" }}</textarea>
+          <button type="button" id="geocodeBtn" class="select-map">📍 Select on Map</button>
+          <input type="hidden" id="lat" name="lat">
+          <input type="hidden" id="lng" name="lng">
+        <div id="locationError" class="error-msg">❌ Please choose a valid location</div>
+      </div>
+      <div class="inline-fields">
+        <div class="form-group time-wrapper">
+          <label>Pickup Time</label>
+          <div class="time-row">
+          <div class="form-group">
+          <input type="text" id="pickup_time_from" name="pickup_time_from" placeholder="From" required>
+          <div class="error-msg">❌ Invalid time</div>
+        </div>
+        <div class="form-group">
+          <input type="text" id="pickup_time_to" name="pickup_time_to" placeholder="To" required>
+          <div class="error-msg">❌ Invalid time</div>
+        </div>
       </div>
     </div>
-
-    <div class="form-row">
-      <div class="form-col">
-        <label for="waste_type">Type of Waste</label>
-        <select id="waste_type" name="waste_type" required>
-          <option value="">-- Select --</option>
-          <option value="organic">Biodegradable / Organic Waste</option>
-          <option value="recyclable">Recyclable Waste</option>
-          <option value="nonrecyclable">Non-Recyclable / Residual Waste</option>
-          <option value="ewaste">E-Waste</option>
-          <option value="hazardous">Hazardous Waste</option>
-          <option value="construction">Construction & Demolition Waste</option>
-        </select>
+  </div>
+</div>
+      <div class="inline-fields">
+        <div class="form-group">
+          <label for="pickup_date">Pickup Date</label>
+          <input type="text" id="pickup_date" name="pickup_date" placeholder="Select Date" required>
+          <div id="dateError" class="error-msg">❌ Please select a future date.</div>
+        </div>
+        <div class="form-group">
+          <label for="waste_type">Type of Waste</label>
+          <select id="waste_type" name="waste_type" required>
+            <option value="">-- Select --</option>
+            <option value="organic">Biodegradable / Organic Waste</option>
+            <option value="recyclable">Recyclable Waste</option>
+            <option value="nonrecyclable">Non-Recyclable / Residual Waste</option>
+            <option value="ewaste">E-Waste</option>
+            <option value="hazardous">Hazardous Waste</option>
+            <option value="construction">Construction & Demolition Waste</option>
+          </select>
+        </div>
+      <div class="form-group">
+        <label for="quantity">Quantity (maximum 20Kg)</label>
+        <input type="number" id="quantity" name="quantity" value="1" min="1" max="20" required>
       </div>
-      <div class="form-col">
+      <div class="form-group">
         <label for="special_instructions">Special Instructions</label>
         <textarea id="special_instructions" name="special_instructions" rows="2"></textarea>
       </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-col">
-        <label for="quantity">Quantity (kg)</label>
-        <input type="number" id="quantity" name="quantity" value="1" min="1" required>
       </div>
-      <div class="form-col">
-        <label for="price">Estimated Price</label>
-        <input type="text" id="price" name="price" readonly value="0">
+      <div class="inline-fields">
+        <div class="form-group">
+          <button type="submit" class="submit-btn">Submit Request</button>
+          </div>
+        <div class="form-group">
+          <a href="{% url 'ecotracksys:citizen_dashboard' %}" class="cancel-btn">Cancel</a>
+        </div>
       </div>
-    </div>
-
-    <button type="submit">Submit Request</button>
-  </form>
-</div>
-
-<!-- Modal Map -->
+    </form>
+  </div>
+  <!-- ---------- Modal Map ---------- -->
 <div id="modalMapContainer">
   <div id="modalMapHeader">
     <span>Choose Location</span>
@@ -289,35 +395,58 @@ body {
   </div>
   <div id="modalMap"></div>
 </div>
-
-<script>
+  <!-- Flatpickr & Leaflet JS -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <script>
+/* ---------- Profile name live update ---------- */
 const profileName = document.getElementById('profile-name');
 const nameInput = document.getElementById('customer_name');
-nameInput.addEventListener('input', ()=>{ profileName.textContent = nameInput.value || 'Your Name'; });
+nameInput.addEventListener('input', () => {
+  profileName.textContent = nameInput.value || 'Your Name';
+});
+// Time picker for Pickup From
+const pickupFrom = flatpickr("#pickup_time_from", {
+  enableTime: true,
+  noCalendar: true,
+  dateFormat: "h:i K",   // 12hr format with AM/PM
+  minTime: "09:00",
+  maxTime: "18:00",
+  defaultHour: 9,
+  onChange: function(selectedDates, dateStr) {
+    const timeError = document.querySelector("#pickup_time_from + .error-msg");
+    if (!dateStr) return;
+    const hour = new Date("1970-01-01 " + dateStr).getHours();
+    timeError.style.display = (hour < 9 || hour >= 18) ? "block" : "none";
 
-// Time validation
-const fromTime = document.getElementById("pickup_time_from");
-const toTime = document.getElementById("pickup_time_to");
-const errorMessage = document.getElementById("errorMessage");
-function validateTime() {
-  if(fromTime.value && toTime.value && fromTime.value >= toTime.value){
-    errorMessage.style.display="block"; return false;
-  } else { errorMessage.style.display="none"; return true; }
-}
-fromTime.addEventListener("input", validateTime);
-toTime.addEventListener("input", validateTime);
+    // ✅ Update "Pickup To" minTime dynamically
+    if (selectedDates[0]) {
+      const minTo = selectedDates[0].getHours().toString().padStart(2, "0") + ":" +
+                    selectedDates[0].getMinutes().toString().padStart(2, "0");
+      pickupTo.set("minTime", minTo);
+    }
+    validateTime();
+  }
+});
+// Time picker for Pickup To
+const pickupTo = flatpickr("#pickup_time_to", {
+  enableTime: true,
+  noCalendar: true,
+  dateFormat: "h:i K",   // 12hr format with AM/PM
+  minTime: "09:00",
+  maxTime: "18:00",
+  defaultHour: 10,
+  onChange: function(selectedDates, dateStr) {
+    const timeError = document.querySelector("#pickup_time_to + .error-msg");
+    if (!dateStr) return;
+    const hour = new Date("1970-01-01 " + dateStr).getHours();
+    timeError.style.display = (hour < 9 || hour >= 18) ? "block" : "none";
+    validateTime();
+  }
+});
 
-// Price calculation
-const wasteCost = {'organic':20,'recyclable':15,'nonrecyclable':25,'ewaste':30,'hazardous':50,'construction':40};
-function updatePrice(){
-  const type=document.getElementById('waste_type').value;
-  const qty=parseInt(document.getElementById('quantity').value)||1;
-  document.getElementById('price').value=wasteCost[type]?wasteCost[type]*qty:0;
-}
-document.getElementById('waste_type').addEventListener('change',updatePrice);
-document.getElementById('quantity').addEventListener('input',updatePrice);
-
-// Modal map logic
+/* ---------- Map Modal ---------- */
 const mapModal = document.getElementById('modalMapContainer');
 const geocodeBtn = document.getElementById('geocodeBtn');
 const closeMapBtn = document.getElementById('closeMapBtn');
@@ -328,22 +457,51 @@ const lngInput = document.getElementById('lng');
 const locationError = document.getElementById('locationError');
 
 let modalMap, marker;
-
+closeMapBtn.addEventListener('click', ()=>{ mapModal.style.display='none'; });
+/* ---------- Define Pala Boundary ---------- */
+const palaBounds = L.latLngBounds(
+  [9.695, 76.65],   // Southwest corner
+  [9.725, 76.72]    // Northeast corner
+);
+function isInsidePala(lat, lng) { return palaBounds.contains([lat, lng]); }
+/* ---------- Map Modal ---------- */
 geocodeBtn.addEventListener('click', ()=>{
   mapModal.style.display='flex';
   setTimeout(()=>{
     if(!modalMap){
-      modalMap = L.map('modalMap').setView([20.5937,78.9629],5);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(modalMap);
-
+      modalMap = L.map('modalMap', {
+        center: [9.711, 76.686],
+        zoom: 14,
+        maxBounds: palaBounds,
+        maxBoundsViscosity: 1.0
+      });
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(modalMap);
       modalMap.on('click', async function(e){
         const {lat,lng}=e.latlng;
+        if(!isInsidePala(lat,lng)){
+          locationError.textContent='❌ Service unavailable in this area.';
+          locationError.style.display='block';
+          latInput.value=''; lngInput.value='';
+          if(marker) modalMap.removeLayer(marker);
+          return;
+        }
+        locationError.style.display='none';
         if(marker) modalMap.removeLayer(marker);
         marker = L.marker([lat,lng], {draggable:true}).addTo(modalMap);
         latInput.value=lat; lngInput.value=lng;
         marker.on('dragend', function(evt){
           const pos = evt.target.getLatLng();
-          latInput.value = pos.lat; lngInput.value = pos.lng;
+          if(!isInsidePala(pos.lat,pos.lng)){
+            locationError.textContent='❌ Service unavailable in this area.';
+            locationError.style.display='block';
+            latInput.value=''; lngInput.value='';
+            modalMap.removeLayer(marker);
+          } else {
+            locationError.style.display='none';
+            latInput.value=pos.lat; lngInput.value=pos.lng;
+          }
         });
         try{
           const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
@@ -356,9 +514,7 @@ geocodeBtn.addEventListener('click', ()=>{
     }
   }, 100);
 });
-
-closeMapBtn.addEventListener('click', ()=>{ mapModal.style.display='none'; });
-
+/* ---------- Search in modal ---------- */
 searchBtn.addEventListener('click', async ()=>{
   const address = searchInput.value.trim();
   if(!address) return alert('Please enter an address.');
@@ -368,30 +524,107 @@ searchBtn.addEventListener('click', async ()=>{
     if(!data.length) return alert('Address not found.');
     const lat=parseFloat(data[0].lat);
     const lng=parseFloat(data[0].lon);
+    if(!isInsidePala(lat,lng)){
+      locationError.textContent='❌ Service unavailable in this area.';
+      locationError.style.display='block';
+      latInput.value=''; lngInput.value='';
+      if(marker) modalMap.removeLayer(marker);
+      return;
+      }
+    
+    locationError.style.display='none';
     if(marker) modalMap.removeLayer(marker);
     marker = L.marker([lat,lng], {draggable:true}).addTo(modalMap);
     modalMap.setView([lat,lng],15);
     latInput.value=lat; lngInput.value=lng;
     marker.on('dragend', function(evt){
       const pos = evt.target.getLatLng();
-      latInput.value = pos.lat; lngInput.value = pos.lng;
+      if(!isInsidePala(pos.lat,pos.lng)){
+        locationError.textContent='❌ Service unavailable in this area.';
+        locationError.style.display='block';
+        latInput.value=''; lngInput.value='';
+        modalMap.removeLayer(marker);
+      } else {
+        locationError.style.display='none';
+        latInput.value=pos.lat; lngInput.value=pos.lng;
+      }
     });
     document.getElementById('address').value = data[0].display_name;
   }catch(e){ alert('Error locating address'); console.error(e); }
 });
-
-// Form submit validation
-const form = document.getElementById('pickupForm');
-form.addEventListener('submit', function(e){
-  if(!validateTime() || !latInput.value || !lngInput.value){
+/* ---------- Final Validation on Form Submit ---------- */
+document.getElementById('pickupForm').addEventListener('submit', async function(e) {
+  const lat = parseFloat(latInput.value);
+  const lng = parseFloat(lngInput.value);
+  const address = document.getElementById('address').value.trim();
+  // Ensure pickup times are valid
+  if (!validateTime()) {
     e.preventDefault();
-    if(!latInput.value || !lngInput.value){
-      locationError.textContent='❌ Please select a location on the map.';
-      locationError.style.display='block';
+    return false;
+  }
+  // Case 1: Lat/Lng already selected via map
+  if (!isNaN(lat) && !isNaN(lng)) {
+    if (!isInsidePala(lat, lng)) {
+      e.preventDefault();
+      locationError.textContent = '❌ Service unavailable in this area.';
+      locationError.style.display = 'block';
+      return false;
     }
+    return true;
+  }
+  // Case 2: User only typed address manually
+  if (address) {
+    e.preventDefault();
+    try {
+      const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
+      const data = await resp.json();
+      if (!data.length) {
+        locationError.textContent = '❌ Address not found. Please select from map.';
+        locationError.style.display = 'block';
+        return false;
+      }
+      const addrLat = parseFloat(data[0].lat);
+      const addrLng = parseFloat(data[0].lon);
+      if (!isInsidePala(addrLat, addrLng)) {
+        locationError.textContent = '❌ Service unavailable in this area.';
+        locationError.style.display = 'block';
+        return false;
+      }
+      latInput.value = addrLat;
+      lngInput.value = addrLng;
+      locationError.style.display = 'none';
+      e.target.submit();
+    } catch (err) {
+      console.error(err);
+      locationError.textContent = '❌ Error validating address.';
+      locationError.style.display = 'block';
+      return false;
+    }
+  } else {
+    e.preventDefault();
+    locationError.textContent = '❌ Please select or enter a valid address.';
+    locationError.style.display = 'block';
+    return false;
+  }
+});
+/* ---------- Date picker for Pickup Date ---------- */
+flatpickr("#pickup_date", {
+  dateFormat: "d-m-y",
+  minDate: "tomorrow",   // disables past dates
+  disableMobile: true
+});
+// Extra safety: show/hide error if someone types manually
+const dateInput = document.getElementById('pickup_date');
+dateInput.addEventListener('change', () => {
+  const selected = new Date(dateInput.value);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  if (selected < today) {
+    document.getElementById('dateError').style.display = 'block';
+  } else {
+    document.getElementById('dateError').style.display = 'none';
   }
 });
 </script>
-
 </body>
 </html>

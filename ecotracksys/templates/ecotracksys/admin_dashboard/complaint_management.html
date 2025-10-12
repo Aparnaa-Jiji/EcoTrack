@@ -96,7 +96,7 @@
        ========================= */
     table {
       width: 100%; border-collapse: collapse;
-      background: var(--primary); 
+      background: white; 
       border-radius: 12px; overflow: hidden;
       box-shadow: 0 4px 12px var(--shadow);
     }
@@ -203,7 +203,7 @@
     .actions { display: flex; gap: 10px; }
     .action-btn {
       background: none; border: none; cursor: pointer;
-      font-size: 18px; color: var(--highlight);
+      font-size: 18px; color: var(--primary);
       transition: all 0.2s ease-in-out;
     }
     .action-btn:hover { color: var(--secondary); transform: scale(1.1); }
@@ -268,12 +268,13 @@
       <ul>
         <li><a href="{% url 'ecotracksys:admin_dashboard' %}" ><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
   <li><a href="{% url 'ecotracksys:pickup_management' %}"><i class="fas fa-trash"></i> <span>Pickup Management</span></a></li>
-  <li><a href="{% url 'ecotracksys:zone_management' %}"><i class="fas fa-map-marker-alt"></i> <span>Zone Management</span></a></li>
+  
   <li><a href="{% url 'ecotracksys:leave_request_management' %}"><i class="fas fa-calendar-alt"></i> <span>Leave Requests</span></a></li>
   <li><a href="{% url 'ecotracksys:complaint_management' %}" class="active"><i class="fas fa-bullhorn"></i> <span>Complaints</span></a></li>
   <li><a href="{% url 'ecotracksys:user_management' %}"><i class="fas fa-users"></i> <span>User Management</span></a></li>
   <li><a href="{% url 'ecotracksys:collector_management' %}"><i class="fas fa-user-cog"></i> <span>Collector Management</span></a></li>
-  <li><a href="{% url 'ecotracksys:analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+  <li><a href="{% url 'ecotracksys:admin_analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+  <li><a href="{% url 'ecotracksys:admin_notifications' %}" ><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
   <li><a href="{% url 'ecotracksys:admin_profile' %}"><i class="fas fa-user-shield"></i> <span>Admin Profile</span></a></li>
       </ul>
     </div>
@@ -307,8 +308,6 @@
           <tr>
             <th>Complaint ID</th>
             <th>User</th>
-            <th>Date</th>
-            <th>Category</th>
             <th>Description</th>
             <th>Status</th>
             <th>Actions</th>
@@ -319,8 +318,6 @@
           <tr>
             <td>{{ complaint.id }}</td>
             <td>{{ complaint.user }}</td>
-            <td>{{ complaint.date }}</td>
-            <td>{{ complaint.category }}</td>
             <td>{{ complaint.description }}</td>
             <td>
               <span class="status-badge {% if complaint.status == 'Resolved' %}status-resolved{% else %}status-pending{% endif %}">
@@ -365,20 +362,20 @@
       </form>
     </div>
   </div>
-
-  <!-- Delete Confirmation Modal -->
-  <div id="deleteModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal('deleteModal')">&times;</span>
-      <h2>Confirm Delete</h2>
-      <form method="POST" action="{% url 'ecotracksys:delete_complaint' %}">
-        {% csrf_token %}
-        <input type="hidden" name="complaint_id" id="deleteComplaintId">
-        <p>Are you sure you want to delete this complaint?</p>
-        <button type="submit" class="submit-btn">Yes, Delete</button>
-      </form>
-    </div>
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal('deleteModal')">&times;</span>
+    <h2>Confirm Delete</h2>
+    <!-- Form action will be set dynamically via JS -->
+    <form method="POST" id="deleteForm">
+      {% csrf_token %}
+      <input type="hidden" name="complaint_id" id="deleteComplaintId">
+      <p>Are you sure you want to delete this complaint?</p>
+      <button type="submit" class="submit-btn">Yes, Delete</button>
+    </form>
   </div>
+</div>
 
   <!-- =======================
        Scripts
@@ -396,35 +393,27 @@
       document.getElementById('modalNote').value = '';
     }
 
-    // Delete Modal
-    function openDeleteModal(complaintId) {
-      document.getElementById('deleteModal').style.display = 'block';
-      document.getElementById('deleteComplaintId').value = complaintId;
-    }
+      // Delete Modal
+  function openDeleteModal(complaintId) {
+    document.getElementById('deleteModal').style.display = 'block';
+    document.getElementById('deleteComplaintId').value = complaintId;
 
-    // Close Modal
-    function closeModal(modalId) {
-      document.getElementById(modalId).style.display = 'none';
-    }
-
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-      if (event.target.classList.contains('modal')) {
-        event.target.style.display = 'none';
-      }
-    }
-    function toggleProfileMenu() {
-    const menu = document.getElementById("profileDropdown");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
+    // dynamically update the form action
+    const form = document.getElementById('deleteForm');
+    form.action = `/dashboard/admin/complaints/delete/${complaintId}/`;
   }
 
-  // Close menu if clicked outside
-  document.addEventListener("click", function(e) {
-    const profileMenu = document.querySelector(".profile-menu");
-    if (!profileMenu.contains(e.target)) {
-      document.getElementById("profileDropdown").style.display = "none";
+  // Close Modal
+  function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+  }
+
+  // Close modal when clicking outside
+  window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+      event.target.style.display = 'none';
     }
-  });
+  }
   </script>
 </body>
 </html>

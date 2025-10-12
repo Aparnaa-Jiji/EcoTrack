@@ -145,7 +145,7 @@
     table {
       width: 100%;
   border-collapse: collapse;
-  background: var(--primary); 
+  background: white; 
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px var(--shadow);
@@ -291,6 +291,27 @@
 .profile-dropdown a:hover {
   background: var(--secondary);
 }
+
+.tabs {
+  margin-bottom: 16px;
+}
+.tab-btn {
+  background: var(--secondary);
+  border: none;
+  padding: 10px 20px;
+  margin-right: 6px;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.tab-btn.active {
+  background: var(--primary);
+  font-weight: bold;
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
   </style>
 </head>
 
@@ -306,12 +327,13 @@
       
          <li><a href="{% url 'ecotracksys:admin_dashboard' %}" ><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
   <li><a href="{% url 'ecotracksys:pickup_management' %}" ><i class="fas fa-trash"></i> <span>Pickup Management</span></a></li>
-  <li><a href="{% url 'ecotracksys:zone_management' %}"><i class="fas fa-map-marker-alt"></i> <span>Zone Management</span></a></li>
+  
   <li><a href="{% url 'ecotracksys:leave_request_management' %}" class="active"><i class="fas fa-calendar-alt"></i> <span>Leave Requests</span></a></li>
   <li><a href="{% url 'ecotracksys:complaint_management' %}"><i class="fas fa-bullhorn"></i> <span>Complaints</span></a></li>
   <li><a href="{% url 'ecotracksys:user_management' %}"><i class="fas fa-users"></i> <span>User Management</span></a></li>
   <li><a href="{% url 'ecotracksys:collector_management' %}"><i class="fas fa-user-cog"></i> <span>Collector Management</span></a></li>
-  <li><a href="{% url 'ecotracksys:analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+  <li><a href="{% url 'ecotracksys:admin_analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+  <li><a href="{% url 'ecotracksys:admin_notifications' %}" ><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
   <li><a href="{% url 'ecotracksys:admin_profile' %}"><i class="fas fa-user-shield"></i> <span>Admin Profile</span></a></li>
  </ul>
     </div>
@@ -341,53 +363,114 @@
       <div class="header">
         <h1>Collector Leave Requests</h1>
       </div>
+      
 
-      <!-- Leave Requests Table -->
-      <table>
-        <thead>
-          <tr>
-            <th>Collector</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Reason</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for leave in leaves %}
-          <tr>
-            <td>{{ leave.collector }}</td>
-            <td>{{ leave.start_date }}</td>
-            <td>{{ leave.end_date }}</td>
-            <td>{{ leave.reason }}</td>
-            <td>
-              <!-- Status badge changes color depending on leave.status -->
-              <span class="status-badge
-                {% if leave.status == 'Approved' %}status-approved
-                {% elif leave.status == 'Rejected' %}status-rejected
-                {% else %}status-pending{% endif %}">
-                {{ leave.status }}
-              </span>
-            </td>
-            <td class="actions">
-              <!-- Show Approve button only if not already approved -->
-              {% if leave.status != 'Approved' %}
-              <button class="action-btn" title="Approve" onclick="openModal('{{ leave.id }}','Approve')">
-                <i class="bi bi-check-circle-fill"></i>
-              </button>
-              {% endif %}
-              <!-- Show Reject button only if not already rejected -->
-              {% if leave.status != 'Rejected' %}
-              <button class="action-btn" title="Reject" onclick="openModal('{{ leave.id }}','Reject')">
-                <i class="bi bi-x-circle-fill"></i>
-              </button>
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <!-- Tabs Navigation -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="openTab('pending')">Pending</button>
+  <button class="tab-btn" onclick="openTab('approved')">Approved</button>
+  <button class="tab-btn" onclick="openTab('rejected')">Rejected</button>
+</div>
+
+<!-- Pending Tab -->
+<div id="pending" class="tab-content active">
+  <table>
+    <thead>
+      <tr>
+        <th>Collector</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Reason</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for leave in pending_leaves %}
+      <tr>
+        <td>{{ leave.collector }}</td>
+        <td>{{ leave.start_date }}</td>
+        <td>{{ leave.end_date }}</td>
+        <td>{{ leave.reason }}</td>
+        <td>{{ leave.leave_type }}</td>
+        <td><span class="status-badge status-pending">{{ leave.status }}</span></td>
+        <td class="actions">
+          <button class="action-btn" title="Approve" onclick="openModal('{{ leave.id }}','Approve')">
+            <i class="bi bi-check-circle-fill"></i>
+          </button>
+          <button class="action-btn" title="Reject" onclick="openModal('{{ leave.id }}','Reject')">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" style="text-align:center;">No pending requests</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Approved Tab -->
+<div id="approved" class="tab-content">
+  <table>
+    <thead>
+      <tr>
+        <th>Collector</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Reason</th>
+        <th>Type</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for leave in approved_leaves %}
+      <tr>
+        <td>{{ leave.collector }}</td>
+        <td>{{ leave.start_date }}</td>
+        <td>{{ leave.end_date }}</td>
+        <td>{{ leave.reason }}</td>
+        <td>{{ leave.leave_type }}</td>
+        <td><span class="status-badge status-approved">{{ leave.status }}</span></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" style="text-align:center;">No approved requests</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Rejected Tab -->
+<div id="rejected" class="tab-content">
+  <table>
+    <thead>
+      <tr>
+        <th>Collector</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Reason</th>
+        <th>Type</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for leave in rejected_leaves %}
+      <tr>
+        <td>{{ leave.collector }}</td>
+        <td>{{ leave.start_date }}</td>
+        <td>{{ leave.end_date }}</td>
+        <td>{{ leave.reason }}</td>
+        <td>{{ leave.leave_type }}</td>
+        <td><span class="status-badge status-rejected">{{ leave.status }}</span></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" style="text-align:center;">No rejected requests</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
     </div>
   </div>
 
@@ -398,18 +481,17 @@
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">&times;</span>
       <h2 id="modalTitle">Confirm Action</h2>
-      <form method="POST" action="#">
-        {% csrf_token %}
-        <!-- Hidden inputs to pass leave ID and action type -->
-        <input type="hidden" name="leave_id" id="modalLeaveId">
-        <input type="hidden" name="action" id="modalAction">
-        <!-- Optional note for remarks -->
-        <div class="form-group">
-          <label for="note">Note (Optional)</label>
-          <textarea name="note" id="modalNote" rows="3" placeholder="Add any remarks..."></textarea>
-        </div>
-        <button type="submit" class="submit-btn">Submit</button>
-      </form>
+      <form method="POST" action="{% url 'ecotracksys:leave_request_action' %}">
+    {% csrf_token %}
+    <input type="hidden" name="leave_id" id="modalLeaveId">
+    <input type="hidden" name="action" id="modalAction">
+    <div class="form-group">
+      <label for="note">Note (Optional)</label>
+      <textarea name="note" id="modalNote" rows="3" placeholder="Add any remarks..."></textarea>
+    </div>
+    <button type="submit" class="submit-btn">Submit</button>
+</form>
+
     </div>
   </div>
 
@@ -461,6 +543,56 @@
       document.getElementById("profileDropdown").style.display = "none";
     }
   });
+  // Replace the form submit handler
+document.querySelector("form").addEventListener("submit", function(e) {
+    e.preventDefault(); // Prevent default form submission
+
+    const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+    fetch("{% url 'ecotracksys:leave_request_action_ajax' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-CSRFToken": csrfToken,
+        },
+        body: new URLSearchParams({
+            leave_id: modalLeaveId.value,
+            action: modalAction.value,
+            note: modalNote.value
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            // Update status badge in table
+            const row = document.querySelector(`button[onclick="openModal('${data.leave_id}','${modalAction.value}')"]`).closest('tr');
+            const badge = row.querySelector(".status-badge");
+
+            badge.textContent = data.new_status;
+            badge.classList.remove('status-pending', 'status-approved', 'status-rejected');
+
+            if(data.new_status === 'Approved') badge.classList.add('status-approved');
+            else if(data.new_status === 'Rejected') badge.classList.add('status-rejected');
+            row.querySelectorAll(".action-btn").forEach(btn => btn.disabled = true);
+
+            closeModal();
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(err => console.error(err));
+});
+
+function openTab(tabId) {
+  // Hide all tabs
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+  // Show selected tab
+  document.getElementById(tabId).classList.add('active');
+  event.target.classList.add('active');
+}
+
   </script>
 </body>
 </html>

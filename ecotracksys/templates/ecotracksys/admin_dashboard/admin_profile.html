@@ -6,6 +6,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Profile | EcoTrack</title>
+  <!-- FontAwesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
@@ -15,47 +16,54 @@
        Root Variables - Minty Theme
        ===================================================== */
 :root {
-      --bg-image: url("{% static 'images/bgimg.jpg' %}");
-      --container-gradient: linear-gradient(145deg, rgba(4, 57, 39, 0.9), rgba(5, 111, 79, 0.85));
-      --primary: #04706e;         /* main accent */
-      --secondary: #2f9080;       /* secondary tone */
-      --highlight: #85fcde;       /* minty highlight */
-      --light-blue: #85fcde;      /* alias for highlight (fix for undefined var) */
-      --shadow: rgba(3, 104, 77, 0.5); /* depth shadow */
-      --text-light: #e6fef3;      /* light text */
-      --text-dark: #0b3d2e;       /* dark text */
+      --bg-image: url("{% static 'images/bgimg.jpg' %}"); /* background image for page */
+      --container-gradient: linear-gradient(145deg, rgba(4, 57, 39, 0.9), rgba(5, 111, 79, 0.85)); /* page gradient */
+      --primary: #04706e;         /* main accent color */
+      --secondary: #2f9080;       /* secondary tone for hover and highlights */
+      --highlight: #85fcde;       /* minty highlight for borders/hover */
+      --light-blue: #85fcde;      /* alias for highlight (used in some elements) */
+      --shadow: rgba(3, 104, 77, 0.5); /* shadow for cards and sidebar */
+      --text-light: #e6fef3;      /* light text color */
+      --text-dark: #0b3d2e;       /* dark text color */
 }
 
+    /* =====================================================
+       Body Styles
+       ===================================================== */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: var(--bg-gradient);
+      background: var(--bg-gradient); /* fallback background gradient */
       color: var(--text-light);
     }
 
-    /* Container: Sidebar + Main */
+    /* =====================================================
+       Container - Sidebar + Main Content
+       ===================================================== */
     .container {
-      display: flex;           /* Sidebar + main content horizontally */
-      min-height: 100vh;       /* Full height page */
-      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7)); /* Soft gradient overlay */
+      display: flex;           /* display sidebar and main content horizontally */
+      min-height: 100vh;       /* make container full viewport height */
+      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7)); /* soft gradient overlay */
     }
 
-    /* Sidebar */
+    /* =====================================================
+       Sidebar Styles
+       ===================================================== */
     .sidebar {
-      width: 260px;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7));
-      transition: width 0.3s ease, padding 0.3s ease; /* Smooth collapse animation */
+      width: 260px; /* default width */
+      background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103, 206, 168, 0.7)); /* gradient overlay */
+      transition: width 0.3s ease, padding 0.3s ease; /* smooth transition for collapse */
       box-shadow: 2px 0 12px var(--shadow);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px); /* subtle blur effect */
     }
 
     /* Collapsed sidebar */
     .sidebar.collapsed { 
-      width: 70px; 
+      width: 70px; /* shrink width */
       padding: 0px; 
     }
 
-    /* Sidebar brand text */
+    /* Sidebar brand/logo */
     .sidebar h2 {
       text-align: center;
       padding: 20px 0;
@@ -64,7 +72,7 @@
       color: var(--primary);
     }
     .sidebar.collapsed h2 { 
-      opacity: 0; /* Hide brand text when collapsed */
+      opacity: 0; /* hide text when collapsed */
     }
 
     /* Sidebar navigation list */
@@ -78,7 +86,7 @@
     .sidebar ul li a {
       display: flex;
       align-items: center;
-      gap: 12px; /* Space between icon and text */
+      gap: 12px; /* space between icon and text */
       padding: 14px 22px;
       color: var(--text-dark);
       text-decoration: none;
@@ -89,10 +97,10 @@
     /* Hover effect for sidebar links */
     .sidebar ul li a:hover {
       background: var(--secondary);
-      color: #ffffff; /* make text/icons white when hovered */
+      color: #ffffff; /* make text/icons white on hover */
     }
 
-    /* Active link style */
+    /* Active link styling */
     .sidebar ul li a.active {
       background: var(--primary);
       color: #ffffff;
@@ -104,10 +112,10 @@
       transition: opacity 0.3s ease; 
     }
     .sidebar.collapsed ul li span { 
-      display: none; /* Hide menu text when collapsed */
+      display: none; /* hide menu text when collapsed */
     }
 
-    /* Sidebar toggle button (hamburger icon) */
+    /* Sidebar toggle button (hamburger) */
     .toggle-btn {
       position: absolute;
       top: 12px;
@@ -119,9 +127,11 @@
       cursor: pointer;
     }
 
-    /* Main */
+    /* =====================================================
+       Main Content
+       ===================================================== */
     .main {
-      flex: 1;
+      flex: 1; /* take remaining width */
       padding: 24px;
       backdrop-filter: blur(6px);
     }
@@ -141,7 +151,9 @@
       color: var(--primary);
     }
 
-    /* Profile Card */
+    /* =====================================================
+       Profile Card
+       ===================================================== */
     .profile-card {
       background:linear-gradient(145deg, rgb(130, 239, 203), rgba(5, 111, 79, 0.85));
       padding: 32px;
@@ -151,6 +163,7 @@
       margin: 0 auto;
     }
 
+    /* Profile Picture */
     .profile-pic {
       width: 120px;
       height: 120px;
@@ -160,6 +173,7 @@
       margin-bottom: 16px;
     }
 
+    /* Form Groups */
     .form-group {
       margin-bottom: 20px;
     }
@@ -179,6 +193,7 @@
       color: var(--text-dark);
     }
 
+    /* Update Button */
     .update-btn {
       background: var(--primary);
       color: white;
@@ -196,7 +211,9 @@
       transform: scale(1.05);
     }
 
-    /* Activity Log */
+    /* =====================================================
+       Activity Log
+       ===================================================== */
     .activity-log {
       margin-top: 40px;
     }
@@ -220,6 +237,7 @@
       box-shadow: 0 2px 6px var(--shadow);
     }
 
+    /* Responsive design for smaller screens */
     @media screen and (max-width: 768px) {
       .sidebar {
         position: fixed;
@@ -240,76 +258,81 @@
   <div class="container">
     <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
+      <!-- Brand Text -->
       <h2 id="brandText">EcoTrack</h2>
+      <!-- Toggle Sidebar Button -->
       <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+      <!-- Navigation Menu -->
       <ul>
-        <ul>
         <li><a href="{% url 'ecotracksys:admin_dashboard' %}" ><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
         <li><a href="{% url 'ecotracksys:pickup_management' %}" ><i class="fas fa-trash"></i> <span>Pickup Management</span></a></li>
-        <li><a href="{% url 'ecotracksys:zone_management' %}"><i class="fas fa-map-marker-alt"></i> <span>Zone Management</span></a></li>
         <li><a href="{% url 'ecotracksys:leave_request_management' %}"><i class="fas fa-calendar-alt"></i> <span>Leave Requests</span></a></li>
         <li><a href="{% url 'ecotracksys:complaint_management' %}"><i class="fas fa-bullhorn"></i> <span>Complaints</span></a></li>
         <li><a href="{% url 'ecotracksys:user_management' %}" ><i class="fas fa-users"></i> <span>User Management</span></a></li>
         <li><a href="{% url 'ecotracksys:collector_management' %}"><i class="fas fa-user-cog"></i> <span>Collector Management</span></a></li>
-        <li><a href="{% url 'ecotracksys:analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_analytics' %}"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+        <li><a href="{% url 'ecotracksys:admin_notifications' %}" ><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
         <li><a href="{% url 'ecotracksys:admin_profile' %}"class="active"><i class="fas fa-user-shield"></i> <span>Admin Profile</span></a></li>
       </ul>
     </div>
 
-    <!-- Main -->
+    <!-- Main Content -->
     <div class="main">
+      <!-- Header -->
       <div class="header">
         <h1>Admin Profile</h1>
       </div>
 
+      <!-- Profile Card -->
       <div class="profile-card">
-  <center>
-    <img src="https://via.placeholder.com/120" alt="Profile" class="profile-pic" />
-    <br />
-    <button class="update-btn"><i class="bi bi-upload"></i> Change Picture</button>
-  </center>
-  <br />
+        <!-- Profile Picture -->
+        <center>
+          {% if request.user.profile_image and request.user.profile_image.name %}
+            <img src="{{ request.user.profile_image.url }}" alt="Profile" class="profile-pic" />
+          {% else %}
+            <img src="{{ MEDIA_URL }}profile_images/default-profile.png" alt="Profile" class="profile-pic" />
+          {% endif %}
+        </center>
 
-  <!-- Profile Update Form -->
-  <form method="POST" action="#">
-    {% csrf_token %}
-    
-    <div class="form-group">
-      <label for="name">Full Name</label>
-      <input type="text" id="name" name="name" value="Aparna Jiji" required />
-    </div>
+        <br />
 
-    <div class="form-group">
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" value="admin@ecotrack.com" required />
-    </div>
+        <!-- Profile Update Form -->
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <!-- Profile Image Upload -->
+          <div class="form-group">
+            <label for="profile_image">Profile Image</label>
+            <input type="file" name="profile_image" id="profile_image" accept="image/*" class="form-control">
+          </div>
 
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" placeholder="Enter new password" />
-    </div>
+          <!-- Full Name Field -->
+          <div class="form-group">
+            <label for="full_name">Full Name</label>
+            {{ form.name }}
+          </div>
 
-    <!-- Main Submit Button -->
-    <center>
-      <button type="submit" class="update-btn">
-        <i class="bi bi-save"></i> Save Changes
-      </button>
-    </center>
-  </form>
-</div>
+          <!-- Email Field -->
+          <div class="form-group">
+            <label for="email">Email</label>
+            {{ form.email }}
+          </div>
 
-      <div class="activity-log">
-        <h2>Recent Activity</h2>
-        <ul>
-          <li><i class="bi bi-clock-history"></i> Logged in on 1 Aug 2025 at 9:00 AM</li>
-          <li><i class="bi bi-person-check"></i> Assigned pickup to Collector #23</li>
-          <li><i class="bi bi-geo-alt-fill"></i> Updated zone details for Sector-17</li>
-          <li><i class="bi bi-check-circle"></i> Reviewed leave request of Collector #11</li>
-        </ul>
+          <!-- Password Field -->
+          <div class="form-group">
+            <label for="password">Password</label>
+            {{ form.password }}
+          </div>
+
+          <!-- Submit Button -->
+          <center>
+            <button type="submit" class="update-btn"><i class="bi bi-save"></i> Save Changes</button>
+          </center>
+        </form>
       </div>
     </div>
   </div>
 
+  <!-- Sidebar Toggle Script -->
   <script>
     function toggleSidebar() {
       document.getElementById("sidebar").classList.toggle("collapsed");

@@ -87,7 +87,7 @@
     <aside class="sidebar">
       <div class="brand">EcoTrack</div>
       <ul class="nav">
-        <li><a href="{% url 'ecotracksys:collector_dashboard' %}"><span class="icon"><i class="fas fa-home"></i></span>Dashboard</a></li>
+        
         <li><a href="{% url 'ecotracksys:collector_assignments' %}"><span class="icon"><i class="fas fa-list-check"></i></span>My Assignments</a></li>
         <li><a href="{% url 'ecotracksys:collector_pickup_history' %}" class="active"><span class="icon"><i class="fas fa-clock-rotate-left"></i></span>History</a></li>
         <li><a href="{% url 'ecotracksys:collector_performance' %}"><span class="icon"><i class="fas fa-chart-line"></i></span>Performance</a></li>
@@ -123,7 +123,7 @@
         <select id="statusFilter">
           <option value="All">All</option>
           <option value="Completed">Completed</option>
-          <option value="Pending">Pending</option>
+          <option value="Cancelled">Cancelled</option>
           <option value="Missed">Missed</option>
         </select>
       </div>
@@ -135,7 +135,6 @@
             <th>ID</th>
             <th>Date</th>
             <th>Citizen</th>
-            <th>Zone</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -143,9 +142,8 @@
           {% for pickup in pickups %}
           <tr data-status="{{ pickup.status }}" data-time="{{ pickup.pickup_time }}" data-waste="{{ pickup.waste_type }}" data-phone="{{ pickup.user.phone }}" data-notes="{{ pickup.notes }}">
             <td>{{ pickup.id }}</td>
-            <td>{{ pickup.pickup_date }}</td>
-            <td>{{ pickup.user.get_full_name }}</td>
-            <td>{{ pickup.zone }}</td>
+            <td>{{ pickup.pickup_date|date:"M d, Y" }}</td>
+            <td>{{ pickup.customer_name }}</td>
             <td><span class="status {{ pickup.status }}">{{ pickup.status }}</span></td>
           </tr>
           {% empty %}
@@ -168,7 +166,7 @@
       <p><strong>Time:</strong> <span id="modalTime"></span></p>
       <p><strong>Citizen:</strong> <span id="modalCitizen"></span></p>
       <p><strong>Phone:</strong> <span id="modalPhone"></span></p>
-      <p><strong>Zone:</strong> <span id="modalZone"></span></p>
+  
       <p><strong>Waste Type:</strong> <span id="modalWaste"></span></p>
       <p><strong>Notes:</strong> <span id="modalNotes"></span></p>
       <p><strong>Status:</strong> <span id="modalStatus"></span></p>
@@ -186,20 +184,23 @@
     const rows=document.querySelectorAll('#pickupTable tbody tr');
     const modal=document.getElementById('detailModal');
     rows.forEach(row=>{
-      row.addEventListener('click',()=>{
-        document.getElementById('modalId').innerText=row.cells[0].innerText;
-        document.getElementById('modalDate').innerText=row.cells[1].innerText;
-        document.getElementById('modalCitizen').innerText=row.cells[2].innerText;
-        document.getElementById('modalZone').innerText=row.cells[3].innerText;
-        document.getElementById('modalStatus').innerText=row.querySelector('.status').innerText;
-        document.getElementById('modalTime').innerText=row.dataset.time;
-        document.getElementById('modalWaste').innerText=row.dataset.waste;
-        document.getElementById('modalPhone').innerText=row.dataset.phone;
-        document.getElementById('modalNotes').innerText=row.dataset.notes;
-        modal.style.display='flex';
-      });
+      if(row.dataset.status){ // only clickable if real data
+        row.addEventListener('click',()=>{
+          document.getElementById('modalId').innerText=row.cells[0].innerText;
+          document.getElementById('modalDate').innerText=row.cells[1].innerText;
+          document.getElementById('modalCitizen').innerText=row.cells[2].innerText;
+
+          document.getElementById('modalStatus').innerText=row.querySelector('.status').innerText;
+          document.getElementById('modalTime').innerText=row.dataset.time;
+          document.getElementById('modalWaste').innerText=row.dataset.waste;
+          document.getElementById('modalPhone').innerText=row.dataset.phone;
+          document.getElementById('modalNotes').innerText=row.dataset.notes;
+          modal.style.display='flex';
+        });
+      }
     });
     function closeModal(){modal.style.display='none';}
+    modal.addEventListener('click',e=>{if(e.target===modal){closeModal();}});
 
     // Status filter
     document.getElementById('statusFilter').addEventListener('change',function(){

@@ -17,7 +17,6 @@
     transition: background .3s ease, color .3s ease;
   }
 
-  /* Container */
   .notifications-container {
     background: linear-gradient(145deg, #d1f5e0, #a7f0d2);
     border-radius: 20px;
@@ -31,7 +30,6 @@
     overflow: hidden;
   }
 
-  /* Header */
   .notifications-header {
     display: flex;
     justify-content: space-between;
@@ -69,12 +67,8 @@
     margin-left: 6px;
   }
 
-  @keyframes pulse {
-    0%,100%{ transform: scale(1); }
-    50%{ transform: scale(1.1); }
-  }
+  @keyframes pulse { 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.1); } }
 
-  /* Control Buttons */
   .notification-controls {
     display: flex;
     gap: 12px;
@@ -96,23 +90,10 @@
     cursor: pointer;
     transition: all 0.3s ease;
   }
-  .control-btn:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 6px 16px rgba(16,185,129,0.5);
-    background: linear-gradient(135deg, #34d399, #059669);
-  }
-  .control-btn.active {
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-    box-shadow: 0 4px 12px rgba(34,197,94,0.4);
-    color: white;
-  }
+  .control-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 6px 16px rgba(16,185,129,0.5); background: linear-gradient(135deg, #34d399, #059669); }
+  .control-btn.active { background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 4px 12px rgba(34,197,94,0.4); color: white; }
 
-  /* Notifications List */
-  #notifications-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
+  #notifications-list { display: flex; flex-direction: column; gap: 20px; }
 
   .notification-item {
     background: linear-gradient(145deg, #d9f7ed, #b7f0db);
@@ -126,10 +107,7 @@
     transform: translateX(-30px);
     animation: slideIn 0.5s forwards;
   }
-
-  @keyframes slideIn {
-    to { opacity: 1; transform: translateX(0); }
-  }
+  @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
 
   .notification-item.unread {
     border-left-color: #facc15;
@@ -137,26 +115,10 @@
     font-weight: 600;
   }
 
-  .notification-title {
-    font-size: 16px;
-    margin: 0 0 6px 0;
-    color: #065f46;
-    line-height: 1.4;
-  }
+  .notification-title { font-size: 16px; margin: 0 0 6px 0; color: #065f46; line-height: 1.4; }
+  .notification-message { font-size: 14px; color: #065f46aa; margin: 0 0 10px 0; line-height: 1.5; }
+  small { color: #16a34a; font-size: 12px; }
 
-  .notification-message {
-    font-size: 14px;
-    color: #065f46aa;
-    margin: 0 0 10px 0;
-    line-height: 1.5;
-  }
-
-  small {
-    color: #16a34a;
-    font-size: 12px;
-  }
-
-  /* Notification Actions */
   .notification-actions {
     position: absolute;
     top: 20px;
@@ -165,20 +127,7 @@
     gap: 8px;
     flex-wrap: wrap;
   }
-  .action-btn {
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(16,185,129,0.3);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-  }
+  .action-btn { padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(16,185,129,0.3); display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
   .mark-read-btn { background: linear-gradient(135deg, #6ee7b7, #10b981); color: #065f46; }
   .mark-read-btn:hover { background: linear-gradient(135deg, #34d399, #059669); transform: scale(1.05); }
   .mark-unread-btn { background: linear-gradient(135deg, #facc15, #ca8a04); color: #065f46; }
@@ -186,46 +135,13 @@
   .delete-btn { background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; }
   .delete-btn:hover { background: linear-gradient(135deg, #dc2626, #991b1b); transform: scale(1.05); }
 
-  /* Empty State */
-  .empty-state {
-    text-align: center;
-    padding: 80px 20px;
-    color: #065f46aa;
-    user-select: none;
-  }
-  .empty-icon {
-    font-size: 64px;
-    margin-bottom: 20px;
-    opacity: 0.6;
-    animation: float 3s ease-in-out infinite;
-  }
-  @keyframes float {
-    0%,100%{ transform: translateY(0); }
-    50%{ transform: translateY(-10px); }
-  }
+  .empty-state { text-align: center; padding: 80px 20px; color: #065f46aa; user-select: none; }
+  .empty-icon { font-size: 64px; margin-bottom: 20px; opacity: 0.6; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-10px); } }
 
-  /* Home Button */
-  .home-btn {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background: linear-gradient(135deg, #34d399, #059669);
-    color: white;
-    padding: 10px 14px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 14px;
-    text-decoration: none;
-    box-shadow: 0 4px 12px rgba(34,197,94,0.3);
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    z-index: 1000;
-  }
+  .home-btn { position: fixed; top: 20px; left: 20px; background: linear-gradient(135deg, #34d399, #059669); color: white; padding: 10px 14px; border-radius: 12px; font-weight: 600; font-size: 14px; text-decoration: none; box-shadow: 0 4px 12px rgba(34,197,94,0.3); transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 6px; z-index: 1000; }
   .home-btn:hover { background: linear-gradient(135deg, #16a34a, #22c55e); transform: scale(1.05); }
 
-  /* Responsive */
   @media (max-width: 768px) {
     .notifications-header { flex-direction: column; text-align: center; gap: 12px; }
     .notifications-title { font-size: 24px; }
@@ -280,76 +196,146 @@
   </div>
 
 <script>
-  // CSRF token
-  function getCookie(name){let cookieValue=null;if(document.cookie&&document.cookie!==''){const cookies=document.cookie.split(';');for(let cookie of cookies){cookie=cookie.trim();if(cookie.startsWith(name+'=')){cookieValue=decodeURIComponent(cookie.substring(name.length+1));break;}}}return cookieValue;}
-  const csrftoken=getCookie('csrftoken');
+  // -------------------------------
+  // URLs rendered safely from Django
+  // -------------------------------
+  const NOTIF_READ_URL   = "{% url 'ecotracksys:mark_notification_read' %}";
+  const NOTIF_UNREAD_URL = "{% url 'ecotracksys:mark_notification_unread' %}";
+  const NOTIF_DELETE_URL = "{% url 'ecotracksys:delete_notification' %}";
 
-  async function postData(url='', data={}){const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','X-CSRFToken':csrftoken},body:new URLSearchParams(data)});return response.json();}
+  // -------------------------------
+  // Get CSRF token from cookies
+  // -------------------------------
+  const csrftoken = (() => {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      document.cookie.split(';').forEach(cookie => {
+        cookie = cookie.trim();
+        if (cookie.startsWith('csrftoken=')) cookieValue = decodeURIComponent(cookie.substring(10));
+      });
+    }
+    return cookieValue;
+  })();
 
-  function updateUI(){
-    const unreadCount=document.querySelectorAll('.notification-item.unread').length;
-    const badge=document.getElementById('notification-badge');
-    badge.textContent=unreadCount;
-    badge.style.display=unreadCount>0?'flex':'none';
-    const visibleNotifications=Array.from(document.querySelectorAll('.notification-item')).filter(n=>n.style.display!=='none');
-    document.getElementById('empty-state')?.style.display=visibleNotifications.length===0?'block':'none';
+  // -------------------------------
+  // Helper: POST request with CSRF
+  // -------------------------------
+  async function postData(url = '', data = {}) {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': csrftoken },
+      body: new URLSearchParams(data)
+    });
+    return response.json();
   }
 
-  function filterNotifications(type){
-    document.querySelectorAll('.control-btn').forEach(btn=>btn.classList.remove('active'));
-    document.querySelector(`[data-filter="${type}"]`)?.classList.add('active');
-    const today=new Date().toISOString().split('T')[0];
-    document.querySelectorAll('.notification-item').forEach(n=>{
-      let show=type==='all'||(type==='unread'&&n.classList.contains('unread'))||(type==='today'&&n.dataset.date===today);
-      n.style.display=show?'block':'none';
+  // -------------------------------
+  // Update unread badge & empty state
+  // -------------------------------
+  function updateUI() {
+    const unreadCount = document.querySelectorAll('.notification-item.unread').length;
+    const badge = document.getElementById('notification-badge');
+    badge.textContent = unreadCount;
+    badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+
+    const visible = Array.from(document.querySelectorAll('.notification-item'))
+                          .filter(n => n.style.display !== 'none');
+    const emptyState = document.getElementById('empty-state');
+    if (emptyState) emptyState.style.display = visible.length === 0 ? 'block' : 'none';
+  }
+
+  // -------------------------------
+  // Filter notifications: all / unread / today
+  // -------------------------------
+  function filterNotifications(type) {
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelectorAll('.notification-item').forEach(n => {
+      let show = type === 'all' ||
+                 (type === 'unread' && n.classList.contains('unread')) ||
+                 (type === 'today' && n.dataset.date === today);
+      n.style.display = show ? 'block' : 'none';
     });
     updateUI();
   }
 
-  async function toggleReadStatus(id, btn){
-    const isUnread=btn.classList.contains('mark-read-btn');
-    const url=isUnread?'{% url "ecotracksys:mark_notification_read" %}':'{% url "ecotracksys:mark_notification_unread" %}';
-    const result=await postData(url,{notif_id:id});
-    if(result.success){
-      const notifElem=btn.closest('.notification-item');
-      notifElem.classList.toggle('unread');
+  // -------------------------------
+  // Toggle read/unread
+  // -------------------------------
+  async function toggleReadStatus(id, btn) {
+    const wasUnread = btn.classList.contains('mark-read-btn');
+    const url = wasUnread ? NOTIF_READ_URL : NOTIF_UNREAD_URL;
+    const result = await postData(url, { notif_id: id });
+
+    if (result.success) {
+      const notif = btn.closest('.notification-item');
+      notif.classList.toggle('unread');
       btn.classList.toggle('mark-read-btn');
       btn.classList.toggle('mark-unread-btn');
-      btn.textContent=isUnread?'Mark Unread':'Mark Read';
+      btn.textContent = wasUnread ? 'Mark Unread' : 'Mark Read';
       updateUI();
-    } else alert('Error: '+(result.error||'Unknown error'));
+    } else {
+      alert('Error: ' + (result.error || 'Unknown error'));
+    }
   }
 
-  async function deleteNotification(id, btn){
-    if(!confirm('Are you sure you want to delete this notification?')) return;
-    const notifElem=btn.closest('.notification-item');
-    notifElem.style.transition='all 0.3s ease'; notifElem.style.opacity='0'; notifElem.style.transform='translateX(-30px)';
-    setTimeout(async ()=>{
-      const result=await postData('{% url "ecotracksys:delete_notification" %}',{notif_id:id});
-      if(result.success){ notifElem.remove(); updateUI(); }
-      else { notifElem.style.opacity='1'; notifElem.style.transform='translateX(0)'; alert('Error: '+(result.error||'Unknown error')); }
-    },300);
+  // -------------------------------
+  // Delete notification
+  // -------------------------------
+  async function deleteNotification(id, btn) {
+    if (!confirm('Are you sure you want to delete this notification?')) return;
+    const notif = btn.closest('.notification-item');
+    notif.style.opacity = '0';
+    notif.style.transform = 'translateX(-30px)';
+    setTimeout(async () => {
+      const result = await postData(NOTIF_DELETE_URL, { notif_id: id });
+      if (result.success) {
+        notif.remove();
+        updateUI();
+      } else {
+        notif.style.opacity = '1';
+        notif.style.transform = 'translateX(0)';
+        alert('Error: ' + (result.error || 'Unknown error'));
+      }
+    }, 300);
   }
 
-  async function markAllRead(){
-    const unreadNotifications=document.querySelectorAll('.notification-item.unread');
-    for(let notif of unreadNotifications){
-      const id=notif.dataset.id;
-      await postData('{% url "ecotracksys:mark_notification_read" %}',{notif_id:id});
+  // -------------------------------
+  // Mark all unread notifications as read
+  // -------------------------------
+  async function markAllRead() {
+    const unread = document.querySelectorAll('.notification-item.unread');
+    for (let notif of unread) {
+      const id = notif.dataset.id;
+      await postData(NOTIF_READ_URL, { notif_id: id });
       notif.classList.remove('unread');
-      const btn=notif.querySelector('[data-action="toggle-read"]');
-      if(btn){btn.classList.replace('mark-read-btn','mark-unread-btn');btn.textContent='Mark Unread';}
+      const btn = notif.querySelector('[data-action="toggle-read"]');
+      if (btn) { btn.classList.replace('mark-read-btn', 'mark-unread-btn'); btn.textContent = 'Mark Unread'; }
     }
     updateUI();
   }
 
-  document.addEventListener('DOMContentLoaded',()=>{
-    updateUI();
-    document.querySelectorAll('[data-filter]').forEach(btn=>{btn.addEventListener('click',()=>filterNotifications(btn.dataset.filter));});
-    document.querySelectorAll('[data-action="toggle-read"]').forEach(btn=>{btn.addEventListener('click',()=>toggleReadStatus(btn.dataset.id,btn));});
-    document.querySelector('[data-action="mark-all-read"]')?.addEventListener('click',markAllRead);
-    document.querySelectorAll('[data-action="delete"]').forEach(btn=>{btn.addEventListener('click',()=>deleteNotification(btn.dataset.id,btn));});
+  // -------------------------------
+  // Event delegation for all buttons
+  // -------------------------------
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('[data-action], [data-filter]');
+    if (!btn) return;
+
+    if (btn.dataset.action === 'toggle-read') toggleReadStatus(btn.dataset.id, btn);
+    if (btn.dataset.action === 'delete') deleteNotification(btn.dataset.id, btn);
+    if (btn.dataset.action === 'mark-all-read') markAllRead();
+    if (btn.dataset.filter) {
+      filterNotifications(btn.dataset.filter);
+      document.querySelectorAll('.control-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
   });
+
+  // -------------------------------
+  // Initialize UI on page load
+  // -------------------------------
+  document.addEventListener('DOMContentLoaded', updateUI);
 </script>
+
 </body>
 </html>

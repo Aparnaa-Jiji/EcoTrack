@@ -81,6 +81,34 @@
     .notif-status{padding:4px 10px;border-radius:20px;font-size:0.8rem;font-weight:700;align-self:center;margin-left:10px;}
     .unread{background:var(--accent);color:#fff;}
     .read{background:#eee;color:#333;}
+
+    /* Actions */
+    .notif-actions{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      margin-left:12px;
+      align-items:flex-end;
+    }
+    .notif-actions button{
+      border:none;
+      border-radius:20px;
+      padding:6px 10px;
+      font-size:0.8rem;
+      font-weight:600;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    .btn-toggle{
+      background:var(--mint-500);
+      color:#fff;
+    }
+    .btn-toggle:hover{background:var(--mint-600);}
+    .btn-delete{
+      background:#ff5252;
+      color:#fff;
+    }
+    .btn-delete:hover{background:#d32f2f;}
   </style>
 </head>
 <body>
@@ -89,7 +117,6 @@
   <aside class="sidebar">
     <div class="brand">EcoTrack</div>
     <ul class="nav">
-      <li><a href="{% url 'ecotracksys:collector_dashboard' %}"><span class="icon"><i class="fas fa-home"></i></span>Dashboard</a></li>
       <li><a href="{% url 'ecotracksys:collector_assignments' %}"><span class="icon"><i class="fas fa-list-check"></i></span>My Assignments</a></li>
       <li><a href="{% url 'ecotracksys:collector_pickup_history' %}"><span class="icon"><i class="fas fa-clock-rotate-left"></i></span>History</a></li>
       <li><a href="{% url 'ecotracksys:collector_performance' %}"><span class="icon"><i class="fas fa-chart-line"></i></span>Performance</a></li>
@@ -121,13 +148,18 @@
 
     <section class="notifications">
       {% for n in notifications %}
-      <div class="notification {% if not n.is_read %}unread{% else %}read{% endif %}" data-id="{{ n.id }}">
+      <div class="notification {% if n.read %}read{% else %}unread{% endif %}" data-id="{{ n.id }}">
         <div class="notif-text">
           <div class="notif-title">{{ n.title }}</div>
           <div class="notif-msg">{{ n.message }}</div>
           <div class="notif-time">{{ n.created_at|date:"M d, H:i" }}</div>
         </div>
-        <div class="notif-status">{% if n.is_read %}Read{% else %}Unread{% endif %}</div>
+        <div class="notif-actions">
+          <button class="btn-toggle">
+            {% if n.read %}<i class="fas fa-envelope-open"></i> Mark Unread{% else %}<i class="fas fa-envelope"></i> Mark Read{% endif %}
+          </button>
+          <button class="btn-delete"><i class="fas fa-trash"></i></button>
+        </div>
       </div>
       {% empty %}
         <div style="padding:18px;text-align:center;color:var(--muted)">No notifications yet.</div>
@@ -143,22 +175,42 @@
   avatarBtn.addEventListener('click', () => profile.classList.toggle('open'));
   document.addEventListener('click', e => { if(!profile.contains(e.target)) profile.classList.remove('open'); });
 
-  // Mark notification as read on click
-  document.querySelectorAll('.notification').forEach(notif => {
-    notif.addEventListener('click', () => {
-      notif.classList.remove('unread');
-      notif.classList.add('read');
-      notif.querySelector('.notif-status').innerText = 'Read';
+  // Toggle read/unread
+  document.querySelectorAll('.btn-toggle').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const notif = btn.closest('.notification');
+      const id = notif.dataset.id;
 
-      // Optional: AJAX call to mark as read in DB
-      fetch(`/api/notifications/${notif.dataset.id}/mark_read/`, {
+      if(notif.classList.contains('read')){
+        notif.classList.remove('read');
+        notif.classList.add('unread');
+        btn.innerHTML = '<i class="fas fa-envelope"></i> Mark Read';
+      }else{
+        notif.classList.remove('unread');
+        notif.classList.add('read');
+        btn.innerHTML = '<i class="fas fa-envelope-open"></i> Mark Unread';
+      }
+
+      fetch(`/api/notifications/${id}/toggle_read/`, {
         method:'POST',
-        headers:{
-          'X-CSRFToken':'{{ csrf_token }}',
-          'X-Requested-With':'XMLHttpRequest',
-          'Content-Type':'application/json'
-        }
-      }).catch(err => console.warn(err));
+        headers:{'X-CSRFToken':'{{ csrf_token }}'}
+      }).catch(err=>console.warn(err));
+    });
+  });
+
+  // Delete notification
+  document.querySelectorAll('.btn-delete').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const notif = btn.closest('.notification');
+      const id = notif.dataset.id;
+      notif.remove();
+
+      fetch(`/api/notifications/${id}/delete/`, {
+        method:'POST',
+        headers:{'X-CSRFToken':'{{ csrf_token }}'}
+      }).catch(err=>console.warn(err));
     });
   });
 </script>

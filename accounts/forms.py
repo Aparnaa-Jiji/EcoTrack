@@ -58,6 +58,7 @@ class CustomUserRegistrationForm(UserCreationForm):
         user.name = self.cleaned_data['name']
         user.email = self.cleaned_data['email']  
         user.phone = self.cleaned_data.get('phone', '')
+        user.role = 'citizen' 
 
         profile_image = self.cleaned_data.get('profile_image')
         if profile_image:

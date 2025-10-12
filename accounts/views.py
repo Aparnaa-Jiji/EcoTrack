@@ -6,22 +6,23 @@ from django.contrib import messages
 from .forms import CustomUserRegistrationForm
 from .models import CustomUser
 from django.http import HttpResponseForbidden
+from django.views.decorators.cache import never_cache
+from django.views.decorators.cache import never_cache
+from django.contrib.auth.decorators import login_required
+
 
 
 # =========================
 # User Registration (Citizen Only)
 # =========================
 def register(request):
-    """
-    Registers a new user (only citizens allowed to self-register).
-    Admins & collectors should be created by admins in Django Admin.
-    """
     if request.method == 'POST':
         form = CustomUserRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
+            # Let form assign all fields including name
             user = form.save(commit=False)
             user.role = 'citizen'  # enforce citizen role
-            user.save()
+            user.save()  # now all fields, including name, are saved
             messages.success(request, 'Registration successful! You can now log in.')
             return redirect('login')
         else:
@@ -31,10 +32,10 @@ def register(request):
 
     return render(request, 'accounts/register.html', {'form': form})
 
-
 # =========================
 # User Login
 # =========================
+
 def login_view(request):
     """
     Handles login and redirects user based on their role.
@@ -49,7 +50,7 @@ def login_view(request):
             if user.role == 'admin':
                 return redirect('ecotracksys:admin_dashboard')
             elif user.role == 'collector':
-                return redirect('ecotracksys:collector_dashboard')
+                return redirect('ecotracksys:collector_assignments')
             else:
                 return redirect('ecotracksys:citizen_dashboard')
         else:
@@ -62,6 +63,7 @@ def login_view(request):
 # User Logout
 # =========================
 def logout_view(request):
+    request.session.flush()  # Clear session data
     logout(request)
     return redirect('login')
 

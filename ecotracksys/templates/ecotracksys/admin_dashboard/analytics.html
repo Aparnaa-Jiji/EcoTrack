@@ -1,290 +1,224 @@
-<!-- File: ecotracksys/templates/admin_dashboard/analytics.html -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- ==== Meta Info ==== -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoTrack - Analytics</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoTrack - Analytics</title>
 
-    <!-- ==== External Libraries ==== -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- ==== Styles ==== -->
-    <style>
-    /* ========= Root Colors ========= */
-    :root {
-      --bg-image: url("{% static 'images/bgimg.jpg' %}");
-      --container-gradient: linear-gradient(145deg, rgba(4, 57, 39, 0.9), rgba(5, 111, 79, 0.85));
-      --primary: #04706e;
-      --secondary: #2f9080;
-      --highlight: #85fcde;
-      --light-blue: #85fcde;
-      --shadow: rgba(3, 104, 77, 0.5);
-      --text-light: #e6fef3;
-      --text-dark: #0b3d2e;
-      --card-gradient: linear-gradient(145deg,#55e1b7,#17bc82);
-    }
-
-    /* ========= Base Page ========= */
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: var(--bg-image) no-repeat center center/cover;
-      color: var(--text-dark);
-    }
-
-    /* ========= Sidebar ========= */
-    .sidebar {
-        position: fixed;
-        top: 0; left: 0;
-        height: 100vh; width: 260px;
-        background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103,206,168,0.7));
-        box-shadow: 2px 0 12px var(--shadow);
-        backdrop-filter: blur(12px);
-        overflow-y: auto;
-        z-index: 1000;
-        transition: width 0.3s ease, padding 0.3s ease;
-    }
-    .sidebar.collapsed { width: 70px; padding: 0; }
-    .sidebar h2 {
-        text-align: center; padding: 20px 0; margin: 0;
-        font-size: 1.6rem; color: var(--primary);
-    }
-    .sidebar.collapsed h2 { opacity: 0; }
-    .sidebar ul { list-style: none; margin: 0; padding: 0; }
-    .sidebar ul li a {
-        display: flex; align-items: center; gap: 12px;
-        padding: 14px 22px; border-radius: 8px;
-        color: var(--text-dark); text-decoration: none;
-        transition: background 0.3s ease, color 0.3s ease;
-    }
-    .sidebar ul li a:hover { background: var(--secondary); color: #fff; }
-    .sidebar ul li a.active { background: var(--primary); color: #fff; font-weight: bold; }
-    .sidebar ul li span { transition: opacity 0.3s ease; }
-    .sidebar.collapsed ul li span { display: none; }
-    .toggle-btn {
-        position: absolute; top: 12px; right: 12px;
-        background: none; border: none;
-        font-size: 22px; color: var(--text-dark); cursor: pointer;
-    }
-
-    /* ========= Main Content ========= */
-    .main {
-        margin-left: 260px;
-        padding: 20px;
-    }
-    h1 { color: var(--primary); }
-
-    /* ========= Chart Cards ========= */
-    .chart-card {
-      background: var(--card-gradient);
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      padding: 15px;
-      margin: 15px auto;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-    }
-    .chart-card h2, .chart-card h3 { margin-top: 0; color: var(--text-light); }
-    .chart-card canvas {
-      width: 100% !important;
-      height: 250px !important;
-    }
-    
-/* ==========================================
-   PROFILE BOX & DROPDOWN
-   ========================================== */
-.profile-box {
-  flex: 1 1 300px;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(10px);
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px var(--shadow);
-  color: #0b3d2e;
+<style>
+/* =====================================================
+   Root Variables
+===================================================== */
+:root {
+  --bg-image: url("{% static 'images/bgimg.jpg' %}");
+  --primary: #04706e;
+  --secondary: #2f9080;
+  --highlight: #85fcde;
+  --shadow: rgba(3, 104, 77, 0.5);
+  --text-light: #e6fef3;
+  --text-dark: #0b3d2e;
+  --card-gradient: linear-gradient(145deg,#55e1b7,#17bc82);
 }
 
-.profile-menu {
-  position: absolute;
-  top: 16px;
-  right: 30px;
-}
-
-.profile-img {
-width: 50px;
-      height: 50px;     /* make width and height equal */
-      border-radius: 50%;
-      object-fit: cover; /* fill the circle without distortion */
-      border: 2px solid var(--primary);
-      cursor: pointer;
-      display: block;
-}
-
-.profile-dropdown {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 55px;
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px var(--shadow);
-  overflow: hidden;
-  z-index: 1000;
-  min-width: 150px;
-}
-
-.profile-dropdown a {
-  display: block;
-  padding: 10px 14px;
-  text-decoration: none;
+/* =====================================================
+   Body & Main
+===================================================== */
+body {
+  margin:0; font-family:'Segoe UI',sans-serif;
+  background: var(--bg-image) no-repeat center center/cover;
   color: var(--text-dark);
-  font-size: 14px;
-  transition: background 0.2s;
 }
 
-.profile-dropdown a:hover {
-  background: var(--secondary);
+/* =====================================================
+   Sidebar
+===================================================== */
+.sidebar {
+  position: fixed; top:0; left:0; height:100vh; width:260px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(103,206,168,0.7));
+  box-shadow:2px 0 12px var(--shadow);
+  backdrop-filter:blur(12px);
+  overflow-y:auto; z-index:1000;
+  transition: width 0.3s ease, padding 0.3s ease;
 }
-    </style>
+.sidebar.collapsed { width:70px; padding:0; }
+.sidebar h2 { text-align:center; padding:20px 0; margin:0; font-size:1.6rem; color:var(--primary); }
+.sidebar.collapsed h2 { opacity:0; }
+.sidebar ul { list-style:none; margin:0; padding:0; }
+.sidebar ul li a { display:flex; align-items:center; gap:12px; padding:14px 22px; border-radius:8px; color:var(--text-dark); text-decoration:none; transition: background 0.3s ease; }
+.sidebar ul li a:hover { background: var(--secondary); color:#fff; }
+.sidebar ul li a.active { background: var(--primary); color:#fff; font-weight:bold; }
+.sidebar.collapsed ul li span { display:none; }
+.toggle-btn { position:absolute; top:12px; right:12px; background:none; border:none; font-size:22px; color:var(--text-dark); cursor:pointer; }
+
+/* =====================================================
+   Main Content
+===================================================== */
+.main { margin-left:260px; padding:20px; }
+h1 { color:var(--primary); }
+
+/* KPI Cards */
+.kpi-container { display:flex; flex-wrap:wrap; gap:20px; margin-bottom:20px; }
+.kpi-card { flex:1 1 200px; background:var(--card-gradient); padding:20px; border-radius:12px; color:var(--text-light); box-shadow:0 4px 12px rgba(0,0,0,0.3); text-align:center; }
+.kpi-card h3 { margin:0; font-size:1rem; }
+.kpi-card p { margin:5px 0 0 0; font-size:1.6rem; font-weight:bold; }
+
+/* Chart Cards */
+.chart-card { background: var(--card-gradient); border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.3); padding:15px; margin:15px auto; width:90%; max-width:400px; text-align:center; }
+.chart-card h2 { margin-top:0; color:var(--text-light); }
+.chart-card canvas { width:100% !important; height:250px !important; }
+
+/* Profile */
+.profile-menu { position:absolute; top:16px; right:30px; }
+.profile-img { width:50px; height:50px; border-radius:50%; object-fit:cover; border:2px solid var(--primary); cursor:pointer; display:block; }
+.profile-dropdown {
+  display:none; position:absolute; right:0; top:55px; background:white; border-radius:10px; box-shadow:0 4px 15px var(--shadow);
+  overflow:hidden; z-index:1000; min-width:150px;
+}
+.profile-dropdown a { display:block; padding:10px 14px; text-decoration:none; color:var(--text-dark); font-size:14px; transition: background 0.2s; }
+.profile-dropdown a:hover { background: var(--secondary); color:#fff; }
+
+</style>
 </head>
 <body>
 
-    <!-- ==== Sidebar ==== -->
-    <div class="sidebar" id="sidebar">
-        <h2 id="brandText">EcoTrack</h2>
-        <button class="toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Sidebar">☰</button>
-        <ul>
-            <li><a href="{% url 'ecotracksys:admin_dashboard' %}"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-            <li><a href="{% url 'ecotracksys:pickup_management' %}"><i class="fas fa-trash"></i> <span>Pickup Management</span></a></li>
-            <li><a href="{% url 'ecotracksys:zone_management' %}"><i class="fas fa-map-marker-alt"></i> <span>Zone Management</span></a></li>
-            <li><a href="{% url 'ecotracksys:leave_request_management' %}"><i class="fas fa-calendar-alt"></i> <span>Leave Requests</span></a></li>
-            <li><a href="{% url 'ecotracksys:complaint_management' %}"><i class="fas fa-bullhorn"></i> <span>Complaints</span></a></li>
-            <li><a href="{% url 'ecotracksys:user_management' %}"><i class="fas fa-users"></i> <span>User Management</span></a></li>
-            <li><a href="{% url 'ecotracksys:collector_management' %}"><i class="fas fa-user-cog"></i> <span>Collector Management</span></a></li>
-            <li><a href="{% url 'ecotracksys:analytics' %}" class="active"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
-            <li><a href="{% url 'ecotracksys:admin_profile' %}"><i class="fas fa-user-shield"></i> <span>Admin Profile</span></a></li>
-        </ul>
-    </div>
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+<h2>EcoTrack</h2>
+<button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+<ul>
+    <li><a href="{% url 'ecotracksys:admin_dashboard' %}"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+    <li><a href="{% url 'ecotracksys:pickup_management' %}"><i class="fas fa-trash"></i> <span>Pickup Management</span></a></li>
+    <li><a href="{% url 'ecotracksys:leave_request_management' %}"><i class="fas fa-calendar-alt"></i> <span>Leave Requests</span></a></li>
+    <li><a href="{% url 'ecotracksys:complaint_management' %}"><i class="fas fa-bullhorn"></i> <span>Complaints</span></a></li>
+    <li><a href="{% url 'ecotracksys:user_management' %}"><i class="fas fa-users"></i> <span>User Management</span></a></li>
+    <li><a href="{% url 'ecotracksys:collector_management' %}"><i class="fas fa-user-cog"></i> <span>Collector Management</span></a></li>
+    <li><a href="{% url 'ecotracksys:admin_analytics' %}" class="active"><i class="fas fa-chart-line"></i> <span>Analytics</span></a></li>
+    <li><a href="{% url 'ecotracksys:admin_notifications' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a></li>
+    <li><a href="{% url 'ecotracksys:admin_profile' %}"><i class="fas fa-user-shield"></i> <span>Admin Profile</span></a></li>
+</ul>
+</div>
 
-    <!-- ==== Main Content ==== -->
-    <div class="main">
-              <!-- Profile Image Dropdown -->
-      <div class="profile-menu">
-        {% if user.is_authenticated %}
-          {% if request.user.profile_image %}
-            <img src="{{ request.user.profile_image.url }}" alt="Profile Image" class="profile-img" onclick="toggleProfileMenu()">
-          {% else %}
-            <img src="{% static 'default_profile.png' %}" alt="Profile Image" class="profile-img" onclick="toggleProfileMenu()">
-          {% endif %}
-        {% endif %}
+<!-- Main -->
+<div class="main">
+<div class="profile-menu">
+{% if user.is_authenticated %}
+  {% if request.user.profile_image %}
+    <img src="{{ request.user.profile_image.url }}" class="profile-img" id="profileImg">
+  {% else %}
+    <img src="{% static 'default_profile.png' %}" class="profile-img" id="profileImg">
+  {% endif %}
+{% endif %}
+<div class="profile-dropdown" id="profileDropdown">
+  <a href="{% url 'ecotracksys:admin_profile' %}">👤 View Profile</a>
+  <a href="{% url 'logout' %}">🚪 Logout</a>
+</div>
+</div>
 
-        <!-- Dropdown Menu -->
-        <div class="profile-dropdown" id="profileDropdown">
-          <a href="{% url 'ecotracksys:admin_profile' %}">👤 View Profile</a>
-          <a href="{% url 'logout' %}">🚪 Logout</a>
-        </div>
-      </div>
-        <h1>📊 Analytics Dashboard</h1>
+<h1>📊 Analytics Dashboard</h1>
 
-        <!-- Pickup Requests Chart -->
-        <div class="chart-card">
-            <h2>Pickup Requests per Month</h2>
-            <canvas id="pickupChart"></canvas>
-        </div>
+<!-- KPI Cards -->
+<div class="kpi-container">
+  <div class="kpi-card"><h3>Total Pickups</h3><p>{{ total_pickups }}</p></div>
+  <div class="kpi-card"><h3>Completed Pickups</h3><p>{{ completed_pickups }}</p></div>
+  <div class="kpi-card"><h3>Pending Pickups</h3><p>{{ pending_pickups }}</p></div>
+  <div class="kpi-card"><h3>Total Collectors</h3><p>{{ total_collectors }}</p></div>
+</div>
 
-        <!-- Collector Performance Chart -->
-        <div class="chart-card">
-            <h2>Collector Performance</h2>
-            <canvas id="collectorChart"></canvas>
-        </div>
+<!-- Charts -->
+<div class="chart-card"><h2>Pickup Status Distribution</h2><canvas id="pickupStatusChart"></canvas></div>
+<div class="chart-card"><h2>Pickup Trends Over Time</h2><canvas id="pickupTrendsChart"></canvas></div>
+<div class="chart-card"><h2>Pickups Assigned per Collector</h2><canvas id="collectorAssignedChart"></canvas></div>
+<div class="chart-card"><h2>Completion Rate per Collector</h2><canvas id="collectorCompletionChart"></canvas></div>
+<div class="chart-card"><h2>Requests per Citizen</h2><canvas id="citizenRequestsChart"></canvas></div>
+<div class="chart-card"><h2>Waste Type Distribution</h2><canvas id="wasteTypeChart"></canvas></div>
 
-        <!-- Zone-wise Waste Collection Chart -->
-        <div class="chart-card">
-            <h2>Zone Wise Collection</h2>
-            <canvas id="zoneChart"></canvas>
-        </div>
-    </div>
+<!-- Pass Django Data to JS Safely -->
+<script id="chart-data" type="application/json">
+{
+  "status_labels": {{ status_labels|safe }},
+  "status_counts": {{ status_counts|safe }},
+  "trends_labels": {{ trends_labels|safe }},
+  "trends_counts": {{ trends_counts|safe }},
+  "collector_labels": {{ collector_labels|safe }},
+  "collector_assigned": {{ collector_assigned|safe }},
+  "collector_completed": {{ collector_completed|safe }},
+  "citizen_labels": {{ citizen_labels|safe }},
+  "citizen_requests": {{ citizen_requests|safe }},
+  "waste_labels": {{ waste_labels|safe }},
+  "waste_counts": {{ waste_counts|safe }}
+}
+</script>
 
-    <!-- ==== Scripts ==== -->
-    <script>
-        function toggleSidebar() {
-            document.getElementById("sidebar").classList.toggle("collapsed");
-        }
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const data = JSON.parse(document.getElementById('chart-data').textContent);
 
-        // Pickup Requests per Month (Line Chart)
-        new Chart(document.getElementById('pickupChart'), {
-            type: 'line',
-            data: {
-                labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul'],
-                datasets: [{
-                    label: 'Pickup Requests',
-                    data: [120,150,180,220,200,250,300],
-                    borderColor: '#0b3d2e',
-                    backgroundColor: 'rgba(4, 112, 110, 0.3)',
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.2)' } },
-                    y: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.2)' } }
-                }
-            }
-        });
+  // Sidebar toggle
+  const sidebar = document.getElementById("sidebar");
+  function toggleSidebar(){ sidebar.classList.toggle("collapsed"); }
 
-        // Collector Performance (Bar Chart)
-        new Chart(document.getElementById('collectorChart'), {
-            type: 'bar',
-            data: {
-                labels: ['John','Priya','Amit','Sara','David'],
-                datasets: [{
-                    label: 'Tasks Completed',
-                    data: [50,45,60,40,55],
-                    backgroundColor: ['#04706e','#2f9080','#0b3d2e','#55e1b7','#17bc82']
-                }]
-            },
-            options: {
-                plugins: { legend: { labels: { color: '#fff' } } },
-                scales: {
-                    x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.2)' } },
-                    y: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.2)' } }
-                }
-            }
-        });
+  // Profile menu
+  const profileImg = document.getElementById("profileImg");
+  const profileDropdown = document.getElementById("profileDropdown");
+  function toggleProfileMenu(){ profileDropdown.style.display = profileDropdown.style.display==='block'?'none':'block'; }
+  profileImg.addEventListener("click", function(e){ toggleProfileMenu(); e.stopPropagation(); });
+  document.addEventListener("click", function(e){ if(!profileDropdown.contains(e.target) && e.target!==profileImg){ profileDropdown.style.display="none"; }});
 
-        // Zone-wise Waste Collection (Pie Chart)
-        new Chart(document.getElementById('zoneChart'), {
-            type: 'pie',
-            data: {
-                labels: ['Zone A','Zone B','Zone C','Zone D'],
-                datasets: [{
-                    data: [300,250,400,350],
-                    backgroundColor: ['#04706e','#2f9080','#85fcde','#0b3d2e']
-                }]
-            },
-            options: {
-                plugins: { legend: { labels: { color: '#fff' } } }
-            }
-        });
-        function toggleProfileMenu() {
-    const menu = document.getElementById("profileDropdown");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
-  }
-
-  // Close menu if clicked outside
-  document.addEventListener("click", function(e) {
-    const profileMenu = document.querySelector(".profile-menu");
-    if (!profileMenu.contains(e.target)) {
-      document.getElementById("profileDropdown").style.display = "none";
+  // Chart.js initialization
+  new Chart(document.getElementById('pickupStatusChart'), {
+    type:'doughnut',
+    data:{
+      labels: data.status_labels,
+      datasets:[{ data: data.status_counts, backgroundColor:['#04706e','#2f9080','#85fcde','#0b3d2e'] }]
     }
   });
-    </script>
+
+  new Chart(document.getElementById('pickupTrendsChart'), {
+    type:'line',
+    data:{
+      labels: data.trends_labels,
+      datasets:[{
+        label:'Total Pickups',
+        data: data.trends_counts,
+        borderColor:'#e6fef3',
+        backgroundColor:'rgba(4,112,110,0.3)',
+        tension:0.4,
+        fill:true
+      }]
+    },
+    options:{ plugins:{legend:{labels:{color:'#fff'}}}, scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}} }
+  });
+
+  new Chart(document.getElementById('collectorAssignedChart'), {
+    type:'bar',
+    data:{ labels: data.collector_labels, datasets:[{ label:'Pickups Assigned', data: data.collector_assigned, backgroundColor:['#04706e','#2f9080','#85fcde','#55e1b7','#17bc82'] }] },
+    options:{ plugins:{legend:{labels:{color:'#fff'}}}, scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}} }
+  });
+
+  new Chart(document.getElementById('collectorCompletionChart'), {
+    type:'bar',
+    data:{ labels: data.collector_labels, datasets:[{ label:'Completion Rate (%)', data: data.collector_completed, backgroundColor:['#04706e','#2f9080','#85fcde','#55e1b7','#17bc82'] }] },
+    options:{ plugins:{legend:{labels:{color:'#fff'}}}, scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}} }
+  });
+
+  new Chart(document.getElementById('citizenRequestsChart'), {
+    type:'bar',
+    data:{ labels: data.citizen_labels, datasets:[{ label:'Requests Made', data: data.citizen_requests, backgroundColor:['#04706e','#2f9080','#85fcde','#0b3d2e'] }] },
+    options:{ plugins:{legend:{labels:{color:'#fff'}}}, scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}} }
+  });
+
+  new Chart(document.getElementById('wasteTypeChart'), {
+    type:'pie',
+    data:{ labels: data.waste_labels, datasets:[{ data: data.waste_counts, backgroundColor:['#04706e','#2f9080','#85fcde','#0b3d2e'] }] }
+  });
+});
+</script>
 
 </body>
 </html>

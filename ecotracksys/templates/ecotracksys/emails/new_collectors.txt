@@ -1,0 +1,14 @@
+Hello {{ user.get_full_name }},
+
+Your EcoTrack collector account has been created.
+
+Login details:
+- Email: {{ user.email }}
+- Password: {{ password }}
+
+Login here: {{ site_url }}
+
+For security, please change your password after logging in.
+
+Thanks,  
+EcoTrack Team

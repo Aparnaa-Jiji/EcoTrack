@@ -352,6 +352,35 @@
       details.style.display = "block";
     }
   }
+
+  document.addEventListener("DOMContentLoaded", function() {
+  const fileInput = document.getElementById("{{ form.photo.id_for_label }}");
+
+  if (fileInput) {
+    // Allow only JPG and PNG
+    fileInput.setAttribute("accept", "image/png, image/jpeg");
+
+    fileInput.addEventListener("change", function() {
+      const file = fileInput.files[0];
+      if (!file) return;
+
+      // ✅ File type check
+      const validTypes = ["image/jpeg", "image/png"];
+      if (!validTypes.includes(file.type)) {
+        alert("Only JPG and PNG formats are allowed.");
+        fileInput.value = ""; // reset input
+        return;
+      }
+
+      // ✅ File size check (max 5 MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size must not exceed 5 MB.");
+        fileInput.value = ""; // reset input
+        return;
+      }
+    });
+  }
+});
 </script>
 
   </div>
